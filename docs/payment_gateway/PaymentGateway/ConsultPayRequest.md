@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 ## Example
 
 ```python
-from dana_python.payment_gateway.payment_gateway.models.consult_pay_request import ConsultPayRequest
+from dana_python.v1.payment_gateway.models.consult_pay_request import ConsultPayRequest
 
 # TODO update the JSON string below
 json = "{}"

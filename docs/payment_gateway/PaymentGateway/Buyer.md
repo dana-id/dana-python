@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 ## Example
 
 ```python
-from dana_python.payment_gateway.payment_gateway.models.buyer import Buyer
+from dana_python.v1.payment_gateway.models.buyer import Buyer
 
 # TODO update the JSON string below
 json = "{}"

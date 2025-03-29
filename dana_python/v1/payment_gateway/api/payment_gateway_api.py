@@ -16,8 +16,8 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union, Type
 from typing_extensions import Annotated
 
-from dana_python.payment_gateway.payment_gateway.models.consult_pay_request import ConsultPayRequest
-from dana_python.payment_gateway.payment_gateway.models.consult_pay_response import ConsultPayResponse
+from dana_python.v1.payment_gateway.models.consult_pay_request import ConsultPayRequest
+from dana_python.v1.payment_gateway.models.consult_pay_response import ConsultPayResponse
 
 from dana_python.api_response import ApiResponse
 from dana_python.rest import RESTResponseType
