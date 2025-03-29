@@ -31,10 +31,10 @@ class Buyer(BaseModel, BaseSdkModel):
     """
     Buyer
     """ # noqa: E501
-    external_user_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, alias="externalUserType")
+    external_user_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
     nickname: Optional[Annotated[str, Field(strict=True, max_length=64)]] = None
-    external_user_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, alias="externalUserId")
-    user_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, alias="userId")
+    external_user_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
+    user_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
     __properties: ClassVar[List[str]] = ["externalUserType", "nickname", "externalUserId", "userId"]
 
     model_config = ConfigDict(

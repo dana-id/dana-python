@@ -32,9 +32,9 @@ class PaymentInfo(BaseModel, BaseSdkModel):
     """
     PaymentInfo
     """ # noqa: E501
-    pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field(alias="payMethod")
-    pay_option: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, alias="payOption")
-    promo_infos: Optional[List[PromoInfo]] = Field(default=None, alias="promoInfos")
+    pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field()
+    pay_option: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    promo_infos: Optional[List[PromoInfo]] = Field(default=None)
     __properties: ClassVar[List[str]] = ["payMethod", "payOption", "promoInfos"]
 
     @field_validator('pay_method')

@@ -32,9 +32,9 @@ class PromoInfo(BaseModel, BaseSdkModel):
     """
     PromoInfo
     """ # noqa: E501
-    promo_amount: ConsultPayRequestAmount = Field(alias="promoAmount")
-    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field(alias="promoId")
-    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field(alias="promoType")
+    promo_amount: ConsultPayRequestAmount = Field()
+    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field()
+    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
     __properties: ClassVar[List[str]] = ["promoAmount", "promoId", "promoType"]
 
     model_config = ConfigDict(

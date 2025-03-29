@@ -34,8 +34,8 @@ class ConsultPayRequestAdditionalInfo(BaseModel, BaseSdkModel):
     Additional information
     """ # noqa: E501
     buyer: Buyer
-    env_info: EnvInfo = Field(alias="envInfo")
-    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, alias="merchantTransType")
+    env_info: EnvInfo = Field()
+    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
     __properties: ClassVar[List[str]] = ["buyer", "envInfo", "merchantTransType"]
 
     model_config = ConfigDict(

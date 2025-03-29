@@ -31,19 +31,19 @@ class EnvInfo(BaseModel, BaseSdkModel):
     """
     EnvInfo
     """ # noqa: E501
-    session_id: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, alias="sessionId")
-    token_id: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, alias="tokenId")
-    website_language: Optional[Annotated[str, Field(strict=True, max_length=16)]] = Field(default=None, alias="websiteLanguage")
-    client_ip: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, alias="clientIp")
-    os_type: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, alias="osType")
-    app_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, alias="appVersion")
-    sdk_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, alias="sdkVersion")
-    source_platform: Annotated[str, Field(strict=True, max_length=32)] = Field(alias="sourcePlatform")
-    order_os_type: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, alias="orderOsType")
-    merchant_app_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, alias="merchantAppVersion")
-    terminal_type: Annotated[str, Field(strict=True, max_length=32)] = Field(alias="terminalType")
-    order_terminal_type: Annotated[str, Field(strict=True, max_length=32)] = Field(alias="orderTerminalType")
-    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, alias="extendInfo")
+    session_id: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    token_id: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    website_language: Optional[Annotated[str, Field(strict=True, max_length=16)]] = Field(default=None)
+    client_ip: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
+    os_type: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    app_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    sdk_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    source_platform: Annotated[str, Field(strict=True, max_length=32)] = Field()
+    order_os_type: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    merchant_app_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    terminal_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
+    order_terminal_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None)
     __properties: ClassVar[List[str]] = ["sessionId", "tokenId", "websiteLanguage", "clientIp", "osType", "appVersion", "sdkVersion", "sourcePlatform", "orderOsType", "merchantAppVersion", "terminalType", "orderTerminalType", "extendInfo"]
 
     @field_validator('source_platform')
