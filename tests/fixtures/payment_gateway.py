@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from dana_python.payment_gateway.payment_gateway.models import *
+from dana_python.v1.payment_gateway.models import *
 
 @pytest.fixture
 def consult_pay_request() -> ConsultPayRequest:

@@ -25,8 +25,8 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 
 ```python
 from dana_python.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana_python.payment_gateway.payment_gateway.models.consult_pay_request import ConsultPayRequest
-from dana_python.payment_gateway.payment_gateway.models.consult_pay_response import ConsultPayResponse
+from dana_python.v1.payment_gateway.models.consult_pay_request import ConsultPayRequest
+from dana_python.v1.payment_gateway.models.consult_pay_response import ConsultPayResponse
 from dana_python.api_client import ApiClient
 from dana_python.rest import ApiException
 from pprint import pprint
@@ -43,8 +43,8 @@ configuration = SnapConfiguration(
 
 
 with ApiClient(configuration) as api_client:
-    api_instance = dana_python.payment_gateway.payment_gateway.PaymentGatewayApi(api_client)
-    consult_pay_request = dana_python.payment_gateway.payment_gateway.ConsultPayRequest()
+    api_instance = dana_python.v1.payment_gateway.PaymentGatewayApi(api_client)
+    consult_pay_request = dana_python.v1.payment_gateway.ConsultPayRequest()
 
     try:
         api_response = api_instance.consult_pay(consult_pay_request)

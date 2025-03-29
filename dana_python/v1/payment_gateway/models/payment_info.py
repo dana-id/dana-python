@@ -22,7 +22,7 @@ from dana_python.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana_python.payment_gateway.payment_gateway.models.promo_info import PromoInfo
+from dana_python.v1.payment_gateway.models.promo_info import PromoInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator

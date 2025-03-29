@@ -20,23 +20,23 @@ import json
 from dana_python.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from typing_extensions import Annotated
-from dana_python.payment_gateway.payment_gateway.models.buyer import Buyer
-from dana_python.payment_gateway.payment_gateway.models.env_info import EnvInfo
+from dana_python.v1.payment_gateway.models.consult_pay_request_additional_info import ConsultPayRequestAdditionalInfo
+from dana_python.v1.payment_gateway.models.consult_pay_request_amount import ConsultPayRequestAmount
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class ConsultPayRequestAdditionalInfo(BaseModel, BaseSdkModel):
+class ConsultPayRequest(BaseModel, BaseSdkModel):
     """
-    Additional information
+    ConsultPayRequest
     """ # noqa: E501
-    buyer: Buyer
-    env_info: EnvInfo = Field()
-    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    __properties: ClassVar[List[str]] = ["buyer", "envInfo", "merchantTransType"]
+    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
+    amount: ConsultPayRequestAmount
+    additional_info: ConsultPayRequestAdditionalInfo = Field()
+    __properties: ClassVar[List[str]] = ["merchantId", "amount", "additionalInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -57,7 +57,7 @@ class ConsultPayRequestAdditionalInfo(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ConsultPayRequestAdditionalInfo from a JSON string"""
+        """Create an instance of ConsultPayRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -78,17 +78,17 @@ class ConsultPayRequestAdditionalInfo(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of buyer
-        if self.buyer:
-            _dict['buyer'] = self.buyer.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of env_info
-        if self.env_info:
-            _dict['envInfo'] = self.env_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of amount
+        if self.amount:
+            _dict['amount'] = self.amount.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of additional_info
+        if self.additional_info:
+            _dict['additionalInfo'] = self.additional_info.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ConsultPayRequestAdditionalInfo from a dict"""
+        """Create an instance of ConsultPayRequest from a dict"""
         if obj is None:
             return None
 
@@ -96,9 +96,9 @@ class ConsultPayRequestAdditionalInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "buyer": Buyer.from_dict(obj["buyer"]) if obj.get("buyer") is not None else None,
-            "envInfo": EnvInfo.from_dict(obj["envInfo"]) if obj.get("envInfo") is not None else None,
-            "merchantTransType": obj.get("merchantTransType")
+            "merchantId": obj.get("merchantId"),
+            "amount": ConsultPayRequestAmount.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
+            "additionalInfo": ConsultPayRequestAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
         })
         return _obj
 
