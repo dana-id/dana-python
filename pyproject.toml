@@ -1,21 +1,42 @@
+[project]
+name = "dana-python-api-client"
+dynamic = [ "version", "readme" ]
+description = "API Client (SDK) for DANA APIs based on https://dashboard.dana.id/api-docs"
+license = "Apache-2.0"
+requires-python = ">=3.8"
+authors = [
+  { name = "DANA Automation Team", email = "automation@dana.id" },
+  { name = "Rangga Putra Pertama", email = "rangga.putra@dana.id" }
+]
+maintainers = [
+    { name = "DANA Automation Team", email = "automation@dana.id" },
+    { name = "Rangga Putra Pertama", email = "rangga.putra@dana.id" }
+]
+keywords = ["DANA", "DANA ID Docs", "DANA SDK"]
+dependencies = [
+  "annotated-types==0.7.0",
+  "cffi==1.17.1",
+  "cryptography==44.0.2",
+  "pycparser==2.22",
+  "pydantic==2.10.6",
+  "pydantic_core==2.27.2",
+  "python-dateutil==2.9.0.post0",
+  "six==1.17.0",
+  "typing_extensions==4.12.2",
+  "urllib3==2.3.0; python_version >= '3.9'",
+  "urllib3==2.2.3; python_version < '3.9'"
+]
+
+[project.urls]
+homepage = "https://dashboard.dana.id/api-docs"
+repository = "https://gitlab.dana.id/automation/dana-python-api-client"
+documentation = "https://gitlab.dana.id/automation/dana-python-api-client/docs/"
+"Bug Tracker" = "https://gitlab.dana.id/automation/dana-python-api-client/issues"
+
 [tool.poetry]
-name = "dana_python.snap.virtualaccount"
-version = "1.0.0"
-description = "Virtual Account API"
-authors = ["OpenAPI Generator Community <team@openapitools.org>"]
-license = "NoLicense"
-readme = "README.md"
-repository = "https://github.com/GIT_USER_ID/GIT_REPO_ID"
-keywords = ["OpenAPI", "OpenAPI-Generator", "Virtual Account API"]
-include = ["dana_python.snap.virtualaccount/py.typed"]
-
-[tool.poetry.dependencies]
-python = "^3.8"
-
-urllib3 = ">= 1.25.3, < 3.0.0"
-python-dateutil = ">= 2.8.2"
-pydantic = ">= 2"
-typing-extensions = ">= 4.7.1"
+version = "0.1.0"
+readme = ["README.md", "docs/PaymentGatewayApi.md"]
+include = ["LICENSE", "README.md", "docs/*.md"]
 
 [tool.poetry.dev-dependencies]
 pytest = ">= 7.2.1"
@@ -35,7 +56,7 @@ extension-pkg-whitelist = "pydantic"
 
 [tool.mypy]
 files = [
-  "dana_python.snap.virtualaccount",
+  "dana_python",
   #"test",  # auto-generated tests
   "tests", # hand-written tests
 ]
@@ -73,7 +94,7 @@ disallow_any_generics = true
 
 [[tool.mypy.overrides]]
 module = [
-  "dana_python.snap.virtualaccount.configuration",
+  "dana_python.utils",
 ]
 warn_unused_ignores = true
 strict_equality = true
