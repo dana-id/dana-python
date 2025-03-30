@@ -1,3 +1,17 @@
+# Copyright 2025 PT Espay Debit Indonesia Koe
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 from dana_python.api_client import ApiClient
 from dana_python.v1.payment_gateway import PaymentGatewayApi
@@ -25,8 +39,6 @@ class TestPaymentGatewayApi:
         with ApiClient(self.config) as api_client:
             api_instance = PaymentGatewayApi(api_client)
             api_response = api_instance.consult_pay(consult_pay_request)
-
-        print(api_response)
 
         assert api_response.response_code == '2005700'
         assert api_response.response_message == 'Successful'
