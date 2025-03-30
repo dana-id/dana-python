@@ -49,6 +49,7 @@ build-package:
   artifacts:
     paths:
       - dist/
+    expire_in: 1h
   needs:
     - pytest-3.9
     - pytest-3.10
@@ -67,7 +68,8 @@ publish-gitlab:
     - poetry config repositories.gitlab "https://gitlab.dana.id/api/v4/projects/$CI_PROJECT_ID/packages/pypi"
     - poetry publish --build -r gitlab --username __token__ --password "$CI_JOB_TOKEN"
   needs:
-    - build-package
+    - job: build-package
+      artifacts: true
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+-rc\.\d+$/'
       when: always
@@ -82,7 +84,8 @@ publish-pypi:
     - poetry config pypi-token.pypi "$PYPI_TOKEN"
     - poetry publish --build --no-interaction
   needs:
-    - build-package
+    - job: build-package
+      artifacts: true
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
       when: manual
