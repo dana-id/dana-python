@@ -45,6 +45,8 @@ pytest-3.12:
 build-package:
   stage: build
   image: python:3.11
+  tags: 
+    - aliyun-sit-runner
   script:
     - pip install poetry
     - poetry install
