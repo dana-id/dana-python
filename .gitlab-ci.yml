@@ -64,6 +64,8 @@ build-package:
 publish-gitlab:
   stage: publish
   image: python:3.11
+  tags: 
+    - aliyun-sit-runner
   script:
     - pip install poetry
     - poetry config repositories.gitlab "https://gitlab.dana.id/api/v4/projects/$CI_PROJECT_ID/packages/pypi"
@@ -77,6 +79,8 @@ publish-gitlab:
 publish-pypi:
   stage: publish
   image: python:3.11
+  tags: 
+    - aliyun-sit-runner
   script:
     - pip install poetry
     - poetry config pypi-token.pypi "$PYPI_TOKEN"
