@@ -33,8 +33,10 @@ repository = "https://gitlab.dana.id/automation/dana-python-api-client"
 documentation = "https://gitlab.dana.id/automation/dana-python-api-client/docs/"
 "Bug Tracker" = "https://gitlab.dana.id/automation/dana-python-api-client/issues"
 
+[tool.setuptools.dynamic]
+readme = {file=["README.md", "docs/PaymentGatewayApi.md"], content-type="text/markdown"}
+
 [tool.poetry]
-readme = ["README.md", "docs/PaymentGatewayApi.md"]
 include = ["LICENSE", "README.md", "docs/*.md"]
 
 [tool.poetry.group.dev.dependencies]
