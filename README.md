@@ -3,7 +3,7 @@ SDK for DANA API (https://dashboard.dana.id/api-docs)
 
 ## Requirements.
 
-Python 3.8+
+Python 3.9.1+
 
 ## Installation & Usage
 ### pip install
