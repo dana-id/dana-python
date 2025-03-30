@@ -45,6 +45,14 @@ build-package:
   script:
     - pip install poetry
     - poetry install
+    - |
+      if [[ "$CI_COMMIT_TAG" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?(rc[0-9]+)?$ ]]; then
+        VERSION="${CI_COMMIT_TAG#v}"
+        sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
+        echo "Updated version to: $VERSION"
+      else
+        echo "Tag format invalid or not provided. Skipping version update."
+      fi
     - poetry build
   artifacts:
     paths:
@@ -84,7 +92,7 @@ publish-pypi:
   script:
     - pip install poetry
     - poetry config pypi-token.pypi "$PYPI_TOKEN"
-    - poetry publish --build --no-interaction
+    - poetry publish --no-interaction
   needs:
     - job: build-package
       artifacts: true
