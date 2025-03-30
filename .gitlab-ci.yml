@@ -65,8 +65,9 @@ publish-gitlab:
     - aliyun-sit-runner
   script:
     - pip install poetry
+    - ls -lh dist
     - poetry config repositories.gitlab "https://gitlab.dana.id/api/v4/projects/$CI_PROJECT_ID/packages/pypi"
-    - poetry publish --build -r gitlab --username __token__ --password "$CI_JOB_TOKEN"
+    - poetry publish -r gitlab --username __token__ --password "$CI_JOB_TOKEN"
   needs:
     - job: build-package
       artifacts: true
