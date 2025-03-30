@@ -1,6 +1,7 @@
 [project]
 name = "dana_python"
-dynamic = [ "version", "readme" ]
+version = "0.1.0rc.1"
+dynamic = [ "readme" ]
 description = "API Client (SDK) for DANA APIs based on https://dashboard.dana.id/api-docs"
 license = "Apache-2.0"
 requires-python = ">3.9.1"
@@ -33,7 +34,6 @@ documentation = "https://gitlab.dana.id/automation/dana-python-api-client/docs/"
 "Bug Tracker" = "https://gitlab.dana.id/automation/dana-python-api-client/issues"
 
 [tool.poetry]
-version = "0.1.0"
 readme = ["README.md", "docs/PaymentGatewayApi.md"]
 include = ["LICENSE", "README.md", "docs/*.md"]
 
