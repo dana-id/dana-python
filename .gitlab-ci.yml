@@ -98,6 +98,16 @@ publish-pypi:
   image: python:3.11
   tags: 
     - aliyun-sit-runner
+  before_script:
+    - pip install poetry
+    - |
+      if [[ "$CI_COMMIT_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        VERSION="${CI_COMMIT_TAG#v}"
+        sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
+        echo "Updated version to: $VERSION"
+      else
+        echo "Tag format invalid or not provided. Skipping version update."
+      fi
   script:
     - pip install poetry
     - poetry config pypi-token.pypi "$PYPI_TOKEN"
