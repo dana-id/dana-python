@@ -1,7 +1,6 @@
 [project]
 name = "dana-python-api-client"
 version = "0.0.0"
-dynamic = [ "readme" ]
 readme = "README.md"
 description = "API Client (SDK) for DANA APIs based on https://dashboard.dana.id/api-docs"
 license = "Apache-2.0"
