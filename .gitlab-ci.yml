@@ -22,7 +22,7 @@ stages:
   script:
     - pip install -r requirements.txt
     - pip install -r test-requirements.txt
-    - pytest -v -s --cov=dana_python.v1.payment_gateway
+    - pytest -v -s --cov=dana.payment_gateway.v1
 
 pytest-3.9:
   extends: .pytest

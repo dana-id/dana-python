@@ -1,4 +1,4 @@
-# dana_python
+# dana
 SDK for DANA API (https://dashboard.dana.id/api-docs) 
 
 ## Requirements.
@@ -17,7 +17,7 @@ pip install git+https://github.com/GIT_USER_ID/GIT_REPO_ID.git
 
 Then import the package:
 ```python
-import dana_python.payment_gateway.payment_gateway
+import dana.payment_gateway.v1
 ```
 
 ### Setuptools
@@ -31,7 +31,7 @@ python setup.py install --user
 
 Then import the package:
 ```python
-import dana_python.payment_gateway.payment_gateway
+import dana.payment_gateway.v1
 ```
 
 ## Getting Started
@@ -42,5 +42,5 @@ Please follow the [installation procedure](#installation--usage) and then go to 
 
 API | Description
 ------------- | -------------
-[**PaymentGatewayApi**](docs/payment_gateway/PaymentGatewayApi.md) | API for doing operations in DANA Payment Gateway (Gapura)
+[**PaymentGatewayApi**](docs/payment_gateway/v1/PaymentGatewayApi.md) | API for doing operations in DANA Payment Gateway (Gapura)
 
