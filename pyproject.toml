@@ -1,5 +1,5 @@
 [project]
-name = "dana_python"
+name = "dana-python"
 version = "0.0.0"
 dynamic = [ "readme" ]
 description = "API Client (SDK) for DANA APIs based on https://dashboard.dana.id/api-docs"
@@ -38,6 +38,7 @@ readme = {file=["README.md", "docs/PaymentGatewayApi.md"], content-type="text/ma
 
 [tool.poetry]
 include = ["LICENSE", "README.md", "docs/*.md"]
+packages = [{ include = "dana" }]
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">= 7.2.1"
@@ -52,12 +53,16 @@ mypy = ">= 1.5"
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dana*"]
+
 [tool.pylint.'MESSAGES CONTROL']
 extension-pkg-whitelist = "pydantic"
 
 [tool.mypy]
 files = [
-  "dana_python",
+  "dana",
   #"test",  # auto-generated tests
   "tests", # hand-written tests
 ]
@@ -95,7 +100,7 @@ disallow_any_generics = true
 
 [[tool.mypy.overrides]]
 module = [
-  "dana_python.utils",
+  "dana.utils",
 ]
 warn_unused_ignores = true
 strict_equality = true

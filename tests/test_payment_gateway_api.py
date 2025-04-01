@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import os
-from dana_python.api_client import ApiClient
-from dana_python.v1.payment_gateway import PaymentGatewayApi
-from dana_python.v1.payment_gateway.models import PaymentInfo, ConsultPayRequest
-from dana_python.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana_python.rest import ApiException
+from dana.api_client import ApiClient
+from dana.payment_gateway.v1 import PaymentGatewayApi
+from dana.payment_gateway.v1.models import PaymentInfo, ConsultPayRequest
+from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
+from dana.rest import ApiException
 from tests.fixtures.payment_gateway import consult_pay_request
 
 class TestPaymentGatewayApi:

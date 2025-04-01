@@ -3,7 +3,7 @@
 #
 # ref: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: dana_python.snap.virtualaccount Python package
+name: dana-python package
 
 on: [push, pull_request]
 
@@ -28,4 +28,4 @@ jobs:
           pip install -r test-requirements.txt
       - name: Test with pytest
         run: |
-          pytest --cov=dana_python.snap.virtualaccount
+          pytest --cov=dana.payment_gateway.v1
