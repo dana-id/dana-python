@@ -46,7 +46,7 @@ build-package:
     - pip install poetry
     - poetry install
     - |
-      if [[ "$CI_COMMIT_TAG" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?(rc[0-9]+)?$ ]]; then
+      if [[ "$CI_COMMIT_TAG" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?(-rc\.[0-9]+)?$ ]]; then
         VERSION="${CI_COMMIT_TAG#v}"
         sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
         echo "Updated version to: $VERSION"
@@ -74,7 +74,7 @@ publish-gitlab:
   before_script:
     - pip install poetry
     - |
-      if [[ "$CI_COMMIT_TAG" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?(rc[0-9]+)?$ ]]; then
+      if [[ "$CI_COMMIT_TAG" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?(-rc\.[0-9]+)?$ ]]; then
         VERSION="${CI_COMMIT_TAG#v}"
         sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
         echo "Updated version to: $VERSION"
@@ -90,7 +90,7 @@ publish-gitlab:
     - job: build-package
       artifacts: true 
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+rc\d+$/'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+-rc\.\d+$/'
       when: always
 
 publish-pypi:
@@ -106,5 +106,5 @@ publish-pypi:
     - job: build-package
       artifacts: true
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+-rc\.\d+$/'
       when: manual
