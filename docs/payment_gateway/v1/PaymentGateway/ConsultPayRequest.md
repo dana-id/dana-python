@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **merchant_id** | **str** | Merchant identifier that is unique per each merchant | 
-**amount** | [**ConsultPayRequestAmount**](ConsultPayRequestAmount.md) |  | 
+**amount** | [**Money**](Money.md) |  | 
 **additional_info** | [**ConsultPayRequestAdditionalInfo**](ConsultPayRequestAdditionalInfo.md) |  | 
 
 ## Example

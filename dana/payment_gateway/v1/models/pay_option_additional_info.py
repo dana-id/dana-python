@@ -34,22 +34,22 @@ import json
 from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.money import Money
+from dana.payment_gateway.v1.models.promo_info import PromoInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class PromoInfo(BaseModel, BaseSdkModel):
+class PayOptionAdditionalInfo(BaseModel, BaseSdkModel):
     """
-    PromoInfo
+    PayOptionAdditionalInfo
     """ # noqa: E501
-    promo_amount: Money = Field()
-    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
-    __properties: ClassVar[List[str]] = ["promoAmount", "promoId", "promoType"]
+    phone_number: Optional[Annotated[str, Field(strict=True, max_length=15)]] = Field(default=None)
+    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
+    promo_infos: Optional[List[PromoInfo]] = Field(default=None)
+    __properties: ClassVar[List[str]] = ["phoneNumber", "paymentCode", "promoInfos"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -70,7 +70,7 @@ class PromoInfo(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PromoInfo from a JSON string"""
+        """Create an instance of PayOptionAdditionalInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -91,14 +91,18 @@ class PromoInfo(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of promo_amount
-        if self.promo_amount:
-            _dict['promoAmount'] = self.promo_amount.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in promo_infos (list)
+        _items = []
+        if self.promo_infos:
+            for _item_promo_infos in self.promo_infos:
+                if _item_promo_infos:
+                    _items.append(_item_promo_infos.to_dict())
+            _dict['promoInfos'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PromoInfo from a dict"""
+        """Create an instance of PayOptionAdditionalInfo from a dict"""
         if obj is None:
             return None
 
@@ -106,9 +110,9 @@ class PromoInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "promoAmount": Money.from_dict(obj["promoAmount"]) if obj.get("promoAmount") is not None else None,
-            "promoId": obj.get("promoId"),
-            "promoType": obj.get("promoType")
+            "phoneNumber": obj.get("phoneNumber"),
+            "paymentCode": obj.get("paymentCode"),
+            "promoInfos": [PromoInfo.from_dict(_item) for _item in obj["promoInfos"]] if obj.get("promoInfos") is not None else None
         })
         return _obj
 

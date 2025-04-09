@@ -229,7 +229,8 @@ class SnapConfiguration(BaseConfiguration):
     ) -> None:
         """Constructor
         """
-        self._base_path = "http://api.sandbox.dana.id" if api_key["ENV"] == Env.SANDBOX else None
+        self._base_path = "http://api.sandbox.dana.id" if api_key["ENV"] == Env.SANDBOX else \
+        "https://api.saas.dana.id" if api_key["ENV"] == Env.PRODUCTION else None
         """Default Base url
         """
         self.server_index = 0 if server_index is None and host is None else server_index
@@ -584,7 +585,12 @@ class SnapConfiguration(BaseConfiguration):
                 'url': "http://api.sandbox.dana.id",
                 'description': "No description provided",
             }
-        ] if self.api_key["ENV"] == Env.SANDBOX else None
+        ] if self.api_key["ENV"] == Env.SANDBOX else [
+            {
+                'url': "https://api.saas.dana.id",
+                'description': "No description provided",
+            }
+        ] if self.api_key["ENV"] == Env.PRODUCTION else None
 
         return host_settings
 

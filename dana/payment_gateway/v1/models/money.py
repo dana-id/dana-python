@@ -36,20 +36,18 @@ from dana.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.money import Money
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class PromoInfo(BaseModel, BaseSdkModel):
+class Money(BaseModel, BaseSdkModel):
     """
-    PromoInfo
+    Money
     """ # noqa: E501
-    promo_amount: Money = Field()
-    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
-    __properties: ClassVar[List[str]] = ["promoAmount", "promoId", "promoType"]
+    value: Annotated[str, Field(strict=True, max_length=19)] = Field(description="Value of amount. Following ISO-4217, for IDR the value includes 2 decimal digits separated with point e.g. IDR 10.000,- will be placed with 10000.00")
+    currency: Annotated[str, Field(strict=True, max_length=3)] = Field(description="Currency of money following ISO-4217")
+    __properties: ClassVar[List[str]] = ["value", "currency"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -70,7 +68,7 @@ class PromoInfo(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PromoInfo from a JSON string"""
+        """Create an instance of Money from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -91,14 +89,11 @@ class PromoInfo(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of promo_amount
-        if self.promo_amount:
-            _dict['promoAmount'] = self.promo_amount.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PromoInfo from a dict"""
+        """Create an instance of Money from a dict"""
         if obj is None:
             return None
 
@@ -106,9 +101,8 @@ class PromoInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "promoAmount": Money.from_dict(obj["promoAmount"]) if obj.get("promoAmount") is not None else None,
-            "promoId": obj.get("promoId"),
-            "promoType": obj.get("promoType")
+            "value": obj.get("value"),
+            "currency": obj.get("currency")
         })
         return _obj
 

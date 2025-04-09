@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**promo_amount** | [**ConsultPayRequestAmount**](ConsultPayRequestAmount.md) |  | 
+**promo_amount** | [**Money**](Money.md) |  | 
 **promo_id** | **str** |  | 
 **promo_type** | **str** |  | 
 

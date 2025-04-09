@@ -22,7 +22,7 @@ def consult_pay_request() -> ConsultPayRequest:
 
     return ConsultPayRequest(
         merchant_id=os.getenv("MERCHANT_ID"),
-        amount=ConsultPayRequestAmount(
+        amount=Money(
             value="12345678.00",
             currency="IDR"
         ),

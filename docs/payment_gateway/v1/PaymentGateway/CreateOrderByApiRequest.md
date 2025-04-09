@@ -1,0 +1,38 @@
+# CreateOrderByApiRequest
+
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**pay_option_details** | [**PayOptionDetails**](PayOptionDetails.md) |  | 
+**additional_info** | [**CreateOrderByApiAdditionalInfo**](CreateOrderByApiAdditionalInfo.md) |  | [optional] 
+**partner_reference_no** | **str** | Transaction identifier on partner system | 
+**merchant_id** | **str** | Unique merchant identifier | 
+**amount** | [**Money**](Money.md) |  | 
+**sub_merchant_id** | **str** | Information of sub merchant identifier | [optional] 
+**external_store_id** | **str** | Store identifier to indicate to which store this payment belongs to | [optional] 
+**valid_up_to** | **str** | The date and time when the order is valid until in the following format: YYYY-MM-DDTHH:MM:SS+07:00  | [optional] 
+**disabled_pay_methods** | **str** | Payment method(s) that cannot be used for this | [optional] 
+**url_params** | [**List[UrlParam]**](UrlParam.md) | Notify URL that DANA must send the payment notification to | 
+
+## Example
+
+```python
+from dana.payment_gateway.v1.models.create_order_by_api_request import CreateOrderByApiRequest
+
+# TODO update the JSON string below
+json = "{}"
+# create an instance of CreateOrderByApiRequest from a JSON string
+create_order_by_api_request_instance = CreateOrderByApiRequest.from_json(json)
+# print the JSON string representation of the object
+print(CreateOrderByApiRequest.to_json())
+
+# convert the object into a dict
+create_order_by_api_request_dict = create_order_by_api_request_instance.to_dict()
+# create an instance of CreateOrderByApiRequest from a dict
+create_order_by_api_request_from_dict = CreateOrderByApiRequest.from_dict(create_order_by_api_request_dict)
+```
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

@@ -34,7 +34,7 @@ import json
 from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.payment_gateway.v1.models.money import Money
 from typing import Optional, Set
@@ -42,14 +42,20 @@ from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class PromoInfo(BaseModel, BaseSdkModel):
+class Goods(BaseModel, BaseSdkModel):
     """
-    PromoInfo
+    Goods
     """ # noqa: E501
-    promo_amount: Money = Field()
-    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
-    __properties: ClassVar[List[str]] = ["promoAmount", "promoId", "promoType"]
+    unit: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Goods unit")
+    category: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Goods category")
+    price: Money
+    merchant_shipping_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Shipment identifier provided by merchant")
+    merchant_goods_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Goods identifier provided by merchant")
+    description: Annotated[str, Field(strict=True, max_length=1024)] = Field(description="Goods description")
+    snapshot_url: Optional[Annotated[str, Field(strict=True, max_length=512)]] = Field(default=None, description="The URL of good’s snapshot web page")
+    quantity: Annotated[str, Field(strict=True, max_length=16)] = Field(description="Count of items")
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information")
+    __properties: ClassVar[List[str]] = ["unit", "category", "price", "merchantShippingId", "merchantGoodsId", "description", "snapshotUrl", "quantity", "extendInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -70,7 +76,7 @@ class PromoInfo(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PromoInfo from a JSON string"""
+        """Create an instance of Goods from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -91,14 +97,14 @@ class PromoInfo(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of promo_amount
-        if self.promo_amount:
-            _dict['promoAmount'] = self.promo_amount.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of price
+        if self.price:
+            _dict['price'] = self.price.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PromoInfo from a dict"""
+        """Create an instance of Goods from a dict"""
         if obj is None:
             return None
 
@@ -106,9 +112,15 @@ class PromoInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "promoAmount": Money.from_dict(obj["promoAmount"]) if obj.get("promoAmount") is not None else None,
-            "promoId": obj.get("promoId"),
-            "promoType": obj.get("promoType")
+            "unit": obj.get("unit"),
+            "category": obj.get("category"),
+            "price": Money.from_dict(obj["price"]) if obj.get("price") is not None else None,
+            "merchantShippingId": obj.get("merchantShippingId"),
+            "merchantGoodsId": obj.get("merchantGoodsId"),
+            "description": obj.get("description"),
+            "snapshotUrl": obj.get("snapshotUrl"),
+            "quantity": obj.get("quantity"),
+            "extendInfo": obj.get("extendInfo")
         })
         return _obj
 
