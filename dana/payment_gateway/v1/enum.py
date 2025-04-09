@@ -14,21 +14,6 @@
 
 from enum import Enum
 
-class SourcePlatform(str, Enum):
-    IPG = "IPG"
-
-class TerminalType(str, Enum):
-    APP = "APP"
-    WEB = "WEB"
-    WAP = "WAP"
-    SYSTEM = "SYSTEM"
-
-class OrderTerminalType(str, Enum):
-    APP = "APP"
-    WEB = "WEB"
-    WAP = "WAP"
-    SYSTEM = "SYSTEM"
-
 class PayMethod(str, Enum):
     BALANCE = "BALANCE"
     COUPON = "COUPON"
@@ -57,3 +42,17 @@ class PayOption(str, Enum):
     VIRTUAL_ACCOUNT_CIMB = "VIRTUAL_ACCOUNT_CIMB"
     VIRTUAL_ACCOUNT_PERMATA = "VIRTUAL_ACCOUNT_PERMATA"
 
+class SourcePlatform(str, Enum):
+    IPG = "IPG"
+
+class TerminalType(str, Enum):
+    APP = "APP"
+    WEB = "WEB"
+    WAP = "WAP"
+    SYSTEM = "SYSTEM"
+
+class OrderTerminalType(str, Enum):
+    APP = "APP"
+    WEB = "WEB"
+    WAP = "WAP"
+    SYSTEM = "SYSTEM"

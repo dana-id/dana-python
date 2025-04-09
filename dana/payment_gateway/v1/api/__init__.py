@@ -13,7 +13,6 @@
 # limitations under the License.
 
 # flake8: noqa
-
 # import apis into api package
 from dana.payment_gateway.v1.api.payment_gateway_api import PaymentGatewayApi
-
+from typing import Union

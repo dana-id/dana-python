@@ -15,7 +15,7 @@
 import os
 from dana.api_client import ApiClient
 from dana.payment_gateway.v1 import PaymentGatewayApi
-from dana.payment_gateway.v1.models import PaymentInfo, ConsultPayRequest
+from dana.payment_gateway.v1.models import PaymentInfo, ConsultPayRequest, CreateOrderByApiRequest, CreateOrderByRedirectRequest
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
 from dana.rest import ApiException
 from tests.fixtures.payment_gateway import consult_pay_request

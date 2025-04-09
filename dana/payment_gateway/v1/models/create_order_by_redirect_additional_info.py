@@ -34,22 +34,24 @@ import json
 from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.money import Money
+from dana.payment_gateway.v1.models.env_info import EnvInfo
+from dana.payment_gateway.v1.models.order_redirect_object import OrderRedirectObject
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class PromoInfo(BaseModel, BaseSdkModel):
+class CreateOrderByRedirectAdditionalInfo(BaseModel, BaseSdkModel):
     """
-    PromoInfo
+    CreateOrderByRedirectAdditionalInfo
     """ # noqa: E501
-    promo_amount: Money = Field()
-    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
-    __properties: ClassVar[List[str]] = ["promoAmount", "promoId", "promoType"]
+    mcc: Annotated[str, Field(strict=True, max_length=64)]
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None)
+    env_info: EnvInfo = Field()
+    order: Optional[OrderRedirectObject] = None
+    __properties: ClassVar[List[str]] = ["mcc", "extendInfo", "envInfo", "order"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -70,7 +72,7 @@ class PromoInfo(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PromoInfo from a JSON string"""
+        """Create an instance of CreateOrderByRedirectAdditionalInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -91,14 +93,17 @@ class PromoInfo(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of promo_amount
-        if self.promo_amount:
-            _dict['promoAmount'] = self.promo_amount.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of env_info
+        if self.env_info:
+            _dict['envInfo'] = self.env_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of order
+        if self.order:
+            _dict['order'] = self.order.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PromoInfo from a dict"""
+        """Create an instance of CreateOrderByRedirectAdditionalInfo from a dict"""
         if obj is None:
             return None
 
@@ -106,9 +111,10 @@ class PromoInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "promoAmount": Money.from_dict(obj["promoAmount"]) if obj.get("promoAmount") is not None else None,
-            "promoId": obj.get("promoId"),
-            "promoType": obj.get("promoType")
+            "mcc": obj.get("mcc"),
+            "extendInfo": obj.get("extendInfo"),
+            "envInfo": EnvInfo.from_dict(obj["envInfo"]) if obj.get("envInfo") is not None else None,
+            "order": OrderRedirectObject.from_dict(obj["order"]) if obj.get("order") is not None else None
         })
         return _obj
 

@@ -33,24 +33,43 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.consult_pay_request_additional_info import ConsultPayRequestAdditionalInfo
+from dana.payment_gateway.v1.models.create_order_by_api_additional_info import CreateOrderByApiAdditionalInfo
 from dana.payment_gateway.v1.models.money import Money
+from dana.payment_gateway.v1.models.pay_option_details import PayOptionDetails
+from dana.payment_gateway.v1.models.url_param import UrlParam
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class ConsultPayRequest(BaseModel, BaseSdkModel):
+class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
     """
-    ConsultPayRequest
+    CreateOrderByApiRequest
     """ # noqa: E501
-    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
+    pay_option_details: PayOptionDetails = Field()
+    additional_info: Optional[CreateOrderByApiAdditionalInfo] = Field(default=None)
+    partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Transaction identifier on partner system")
+    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Unique merchant identifier")
     amount: Money
-    additional_info: ConsultPayRequestAdditionalInfo = Field()
-    __properties: ClassVar[List[str]] = ["merchantId", "amount", "additionalInfo"]
+    sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
+    external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
+    valid_up_to: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="The date and time when the order is valid until in the following format: YYYY-MM-DDTHH:MM:SS+07:00 ")
+    disabled_pay_methods: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method(s) that cannot be used for this")
+    url_params: List[UrlParam] = Field(description="Notify URL that DANA must send the payment notification to")
+    __properties: ClassVar[List[str]] = ["partnerReferenceNo", "merchantId", "amount", "subMerchantId", "externalStoreId", "validUpTo", "disabledPayMethods", "urlParams"]
+
+    @field_validator('valid_up_to')
+    def valid_up_to_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if value is None:
+            return value
+
+        if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
+            raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -71,7 +90,7 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ConsultPayRequest from a JSON string"""
+        """Create an instance of CreateOrderByApiRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -95,14 +114,18 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
         # override the default output from pydantic by calling `to_dict()` of amount
         if self.amount:
             _dict['amount'] = self.amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of additional_info
-        if self.additional_info:
-            _dict['additionalInfo'] = self.additional_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in url_params (list)
+        _items = []
+        if self.url_params:
+            for _item_url_params in self.url_params:
+                if _item_url_params:
+                    _items.append(_item_url_params.to_dict())
+            _dict['urlParams'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ConsultPayRequest from a dict"""
+        """Create an instance of CreateOrderByApiRequest from a dict"""
         if obj is None:
             return None
 
@@ -110,9 +133,14 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "partnerReferenceNo": obj.get("partnerReferenceNo"),
             "merchantId": obj.get("merchantId"),
             "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
-            "additionalInfo": ConsultPayRequestAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "subMerchantId": obj.get("subMerchantId"),
+            "externalStoreId": obj.get("externalStoreId"),
+            "validUpTo": obj.get("validUpTo"),
+            "disabledPayMethods": obj.get("disabledPayMethods"),
+            "urlParams": [UrlParam.from_dict(_item) for _item in obj["urlParams"]] if obj.get("urlParams") is not None else None
         })
         return _obj
 

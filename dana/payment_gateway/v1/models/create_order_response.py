@@ -34,23 +34,25 @@ import json
 from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.consult_pay_request_additional_info import ConsultPayRequestAdditionalInfo
-from dana.payment_gateway.v1.models.money import Money
+from dana.payment_gateway.v1.models.create_order_response_additional_info import CreateOrderResponseAdditionalInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class ConsultPayRequest(BaseModel, BaseSdkModel):
+class CreateOrderResponse(BaseModel, BaseSdkModel):
     """
-    ConsultPayRequest
+    CreateOrderResponse
     """ # noqa: E501
-    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
-    amount: Money
-    additional_info: ConsultPayRequestAdditionalInfo = Field()
-    __properties: ClassVar[List[str]] = ["merchantId", "amount", "additionalInfo"]
+    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code for the transaction result. Example values include:<br> * 2005400 - Successful<br> * 4005400 - Bad Request - Retry request with proper parameter<br> * 4005401 - Invalid Field Format - Retry request with proper parameter<br> * 4005402 - Invalid Mandatory Field - Retry request with proper parameter<br> * 4015400 - Unauthorized. Invalid Signature - Retry request with proper parameter<br> * 4035402 - Exceeds Transaction Amount Limit - Try to adjust the order amount<br> * 4035405 - Do Not Honor - Retry request with proper parameter or can contact DANA to check the user/account status<br> * 4035415 - Transaction Not Permitted - Retry request periodically or consult to DANA<br> * 4045408 - Invalid Merchant - Retry request with proper parameter<br> * 4045418 - Inconsistent Request - Retry with proper parameter<br> * 4295400 - Too Many Requests - Retry request periodically by sending same request payload<br> * 5005400 - General Error - Retry request periodically<br> * 5005401 - Internal Server Error - Retry request periodically by sending same request payload<br> ")
+    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Message corresponding to the response code")
+    reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Transaction identifier on DANA system (present if successfully processed)")
+    partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Transaction identifier on partner system")
+    web_redirect_url: Optional[Annotated[str, Field(strict=True, max_length=2048)]] = Field(default=None, description="Checkout URL (present if payment method is not OVO/Virtual Account/QRIS)")
+    additional_info: Optional[CreateOrderResponseAdditionalInfo] = Field(default=None)
+    __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "referenceNo", "partnerReferenceNo", "webRedirectUrl", "additionalInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -71,7 +73,7 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ConsultPayRequest from a JSON string"""
+        """Create an instance of CreateOrderResponse from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -92,9 +94,6 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of amount
-        if self.amount:
-            _dict['amount'] = self.amount.to_dict()
         # override the default output from pydantic by calling `to_dict()` of additional_info
         if self.additional_info:
             _dict['additionalInfo'] = self.additional_info.to_dict()
@@ -102,7 +101,7 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ConsultPayRequest from a dict"""
+        """Create an instance of CreateOrderResponse from a dict"""
         if obj is None:
             return None
 
@@ -110,9 +109,12 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "merchantId": obj.get("merchantId"),
-            "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
-            "additionalInfo": ConsultPayRequestAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "responseCode": obj.get("responseCode"),
+            "responseMessage": obj.get("responseMessage"),
+            "referenceNo": obj.get("referenceNo"),
+            "partnerReferenceNo": obj.get("partnerReferenceNo"),
+            "webRedirectUrl": obj.get("webRedirectUrl"),
+            "additionalInfo": CreateOrderResponseAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
         })
         return _obj
 

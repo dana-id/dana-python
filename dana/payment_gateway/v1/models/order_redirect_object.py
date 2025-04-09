@@ -33,23 +33,39 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.money import Money
+from dana.payment_gateway.v1.models.buyer import Buyer
+from dana.payment_gateway.v1.models.goods import Goods
+from dana.payment_gateway.v1.models.shipping_info import ShippingInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class PromoInfo(BaseModel, BaseSdkModel):
+class OrderRedirectObject(BaseModel, BaseSdkModel):
     """
-    PromoInfo
+    OrderRedirectObject
     """ # noqa: E501
-    promo_amount: Money = Field()
-    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
-    __properties: ClassVar[List[str]] = ["promoAmount", "promoId", "promoType"]
+    order_title: Annotated[str, Field(strict=True, max_length=64)] = Field()
+    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
+    buyer: Buyer
+    goods: Optional[List[Goods]] = None
+    shipping_info: Optional[ShippingInfo] = Field(default=None)
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None)
+    scenario: Optional[Annotated[str, Field(strict=True, max_length=64)]] = None
+    __properties: ClassVar[List[str]] = ["orderTitle", "merchantTransType", "buyer", "goods", "shippingInfo", "extendInfo", "scenario"]
+
+    @field_validator('scenario')
+    def scenario_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['REDIRECT']):
+            raise ValueError("must be one of enum values ('REDIRECT')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -70,7 +86,7 @@ class PromoInfo(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PromoInfo from a JSON string"""
+        """Create an instance of OrderRedirectObject from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -91,14 +107,24 @@ class PromoInfo(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of promo_amount
-        if self.promo_amount:
-            _dict['promoAmount'] = self.promo_amount.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of buyer
+        if self.buyer:
+            _dict['buyer'] = self.buyer.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in goods (list)
+        _items = []
+        if self.goods:
+            for _item_goods in self.goods:
+                if _item_goods:
+                    _items.append(_item_goods.to_dict())
+            _dict['goods'] = _items
+        # override the default output from pydantic by calling `to_dict()` of shipping_info
+        if self.shipping_info:
+            _dict['shippingInfo'] = self.shipping_info.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PromoInfo from a dict"""
+        """Create an instance of OrderRedirectObject from a dict"""
         if obj is None:
             return None
 
@@ -106,9 +132,13 @@ class PromoInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "promoAmount": Money.from_dict(obj["promoAmount"]) if obj.get("promoAmount") is not None else None,
-            "promoId": obj.get("promoId"),
-            "promoType": obj.get("promoType")
+            "orderTitle": obj.get("orderTitle"),
+            "merchantTransType": obj.get("merchantTransType"),
+            "buyer": Buyer.from_dict(obj["buyer"]) if obj.get("buyer") is not None else None,
+            "goods": [Goods.from_dict(_item) for _item in obj["goods"]] if obj.get("goods") is not None else None,
+            "shippingInfo": ShippingInfo.from_dict(obj["shippingInfo"]) if obj.get("shippingInfo") is not None else None,
+            "extendInfo": obj.get("extendInfo"),
+            "scenario": obj.get("scenario")
         })
         return _obj
 
