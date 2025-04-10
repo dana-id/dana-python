@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List
 from typing_extensions import Annotated
 from typing import Optional, Set
@@ -49,6 +49,13 @@ class UrlParam(BaseModel, BaseSdkModel):
     type: Annotated[str, Field(strict=True, max_length=32)]
     is_deeplink: Annotated[str, Field(strict=True, max_length=1)] = Field()
     __properties: ClassVar[List[str]] = ["url", "type", "isDeeplink"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['PAY_RETURN', 'NOTIFICATION']):
+            raise ValueError("must be one of enum values ('PAY_RETURN', 'NOTIFICATION')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

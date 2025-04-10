@@ -108,7 +108,7 @@ class PromoInfo(BaseModel, BaseSdkModel):
         _obj = cls.model_validate({
             "promoAmount": Money.from_dict(obj["promoAmount"]) if obj.get("promoAmount") is not None else None,
             "promoId": obj.get("promoId"),
-            "promoType": obj.get("promoType")
+            "promoType": obj.get("promoType") if obj.get("promoType") is not None else 'DIRECT_DISCOUNT'
         })
         return _obj
 

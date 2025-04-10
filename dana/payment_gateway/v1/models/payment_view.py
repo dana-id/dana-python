@@ -36,37 +36,26 @@ from dana.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.create_order_by_api_additional_info import CreateOrderByApiAdditionalInfo
-from dana.payment_gateway.v1.models.money import Money
-from dana.payment_gateway.v1.models.pay_option_detail import PayOptionDetail
-from dana.payment_gateway.v1.models.url_param import UrlParam
+from dana.payment_gateway.v1.models.pay_option_info import PayOptionInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
+class PaymentView(BaseModel, BaseSdkModel):
     """
-    CreateOrderByApiRequest
+    PaymentView
     """ # noqa: E501
-    pay_option_details: List[PayOptionDetail] = Field()
-    additional_info: Optional[CreateOrderByApiAdditionalInfo] = Field(default=None)
-    partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Transaction identifier on partner system")
-    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Unique merchant identifier")
-    amount: Money
-    sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
-    external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    valid_up_to: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="The date and time when the order is valid until in the following format: YYYY-MM-DDTHH:MM:SS+07:00 ")
-    disabled_pay_methods: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method(s) that cannot be used for this")
-    url_params: List[UrlParam] = Field(description="Notify URL that DANA must send the payment notification to")
-    __properties: ClassVar[List[str]] = ["partnerReferenceNo", "merchantId", "amount", "subMerchantId", "externalStoreId", "validUpTo", "disabledPayMethods", "urlParams"]
+    cashier_request_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Cashier request identifier")
+    paid_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Paid time in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
+    pay_option_infos: List[PayOptionInfo] = Field(description="Information of pay options")
+    pay_request_extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information of pay request")
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional extend information")
+    __properties: ClassVar[List[str]] = ["cashierRequestId", "paidTime", "payOptionInfos", "payRequestExtendInfo", "extendInfo"]
 
-    @field_validator('valid_up_to')
-    def valid_up_to_validate_regular_expression(cls, value):
+    @field_validator('paid_time')
+    def paid_time_validate_regular_expression(cls, value):
         """Validates the regular expression"""
-        if value is None:
-            return value
-
         if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
             raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
         return value
@@ -90,7 +79,7 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of CreateOrderByApiRequest from a JSON string"""
+        """Create an instance of PaymentView from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -111,21 +100,18 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of amount
-        if self.amount:
-            _dict['amount'] = self.amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in url_params (list)
+        # override the default output from pydantic by calling `to_dict()` of each item in pay_option_infos (list)
         _items = []
-        if self.url_params:
-            for _item_url_params in self.url_params:
-                if _item_url_params:
-                    _items.append(_item_url_params.to_dict())
-            _dict['urlParams'] = _items
+        if self.pay_option_infos:
+            for _item_pay_option_infos in self.pay_option_infos:
+                if _item_pay_option_infos:
+                    _items.append(_item_pay_option_infos.to_dict())
+            _dict['payOptionInfos'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of CreateOrderByApiRequest from a dict"""
+        """Create an instance of PaymentView from a dict"""
         if obj is None:
             return None
 
@@ -133,14 +119,11 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "partnerReferenceNo": obj.get("partnerReferenceNo"),
-            "merchantId": obj.get("merchantId"),
-            "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
-            "subMerchantId": obj.get("subMerchantId"),
-            "externalStoreId": obj.get("externalStoreId"),
-            "validUpTo": obj.get("validUpTo"),
-            "disabledPayMethods": obj.get("disabledPayMethods"),
-            "urlParams": [UrlParam.from_dict(_item) for _item in obj["urlParams"]] if obj.get("urlParams") is not None else None
+            "cashierRequestId": obj.get("cashierRequestId"),
+            "paidTime": obj.get("paidTime"),
+            "payOptionInfos": [PayOptionInfo.from_dict(_item) for _item in obj["payOptionInfos"]] if obj.get("payOptionInfos") is not None else None,
+            "payRequestExtendInfo": obj.get("payRequestExtendInfo"),
+            "extendInfo": obj.get("extendInfo")
         })
         return _obj
 

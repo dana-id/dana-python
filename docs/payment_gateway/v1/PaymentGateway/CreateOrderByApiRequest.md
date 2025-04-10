@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**pay_option_details** | [**PayOptionDetails**](PayOptionDetails.md) |  | 
+**pay_option_details** | [**List[PayOptionDetail]**](PayOptionDetail.md) |  | 
 **additional_info** | [**CreateOrderByApiAdditionalInfo**](CreateOrderByApiAdditionalInfo.md) |  | [optional] 
 **partner_reference_no** | **str** | Transaction identifier on partner system | 
 **merchant_id** | **str** | Unique merchant identifier | 

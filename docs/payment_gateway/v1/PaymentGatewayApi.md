@@ -5,7 +5,8 @@ All URIs are relative to http://api.sandbox.dana.id for sandbox environment and 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**consult_pay**](PaymentGatewayApi.md#consult_pay) | **POST** /v1.0/payment-gateway/consult-pay.htm | Consult Pay API
-[**create_order**](PaymentGatewayApi.md#create_order) | **POST** /v1.0/payment-gateway/create-order.htm | Create Payment Order
+[**create_order**](PaymentGatewayApi.md#create_order) | **POST** /payment-gateway/v1.0/debit/payment-host-to-host.htm | Create Payment Order
+[**query_payment**](PaymentGatewayApi.md#query_payment) | **POST** /payment-gateway/v1.0/debit/status.htm | Query Payment
 
 # **consult_pay**
 > consult_pay(consult_pay_request) -> ConsultPayResponse 
@@ -85,6 +86,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * CHANNEL_ID
 * PRIVATE_KEY
 * PRIVATE_KEY_PATH
+* ENV
 
 ```python
 from dana.payment_gateway.v1.models.create_order_by_redirect_request import CreateOrderByRedirectRequest
@@ -131,6 +133,69 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Order creation response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **query_payment**
+> query_payment(query_payment_request) -> QueryPaymentResponse 
+
+Query Payment
+
+Inquiry payment status and information from merchant’s platform to DANA
+
+### Example
+You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
+* ORIGIN
+* X_PARTNER_ID
+* CHANNEL_ID
+* PRIVATE_KEY
+* PRIVATE_KEY_PATH
+
+```python
+from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
+from dana.payment_gateway.v1.models.query_payment_request import QueryPaymentRequest
+from dana.payment_gateway.v1.models.query_payment_response import QueryPaymentResponse
+from dana.api_client import ApiClient
+from dana.rest import ApiException
+from pprint import pprint
+
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        CHANNEL_ID=os.environ.get("CHANNEL_ID"),
+        ENV=Env.SANDBOX
+    )
+)
+
+with ApiClient(configuration) as api_client:
+    api_instance = dana.payment_gateway.v1.PaymentGatewayApi(api_client)
+    query_payment_request = dana.payment_gateway.v1.QueryPaymentRequest()
+
+    try:
+        api_response = api_instance.query_payment(query_payment_request)
+        print("The response of PaymentGatewayApi->query_payment:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PaymentGatewayApi->query_payment: %s\n" % e)
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **query_payment_request** | [**QueryPaymentRequest**](PaymentGateway/QueryPaymentRequest.md)|  | 
+
+### Return type
+
+[**QueryPaymentResponse**](PaymentGateway/QueryPaymentResponse.md)
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Query payment response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

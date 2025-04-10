@@ -36,33 +36,30 @@ from dana.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.create_order_by_api_additional_info import CreateOrderByApiAdditionalInfo
 from dana.payment_gateway.v1.models.money import Money
-from dana.payment_gateway.v1.models.pay_option_detail import PayOptionDetail
-from dana.payment_gateway.v1.models.url_param import UrlParam
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
+class QueryPaymentRequest(BaseModel, BaseSdkModel):
     """
-    CreateOrderByApiRequest
+    QueryPaymentRequest
     """ # noqa: E501
-    pay_option_details: List[PayOptionDetail] = Field()
-    additional_info: Optional[CreateOrderByApiAdditionalInfo] = Field(default=None)
-    partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Transaction identifier on partner system")
-    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Unique merchant identifier")
-    amount: Money
+    original_partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on partner system")
+    original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system")
+    original_external_id: Optional[Annotated[str, Field(strict=True, max_length=36)]] = Field(default=None, description="Original external identifier on header message")
+    service_code: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Transaction type indicator is based on the service code of the original transaction request:<br> - IPG Cashier Pay - SNAP: 54<br> - QRIS CPM (Acquirer) - SNAP: 60<br> - QRIS MPM (Acquirer) - SNAP: 47<br> - Payment Gateway: 54<br> ")
+    transaction_date: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Transaction date in format YYYY-MM-DDTHH:mm:ss+07:00 (GMT+7, Jakarta time)")
+    amount: Optional[Money] = None
+    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
     sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    valid_up_to: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="The date and time when the order is valid until in the following format: YYYY-MM-DDTHH:MM:SS+07:00 ")
-    disabled_pay_methods: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method(s) that cannot be used for this")
-    url_params: List[UrlParam] = Field(description="Notify URL that DANA must send the payment notification to")
-    __properties: ClassVar[List[str]] = ["partnerReferenceNo", "merchantId", "amount", "subMerchantId", "externalStoreId", "validUpTo", "disabledPayMethods", "urlParams"]
+    additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
+    __properties: ClassVar[List[str]] = ["originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "serviceCode", "transactionDate", "amount", "merchantId", "subMerchantId", "externalStoreId", "additionalInfo"]
 
-    @field_validator('valid_up_to')
-    def valid_up_to_validate_regular_expression(cls, value):
+    @field_validator('transaction_date')
+    def transaction_date_validate_regular_expression(cls, value):
         """Validates the regular expression"""
         if value is None:
             return value
@@ -90,7 +87,7 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of CreateOrderByApiRequest from a JSON string"""
+        """Create an instance of QueryPaymentRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -114,18 +111,11 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
         # override the default output from pydantic by calling `to_dict()` of amount
         if self.amount:
             _dict['amount'] = self.amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in url_params (list)
-        _items = []
-        if self.url_params:
-            for _item_url_params in self.url_params:
-                if _item_url_params:
-                    _items.append(_item_url_params.to_dict())
-            _dict['urlParams'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of CreateOrderByApiRequest from a dict"""
+        """Create an instance of QueryPaymentRequest from a dict"""
         if obj is None:
             return None
 
@@ -133,14 +123,16 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "partnerReferenceNo": obj.get("partnerReferenceNo"),
-            "merchantId": obj.get("merchantId"),
+            "originalPartnerReferenceNo": obj.get("originalPartnerReferenceNo"),
+            "originalReferenceNo": obj.get("originalReferenceNo"),
+            "originalExternalId": obj.get("originalExternalId"),
+            "serviceCode": obj.get("serviceCode") if obj.get("serviceCode") is not None else '54',
+            "transactionDate": obj.get("transactionDate"),
             "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
+            "merchantId": obj.get("merchantId"),
             "subMerchantId": obj.get("subMerchantId"),
             "externalStoreId": obj.get("externalStoreId"),
-            "validUpTo": obj.get("validUpTo"),
-            "disabledPayMethods": obj.get("disabledPayMethods"),
-            "urlParams": [UrlParam.from_dict(_item) for _item in obj["urlParams"]] if obj.get("urlParams") is not None else None
+            "additionalInfo": obj.get("additionalInfo")
         })
         return _obj
 
