@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **promo_amount** | [**Money**](Money.md) |  | 
 **promo_id** | **str** |  | 
-**promo_type** | **str** |  | 
+**promo_type** | **str** |  | [default to 'DIRECT_DISCOUNT']
 
 ## Example
 

@@ -33,39 +33,28 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.buyer import Buyer
-from dana.payment_gateway.v1.models.goods import Goods
-from dana.payment_gateway.v1.models.shipping_info import ShippingInfo
+from dana.payment_gateway.v1.models.money import Money
+from dana.payment_gateway.v1.models.pay_option_additional_info import PayOptionAdditionalInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class OrderRedirectObject(BaseModel, BaseSdkModel):
+class PayOptionDetail(BaseModel, BaseSdkModel):
     """
-    OrderRedirectObject
+    PayOptionDetail
     """ # noqa: E501
-    order_title: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    buyer: Buyer
-    goods: Optional[List[Goods]] = None
-    shipping_info: Optional[List[ShippingInfo]] = Field(default=None)
-    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None)
-    scenario: Optional[Annotated[str, Field(strict=True, max_length=64)]] = None
-    __properties: ClassVar[List[str]] = ["orderTitle", "merchantTransType", "buyer", "goods", "shippingInfo", "extendInfo", "scenario"]
-
-    @field_validator('scenario')
-    def scenario_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['REDIRECT']):
-            raise ValueError("must be one of enum values ('REDIRECT')")
-        return value
+    pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field()
+    pay_option: Annotated[str, Field(strict=True, max_length=64)] = Field()
+    trans_amount: Money = Field()
+    fee_amount: Optional[Money] = Field(default=None)
+    card_token: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
+    merchant_token: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
+    additional_info: Optional[PayOptionAdditionalInfo] = Field(default=None)
+    __properties: ClassVar[List[str]] = ["payMethod", "payOption", "transAmount", "feeAmount", "cardToken", "merchantToken", "additionalInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -86,7 +75,7 @@ class OrderRedirectObject(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of OrderRedirectObject from a JSON string"""
+        """Create an instance of PayOptionDetail from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -107,28 +96,20 @@ class OrderRedirectObject(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of buyer
-        if self.buyer:
-            _dict['buyer'] = self.buyer.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in goods (list)
-        _items = []
-        if self.goods:
-            for _item_goods in self.goods:
-                if _item_goods:
-                    _items.append(_item_goods.to_dict())
-            _dict['goods'] = _items
-        # override the default output from pydantic by calling `to_dict()` of each item in shipping_info (list)
-        _items = []
-        if self.shipping_info:
-            for _item_shipping_info in self.shipping_info:
-                if _item_shipping_info:
-                    _items.append(_item_shipping_info.to_dict())
-            _dict['shippingInfo'] = _items
+        # override the default output from pydantic by calling `to_dict()` of trans_amount
+        if self.trans_amount:
+            _dict['transAmount'] = self.trans_amount.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of fee_amount
+        if self.fee_amount:
+            _dict['feeAmount'] = self.fee_amount.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of additional_info
+        if self.additional_info:
+            _dict['additionalInfo'] = self.additional_info.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of OrderRedirectObject from a dict"""
+        """Create an instance of PayOptionDetail from a dict"""
         if obj is None:
             return None
 
@@ -136,13 +117,13 @@ class OrderRedirectObject(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "orderTitle": obj.get("orderTitle"),
-            "merchantTransType": obj.get("merchantTransType"),
-            "buyer": Buyer.from_dict(obj["buyer"]) if obj.get("buyer") is not None else None,
-            "goods": [Goods.from_dict(_item) for _item in obj["goods"]] if obj.get("goods") is not None else None,
-            "shippingInfo": [ShippingInfo.from_dict(_item) for _item in obj["shippingInfo"]] if obj.get("shippingInfo") is not None else None,
-            "extendInfo": obj.get("extendInfo"),
-            "scenario": obj.get("scenario")
+            "payMethod": obj.get("payMethod"),
+            "payOption": obj.get("payOption"),
+            "transAmount": Money.from_dict(obj["transAmount"]) if obj.get("transAmount") is not None else None,
+            "feeAmount": Money.from_dict(obj["feeAmount"]) if obj.get("feeAmount") is not None else None,
+            "cardToken": obj.get("cardToken"),
+            "merchantToken": obj.get("merchantToken"),
+            "additionalInfo": PayOptionAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
         })
         return _obj
 

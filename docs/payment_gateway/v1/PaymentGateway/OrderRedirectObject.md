@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **merchant_trans_type** | **str** |  | [optional] 
 **buyer** | [**Buyer**](Buyer.md) |  | 
 **goods** | [**List[Goods]**](Goods.md) |  | [optional] 
-**shipping_info** | [**ShippingInfo**](ShippingInfo.md) |  | [optional] 
+**shipping_info** | [**List[ShippingInfo]**](ShippingInfo.md) |  | [optional] 
 **extend_info** | **str** |  | [optional] 
 **scenario** | **str** |  | [optional] 
 
