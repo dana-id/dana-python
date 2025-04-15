@@ -66,7 +66,7 @@ class Buyer(BaseModel, BaseSdkModel):
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
         # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict(), separators=(',', ': '))
+        return json.dumps(self.to_dict(), separators=(',', ':'))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

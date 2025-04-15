@@ -36,7 +36,7 @@ from dana.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.payment_info import PaymentInfo
+from dana.payment_gateway.v1.models.consult_pay_payment_info import ConsultPayPaymentInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
@@ -48,7 +48,7 @@ class ConsultPayResponse(BaseModel, BaseSdkModel):
     """ # noqa: E501
     response_code: Optional[Annotated[str, Field(strict=True, max_length=7)]] = Field(default=None)
     response_message: Optional[Annotated[str, Field(strict=True, max_length=150)]] = Field(default=None, description="The response code - response message:<br> * 2000000 - Successful<br> * 4000000 - Bad Request - Retry request with proper parameter<br> * 4000001 - Invalid format for certain field - Retry request with proper parameter<br> * 4000002 - Missing or invalid format on mandatory field - Retry request with proper parameter<br> * 4010000 - Signature is invalid - Retry request with proper parameter<br> * 4030005 - Account or user status is abnormal - Retry request with proper parameter or can contact DANA to check the user/account status<br> * 4030015 - Transaction not permitted - Retry request periodically or consult to DANA<br> * 4040008 - Merchant does not exist or status abnormal - Retry request with proper parameter<br> * 4290000 - Maximum transaction limit exceeded - Retry request periodically by sending same request payload<br> * 5000000 - General error - Retry request periodically<br> ")
-    payment_infos: Optional[List[PaymentInfo]] = Field(default=None)
+    payment_infos: Optional[List[ConsultPayPaymentInfo]] = Field(default=None)
     __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "paymentInfos"]
 
     model_config = ConfigDict(
@@ -66,7 +66,7 @@ class ConsultPayResponse(BaseModel, BaseSdkModel):
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
         # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict(), separators=(',', ': '))
+        return json.dumps(self.to_dict(), separators=(',', ':'))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -112,7 +112,7 @@ class ConsultPayResponse(BaseModel, BaseSdkModel):
         _obj = cls.model_validate({
             "responseCode": obj.get("responseCode"),
             "responseMessage": obj.get("responseMessage"),
-            "paymentInfos": [PaymentInfo.from_dict(_item) for _item in obj["paymentInfos"]] if obj.get("paymentInfos") is not None else None
+            "paymentInfos": [ConsultPayPaymentInfo.from_dict(_item) for _item in obj["paymentInfos"]] if obj.get("paymentInfos") is not None else None
         })
         return _obj
 

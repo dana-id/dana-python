@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **pay_method** | **str** | Payment method name | 
 **pay_option** | **str** | Payment provider name | [optional] 
-**pay_amount** | [**Money**](Money.md) |  | 
+**pay_amount** | [**Money**](Money.md) |  | [optional] 
 **trans_amount** | [**Money**](Money.md) |  | [optional] 
 **charge_amount** | [**Money**](Money.md) |  | [optional] 
 **pay_option_bill_extend_info** | **str** | Extended bill information for pay option | [optional] 

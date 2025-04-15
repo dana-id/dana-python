@@ -37,6 +37,7 @@ from dana.payment_gateway.v1.api.payment_gateway_api import PaymentGatewayApi
 # import models into sdk package
 from dana.payment_gateway.v1.models.amount_detail import AmountDetail
 from dana.payment_gateway.v1.models.buyer import Buyer
+from dana.payment_gateway.v1.models.consult_pay_payment_info import ConsultPayPaymentInfo
 from dana.payment_gateway.v1.models.consult_pay_request import ConsultPayRequest
 from dana.payment_gateway.v1.models.consult_pay_request_additional_info import ConsultPayRequestAdditionalInfo
 from dana.payment_gateway.v1.models.consult_pay_response import ConsultPayResponse
@@ -47,6 +48,7 @@ from dana.payment_gateway.v1.models.create_order_by_redirect_request import Crea
 from dana.payment_gateway.v1.models.create_order_response import CreateOrderResponse
 from dana.payment_gateway.v1.models.create_order_response_additional_info import CreateOrderResponseAdditionalInfo
 from dana.payment_gateway.v1.models.env_info import EnvInfo
+from dana.payment_gateway.v1.models.finish_notify import FinishNotify
 from dana.payment_gateway.v1.models.goods import Goods
 from dana.payment_gateway.v1.models.money import Money
 from dana.payment_gateway.v1.models.order_api_object import OrderApiObject
@@ -54,14 +56,16 @@ from dana.payment_gateway.v1.models.order_redirect_object import OrderRedirectOb
 from dana.payment_gateway.v1.models.pay_option_additional_info import PayOptionAdditionalInfo
 from dana.payment_gateway.v1.models.pay_option_detail import PayOptionDetail
 from dana.payment_gateway.v1.models.pay_option_info import PayOptionInfo
-from dana.payment_gateway.v1.models.payment_info import PaymentInfo
 from dana.payment_gateway.v1.models.payment_view import PaymentView
 from dana.payment_gateway.v1.models.promo_info import PromoInfo
+from dana.payment_gateway.v1.models.push_notify_additional_info import PushNotifyAdditionalInfo
+from dana.payment_gateway.v1.models.push_notify_payment_info import PushNotifyPaymentInfo
 from dana.payment_gateway.v1.models.query_payment_request import QueryPaymentRequest
 from dana.payment_gateway.v1.models.query_payment_response import QueryPaymentResponse
 from dana.payment_gateway.v1.models.query_payment_response_additional_info import QueryPaymentResponseAdditionalInfo
 from dana.payment_gateway.v1.models.seller import Seller
 from dana.payment_gateway.v1.models.shipping_info import ShippingInfo
+from dana.payment_gateway.v1.models.shop_info import ShopInfo
 from dana.payment_gateway.v1.models.status_detail import StatusDetail
 from dana.payment_gateway.v1.models.time_detail import TimeDetail
 from dana.payment_gateway.v1.models.url_param import UrlParam

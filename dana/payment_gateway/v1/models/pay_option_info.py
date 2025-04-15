@@ -48,7 +48,7 @@ class PayOptionInfo(BaseModel, BaseSdkModel):
     """ # noqa: E501
     pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Payment method name")
     pay_option: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment provider name")
-    pay_amount: Money = Field()
+    pay_amount: Optional[Money] = Field(default=None)
     trans_amount: Optional[Money] = Field(default=None)
     charge_amount: Optional[Money] = Field(default=None)
     pay_option_bill_extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extended bill information for pay option")
@@ -87,7 +87,7 @@ class PayOptionInfo(BaseModel, BaseSdkModel):
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
         # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict(), separators=(',', ': '))
+        return json.dumps(self.to_dict(), separators=(',', ':'))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

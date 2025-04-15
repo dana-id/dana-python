@@ -12,36 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-from dana.api_client import ApiClient
 from dana.payment_gateway.v1 import PaymentGatewayApi
-from dana.payment_gateway.v1.models import PaymentInfo, ConsultPayRequest, CreateOrderByApiRequest, CreateOrderByRedirectRequest
-from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
+from dana.payment_gateway.v1.models import ConsultPayPaymentInfo, ConsultPayRequest, CreateOrderByApiRequest, QueryPaymentRequest
 from dana.rest import ApiException
-from tests.fixtures.payment_gateway import consult_pay_request
+# Import fixtures directly from their modules to avoid circular imports
+from tests.fixtures.api_client import api_instance
+from tests.fixtures.payment_gateway import consult_pay_request, create_order_by_api_request, query_payment_request
+
 
 class TestPaymentGatewayApi:
     
-    @classmethod
-    def setup_class(cls):
-        cls.config = SnapConfiguration(api_key=AuthSettings(
-             PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
-             ORIGIN=os.environ.get("ORIGIN"),
-             X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-             CHANNEL_ID=os.environ.get("CHANNEL_ID"),
-             ENV=Env.SANDBOX
-            ),
-        )
-
-    def test_consult_pay_with_str_private_key_success(self, consult_pay_request: ConsultPayRequest):
+    def test_consult_pay_with_str_private_key_success(self, api_instance: PaymentGatewayApi, consult_pay_request: ConsultPayRequest):
         """Should give success response code and message and correct mandatory fields"""
         
-        with ApiClient(self.config) as api_client:
-            api_instance = PaymentGatewayApi(api_client)
-            api_response = api_instance.consult_pay(consult_pay_request)
+        api_response = api_instance.consult_pay(consult_pay_request)
 
         assert api_response.response_code == '2005700'
         assert api_response.response_message == 'Successful'
 
-        assert all(isinstance(i, PaymentInfo) for i in api_response.payment_infos)
+        assert all(isinstance(i, ConsultPayPaymentInfo) for i in api_response.payment_infos)
         assert all(hasattr(i, "pay_method") for i in api_response.payment_infos)
+
+    def test_create_order_by_api_and_query_payment_success(self, api_instance: PaymentGatewayApi, create_order_by_api_request: CreateOrderByApiRequest, query_payment_request: QueryPaymentRequest):
+        """Should give success response code and message and correct mandatory fields"""
+        
+        api_response_create_order = api_instance.create_order(create_order_by_api_request)
+
+        assert api_response_create_order.response_code == '2000000'
+        assert api_response_create_order.response_message == 'Success'
+
+        api_response_query_payment = api_instance.query_payment(query_payment_request)
+
+        assert hasattr(api_response_query_payment, 'response_code')
+        assert hasattr(api_response_query_payment, 'response_message')

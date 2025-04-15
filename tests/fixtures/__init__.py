@@ -12,3 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Make fixtures available at the package level, but import individually in tests
+# to avoid potential circular imports
+

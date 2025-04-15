@@ -56,7 +56,7 @@ class EnvInfo(BaseModel, BaseSdkModel):
     order_os_type: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
     merchant_app_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
     terminal_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
-    order_terminal_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
+    order_terminal_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None)
     __properties: ClassVar[List[str]] = ["sessionId", "tokenId", "websiteLanguage", "clientIp", "osType", "appVersion", "sdkVersion", "sourcePlatform", "orderOsType", "merchantAppVersion", "terminalType", "orderTerminalType", "extendInfo"]
 
@@ -77,6 +77,9 @@ class EnvInfo(BaseModel, BaseSdkModel):
     @field_validator('order_terminal_type')
     def order_terminal_type_validate_enum(cls, value):
         """Validates the enum"""
+        if value is None:
+            return value
+
         if value not in set(['APP', 'WEB', 'WAP', 'SYSTEM']):
             raise ValueError("must be one of enum values ('APP', 'WEB', 'WAP', 'SYSTEM')")
         return value
@@ -96,7 +99,7 @@ class EnvInfo(BaseModel, BaseSdkModel):
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
         # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict(), separators=(',', ': '))
+        return json.dumps(self.to_dict(), separators=(',', ':'))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

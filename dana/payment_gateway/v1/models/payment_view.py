@@ -46,9 +46,9 @@ class PaymentView(BaseModel, BaseSdkModel):
     """
     PaymentView
     """ # noqa: E501
-    cashier_request_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Cashier request identifier")
-    paid_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Paid time in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    pay_option_infos: List[PayOptionInfo] = Field(description="Information of pay options")
+    cashier_request_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Cashier request identifier")
+    paid_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Paid time in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
+    pay_option_infos: Optional[List[PayOptionInfo]] = Field(default=None, description="Information of pay options")
     pay_request_extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information of pay request")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional extend information")
     __properties: ClassVar[List[str]] = ["cashierRequestId", "paidTime", "payOptionInfos", "payRequestExtendInfo", "extendInfo"]
@@ -56,6 +56,9 @@ class PaymentView(BaseModel, BaseSdkModel):
     @field_validator('paid_time')
     def paid_time_validate_regular_expression(cls, value):
         """Validates the regular expression"""
+        if value is None:
+            return value
+
         if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
             raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
         return value
@@ -75,7 +78,7 @@ class PaymentView(BaseModel, BaseSdkModel):
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
         # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict(), separators=(',', ': '))
+        return json.dumps(self.to_dict(), separators=(',', ':'))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

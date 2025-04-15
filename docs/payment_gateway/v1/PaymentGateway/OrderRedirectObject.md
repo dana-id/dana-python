@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **order_title** | **str** |  | 
 **merchant_trans_type** | **str** |  | [optional] 
-**buyer** | [**Buyer**](Buyer.md) |  | 
+**buyer** | [**Buyer**](Buyer.md) |  | [optional] 
 **goods** | [**List[Goods]**](Goods.md) |  | [optional] 
 **shipping_info** | [**List[ShippingInfo]**](ShippingInfo.md) |  | [optional] 
 **extend_info** | **str** |  | [optional] 
