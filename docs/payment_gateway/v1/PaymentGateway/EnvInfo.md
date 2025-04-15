@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 **order_os_type** | **str** |  | [optional] 
 **merchant_app_version** | **str** |  | [optional] 
 **terminal_type** | **str** |  | 
-**order_terminal_type** | **str** |  | 
+**order_terminal_type** | **str** |  | [optional] 
 **extend_info** | **str** |  | [optional] 
 
 ## Example

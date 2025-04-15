@@ -13,7 +13,7 @@ maintainers = [
     { name = "DANA Automation Team", email = "automation@dana.id" },
     { name = "Rangga Putra Pertama", email = "rangga.putra@dana.id" }
 ]
-keywords = ["DANA", "DANA ID Docs", "DANA SDK"]
+keywords = ["DANA", "DANA ID Docs", "DANA SDK", "DANA Python", "DANA API Client", "DANA Python API Client", "DANA Python SDK"]
 dependencies = [
   "annotated-types==0.7.0",
   "cffi==1.17.1",

@@ -50,7 +50,7 @@ class OrderApiObject(BaseModel, BaseSdkModel):
     """ # noqa: E501
     order_title: Annotated[str, Field(strict=True, max_length=64)] = Field()
     merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    buyer: Buyer
+    buyer: Optional[Buyer] = None
     goods: Optional[List[Goods]] = None
     shipping_info: Optional[List[ShippingInfo]] = Field(default=None)
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None)
@@ -82,7 +82,7 @@ class OrderApiObject(BaseModel, BaseSdkModel):
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
         # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict(), separators=(',', ': '))
+        return json.dumps(self.to_dict(), separators=(',', ':'))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

@@ -33,28 +33,40 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.money import Money
-from dana.payment_gateway.v1.models.pay_option_additional_info import PayOptionAdditionalInfo
+from dana.payment_gateway.v1.models.promo_info import PromoInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class PayOptionDetail(BaseModel, BaseSdkModel):
+class ConsultPayPaymentInfo(BaseModel, BaseSdkModel):
     """
-    PayOptionDetail
+    ConsultPayPaymentInfo
     """ # noqa: E501
     pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    pay_option: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    trans_amount: Money = Field()
-    fee_amount: Optional[Money] = Field(default=None)
-    card_token: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    merchant_token: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    additional_info: Optional[PayOptionAdditionalInfo] = Field(default=None)
-    __properties: ClassVar[List[str]] = ["payMethod", "payOption", "transAmount", "feeAmount", "cardToken", "merchantToken", "additionalInfo"]
+    pay_option: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
+    promo_infos: Optional[List[PromoInfo]] = Field(default=None)
+    __properties: ClassVar[List[str]] = ["payMethod", "payOption", "promoInfos"]
+
+    @field_validator('pay_method')
+    def pay_method_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['BALANCE', 'COUPON', 'NET_BANKING', 'CREDIT_CARD', 'DEBIT_CARD', 'VIRTUAL_ACCOUNT', 'OTC', 'DIRECT_DEBIT_CREDIT_CARD', 'DIRECT_DEBIT_DEBIT_CARD', 'ONLINE_CREDIT', 'LOAN_CREDIT', 'NETWORK_PAY']):
+            raise ValueError("must be one of enum values ('BALANCE', 'COUPON', 'NET_BANKING', 'CREDIT_CARD', 'DEBIT_CARD', 'VIRTUAL_ACCOUNT', 'OTC', 'DIRECT_DEBIT_CREDIT_CARD', 'DIRECT_DEBIT_DEBIT_CARD', 'ONLINE_CREDIT', 'LOAN_CREDIT', 'NETWORK_PAY')")
+        return value
+
+    @field_validator('pay_option')
+    def pay_option_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['NETWORK_PAY_PG_SPAY', 'NETWORK_PAY_PG_OVO', 'NETWORK_PAY_PG_GOPAY', 'NETWORK_PAY_PG_LINKAJA', 'NETWORK_PAY_PG_CARD', 'VIRTUAL_ACCOUNT_BCA', 'VIRTUAL_ACCOUNT_BNI', 'VIRTUAL_ACCOUNT_MANDIRI', 'VIRTUAL_ACCOUNT_BRI', 'VIRTUAL_ACCOUNT_BTPN', 'VIRTUAL_ACCOUNT_CIMB', 'VIRTUAL_ACCOUNT_PERMATA']):
+            raise ValueError("must be one of enum values ('NETWORK_PAY_PG_SPAY', 'NETWORK_PAY_PG_OVO', 'NETWORK_PAY_PG_GOPAY', 'NETWORK_PAY_PG_LINKAJA', 'NETWORK_PAY_PG_CARD', 'VIRTUAL_ACCOUNT_BCA', 'VIRTUAL_ACCOUNT_BNI', 'VIRTUAL_ACCOUNT_MANDIRI', 'VIRTUAL_ACCOUNT_BRI', 'VIRTUAL_ACCOUNT_BTPN', 'VIRTUAL_ACCOUNT_CIMB', 'VIRTUAL_ACCOUNT_PERMATA')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -75,7 +87,7 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PayOptionDetail from a JSON string"""
+        """Create an instance of ConsultPayPaymentInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -96,20 +108,18 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of trans_amount
-        if self.trans_amount:
-            _dict['transAmount'] = self.trans_amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of fee_amount
-        if self.fee_amount:
-            _dict['feeAmount'] = self.fee_amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of additional_info
-        if self.additional_info:
-            _dict['additionalInfo'] = self.additional_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in promo_infos (list)
+        _items = []
+        if self.promo_infos:
+            for _item_promo_infos in self.promo_infos:
+                if _item_promo_infos:
+                    _items.append(_item_promo_infos.to_dict())
+            _dict['promoInfos'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PayOptionDetail from a dict"""
+        """Create an instance of ConsultPayPaymentInfo from a dict"""
         if obj is None:
             return None
 
@@ -119,11 +129,7 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
         _obj = cls.model_validate({
             "payMethod": obj.get("payMethod"),
             "payOption": obj.get("payOption"),
-            "transAmount": Money.from_dict(obj["transAmount"]) if obj.get("transAmount") is not None else None,
-            "feeAmount": Money.from_dict(obj["feeAmount"]) if obj.get("feeAmount") is not None else None,
-            "cardToken": obj.get("cardToken"),
-            "merchantToken": obj.get("merchantToken"),
-            "additionalInfo": PayOptionAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "promoInfos": [PromoInfo.from_dict(_item) for _item in obj["promoInfos"]] if obj.get("promoInfos") is not None else None
         })
         return _obj
 

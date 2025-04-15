@@ -36,35 +36,41 @@ from dana.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.create_order_by_redirect_additional_info import CreateOrderByRedirectAdditionalInfo
 from dana.payment_gateway.v1.models.money import Money
-from dana.payment_gateway.v1.models.url_param import UrlParam
+from dana.payment_gateway.v1.models.push_notify_additional_info import PushNotifyAdditionalInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class CreateOrderByRedirectRequest(BaseModel, BaseSdkModel):
+class FinishNotify(BaseModel, BaseSdkModel):
     """
-    CreateOrderByRedirectRequest
+    FinishNotify
     """ # noqa: E501
-    additional_info: Optional[CreateOrderByRedirectAdditionalInfo] = Field(default=None)
-    partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Transaction identifier on partner system")
-    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Unique merchant identifier")
+    original_partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Original transaction identifier on DANA system")
+    original_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Original transaction identifier on partner system")
+    original_external_id: Optional[Annotated[str, Field(strict=True, max_length=36)]] = Field(default=None, description="Original external identifier on header message")
+    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Unique identifier for each merchant")
+    sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Sub merchant identifier")
     amount: Money
-    sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
-    external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    valid_up_to: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="The date and time when the order is valid until in the following format: YYYY-MM-DDTHH:MM:SS+07:00 ")
-    disabled_pay_methods: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method(s) that cannot be used for this")
-    url_params: List[UrlParam] = Field(description="Notify URL that DANA must send the payment notification to")
-    __properties: ClassVar[List[str]] = ["partnerReferenceNo", "merchantId", "amount", "subMerchantId", "externalStoreId", "validUpTo", "disabledPayMethods", "urlParams"]
+    latest_transaction_status: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Transaction status code:<br> - 00 = Success<br> - 05 = Cancelled (expired)<br> ")
+    transaction_status_desc: Optional[Annotated[str, Field(strict=True, max_length=50)]] = Field(default=None, description="Description of transaction status")
+    created_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Transaction creation time (GMT+7, Jakarta)")
+    finished_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Transaction completion time (GMT+7, Jakarta)")
+    external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier")
+    additional_info: Optional[PushNotifyAdditionalInfo] = Field(default=None)
+    __properties: ClassVar[List[str]] = ["originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "merchantId", "subMerchantId", "amount", "latestTransactionStatus", "transactionStatusDesc", "createdTime", "finishedTime", "externalStoreId", "additionalInfo"]
 
-    @field_validator('valid_up_to')
-    def valid_up_to_validate_regular_expression(cls, value):
+    @field_validator('created_time')
+    def created_time_validate_regular_expression(cls, value):
         """Validates the regular expression"""
-        if value is None:
-            return value
+        if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
+            raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
+        return value
 
+    @field_validator('finished_time')
+    def finished_time_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
         if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
             raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
         return value
@@ -88,7 +94,7 @@ class CreateOrderByRedirectRequest(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of CreateOrderByRedirectRequest from a JSON string"""
+        """Create an instance of FinishNotify from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -112,18 +118,14 @@ class CreateOrderByRedirectRequest(BaseModel, BaseSdkModel):
         # override the default output from pydantic by calling `to_dict()` of amount
         if self.amount:
             _dict['amount'] = self.amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in url_params (list)
-        _items = []
-        if self.url_params:
-            for _item_url_params in self.url_params:
-                if _item_url_params:
-                    _items.append(_item_url_params.to_dict())
-            _dict['urlParams'] = _items
+        # override the default output from pydantic by calling `to_dict()` of additional_info
+        if self.additional_info:
+            _dict['additionalInfo'] = self.additional_info.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of CreateOrderByRedirectRequest from a dict"""
+        """Create an instance of FinishNotify from a dict"""
         if obj is None:
             return None
 
@@ -131,14 +133,18 @@ class CreateOrderByRedirectRequest(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "partnerReferenceNo": obj.get("partnerReferenceNo"),
+            "originalPartnerReferenceNo": obj.get("originalPartnerReferenceNo"),
+            "originalReferenceNo": obj.get("originalReferenceNo"),
+            "originalExternalId": obj.get("originalExternalId"),
             "merchantId": obj.get("merchantId"),
-            "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
             "subMerchantId": obj.get("subMerchantId"),
+            "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
+            "latestTransactionStatus": obj.get("latestTransactionStatus"),
+            "transactionStatusDesc": obj.get("transactionStatusDesc"),
+            "createdTime": obj.get("createdTime"),
+            "finishedTime": obj.get("finishedTime"),
             "externalStoreId": obj.get("externalStoreId"),
-            "validUpTo": obj.get("validUpTo"),
-            "disabledPayMethods": obj.get("disabledPayMethods"),
-            "urlParams": [UrlParam.from_dict(_item) for _item in obj["urlParams"]] if obj.get("urlParams") is not None else None
+            "additionalInfo": PushNotifyAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
         })
         return _obj
 

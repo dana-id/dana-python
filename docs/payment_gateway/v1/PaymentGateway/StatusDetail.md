@@ -6,8 +6,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **acquirement_status** | **str** | The status of acquirement | 
-**frozen** | **bool** | Whether the frozen is true or not | 
-**cancelled** | **bool** | Whether the cancelled is true or not | 
+**frozen** | **bool** | Whether the frozen is true or not | [optional] 
+**cancelled** | **bool** | Whether the cancelled is true or not | [optional] 
 
 ## Example
 

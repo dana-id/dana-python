@@ -36,25 +36,21 @@ from dana.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.money import Money
-from dana.payment_gateway.v1.models.pay_option_additional_info import PayOptionAdditionalInfo
+from dana.payment_gateway.v1.models.push_notify_payment_info import PushNotifyPaymentInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class PayOptionDetail(BaseModel, BaseSdkModel):
+class PushNotifyAdditionalInfo(BaseModel, BaseSdkModel):
     """
-    PayOptionDetail
+    PushNotifyAdditionalInfo
     """ # noqa: E501
-    pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    pay_option: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    trans_amount: Money = Field()
-    fee_amount: Optional[Money] = Field(default=None)
-    card_token: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    merchant_token: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    additional_info: Optional[PayOptionAdditionalInfo] = Field(default=None)
-    __properties: ClassVar[List[str]] = ["payMethod", "payOption", "transAmount", "feeAmount", "cardToken", "merchantToken", "additionalInfo"]
+    payment_info: Optional[PushNotifyPaymentInfo] = Field(default=None)
+    shop_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information of shop")
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extended information (as a JSON string)")
+    extend_info_closed_reason: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Reason for order closure (if order is closed)")
+    __properties: ClassVar[List[str]] = ["paymentInfo", "shopInfo", "extendInfo", "extendInfo.closedReason"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -75,7 +71,7 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PayOptionDetail from a JSON string"""
+        """Create an instance of PushNotifyAdditionalInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -96,20 +92,14 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of trans_amount
-        if self.trans_amount:
-            _dict['transAmount'] = self.trans_amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of fee_amount
-        if self.fee_amount:
-            _dict['feeAmount'] = self.fee_amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of additional_info
-        if self.additional_info:
-            _dict['additionalInfo'] = self.additional_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of payment_info
+        if self.payment_info:
+            _dict['paymentInfo'] = self.payment_info.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PayOptionDetail from a dict"""
+        """Create an instance of PushNotifyAdditionalInfo from a dict"""
         if obj is None:
             return None
 
@@ -117,13 +107,10 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "payMethod": obj.get("payMethod"),
-            "payOption": obj.get("payOption"),
-            "transAmount": Money.from_dict(obj["transAmount"]) if obj.get("transAmount") is not None else None,
-            "feeAmount": Money.from_dict(obj["feeAmount"]) if obj.get("feeAmount") is not None else None,
-            "cardToken": obj.get("cardToken"),
-            "merchantToken": obj.get("merchantToken"),
-            "additionalInfo": PayOptionAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "paymentInfo": PushNotifyPaymentInfo.from_dict(obj["paymentInfo"]) if obj.get("paymentInfo") is not None else None,
+            "shopInfo": obj.get("shopInfo"),
+            "extendInfo": obj.get("extendInfo"),
+            "extendInfo.closedReason": obj.get("extendInfo.closedReason")
         })
         return _obj
 

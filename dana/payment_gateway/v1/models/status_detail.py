@@ -34,7 +34,7 @@ import json
 from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
@@ -46,8 +46,8 @@ class StatusDetail(BaseModel, BaseSdkModel):
     StatusDetail
     """ # noqa: E501
     acquirement_status: Annotated[str, Field(strict=True, max_length=64)] = Field(description="The status of acquirement")
-    frozen: StrictBool = Field(description="Whether the frozen is true or not")
-    cancelled: StrictBool = Field(description="Whether the cancelled is true or not")
+    frozen: Optional[StrictBool] = Field(default=None, description="Whether the frozen is true or not")
+    cancelled: Optional[StrictBool] = Field(default=None, description="Whether the cancelled is true or not")
     __properties: ClassVar[List[str]] = ["acquirementStatus", "frozen", "cancelled"]
 
     @field_validator('acquirement_status')
@@ -72,7 +72,7 @@ class StatusDetail(BaseModel, BaseSdkModel):
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
         # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict(), separators=(',', ': '))
+        return json.dumps(self.to_dict(), separators=(',', ':'))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

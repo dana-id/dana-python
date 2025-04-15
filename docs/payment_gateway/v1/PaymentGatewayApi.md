@@ -5,8 +5,17 @@ All URIs are relative to http://api.sandbox.dana.id for sandbox environment and 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**consult_pay**](PaymentGatewayApi.md#consult_pay) | **POST** /v1.0/payment-gateway/consult-pay.htm | Consult Pay API
-[**create_order**](PaymentGatewayApi.md#create_order) | **POST** /payment-gateway/v1.0/debit/payment-host-to-host.htm | Create Payment Order
+[**create_order**](PaymentGatewayApi.md#create_order) | **POST** /v1.0/payment-gateway/payment.htm | Create Payment Order
 [**query_payment**](PaymentGatewayApi.md#query_payment) | **POST** /payment-gateway/v1.0/debit/status.htm | Query Payment
+
+
+### Webhooks
+
+The following webhook notifications may be sent to the URLs specified in your API requests.
+
+Model | Description
+------------- | -------------
+[**FinishNotify**](PaymentGateway/FinishNotify.md) | FinishNotify
 
 # **consult_pay**
 > consult_pay(consult_pay_request) -> ConsultPayResponse 

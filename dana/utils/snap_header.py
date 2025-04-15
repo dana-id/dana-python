@@ -28,6 +28,8 @@ X_TIMESTAMP = "X-TIMESTAMP"
 X_SIGNATURE = "X-SIGNATURE"
 X_EXTERNALID = "X-EXTERNAL-ID"
 
+RESOURCE_PATH_TO_EDIT = ["/payment-gateway/v1.0/debit/status.htm"]
+
 class SnapHeader:
     SnapRuntimeHeaders: List[str] = [X_TIMESTAMP, X_SIGNATURE, X_EXTERNALID]
 
@@ -75,6 +77,11 @@ class SnapHeader:
                     return private_key
             else:
                 raise ValueError("Provide on of private_key or private_key_path")
+
+        def edit_resource_path(resource_path: str) -> str:
+            if resource_path in RESOURCE_PATH_TO_EDIT:
+                return resource_path.replace("/payment-gateway/v1.0", "/v1.0")
+            return resource_path
         
         if not isinstance(body, str):
             body = str(body)
@@ -84,6 +91,8 @@ class SnapHeader:
 
         jakarta_time = datetime.now(timezone.utc) + timedelta(hours=7)
         timestamp = jakarta_time.strftime('%Y-%m-%dT%H:%M:%S+07:00')
+
+        resource_path = edit_resource_path(resource_path)
 
         hashed_payload = sha256(body.encode('utf-8')).hexdigest()
 

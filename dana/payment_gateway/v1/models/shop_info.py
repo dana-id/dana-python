@@ -36,25 +36,24 @@ from dana.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
-from dana.payment_gateway.v1.models.money import Money
-from dana.payment_gateway.v1.models.pay_option_additional_info import PayOptionAdditionalInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class PayOptionDetail(BaseModel, BaseSdkModel):
+class ShopInfo(BaseModel, BaseSdkModel):
     """
-    PayOptionDetail
+    ShopInfo
     """ # noqa: E501
-    pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    pay_option: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    trans_amount: Money = Field()
-    fee_amount: Optional[Money] = Field(default=None)
-    card_token: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    merchant_token: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    additional_info: Optional[PayOptionAdditionalInfo] = Field(default=None)
-    __properties: ClassVar[List[str]] = ["payMethod", "payOption", "transAmount", "feeAmount", "cardToken", "merchantToken", "additionalInfo"]
+    shop_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Shop identifier (required if externalShopId is blank)")
+    external_shop_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="External shop identifier (required if shopId is blank)")
+    operator_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Operator identifier")
+    shop_address: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Shop address")
+    division_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Division identifier")
+    external_division_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="External division identifier")
+    division_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Division type")
+    shop_name: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Shop name")
+    __properties: ClassVar[List[str]] = ["shopId", "externalShopId", "operatorId", "shopAddress", "divisionId", "externalDivisionId", "divisionType", "shopName"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -75,7 +74,7 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PayOptionDetail from a JSON string"""
+        """Create an instance of ShopInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -96,20 +95,11 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of trans_amount
-        if self.trans_amount:
-            _dict['transAmount'] = self.trans_amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of fee_amount
-        if self.fee_amount:
-            _dict['feeAmount'] = self.fee_amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of additional_info
-        if self.additional_info:
-            _dict['additionalInfo'] = self.additional_info.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PayOptionDetail from a dict"""
+        """Create an instance of ShopInfo from a dict"""
         if obj is None:
             return None
 
@@ -117,13 +107,14 @@ class PayOptionDetail(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "payMethod": obj.get("payMethod"),
-            "payOption": obj.get("payOption"),
-            "transAmount": Money.from_dict(obj["transAmount"]) if obj.get("transAmount") is not None else None,
-            "feeAmount": Money.from_dict(obj["feeAmount"]) if obj.get("feeAmount") is not None else None,
-            "cardToken": obj.get("cardToken"),
-            "merchantToken": obj.get("merchantToken"),
-            "additionalInfo": PayOptionAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "shopId": obj.get("shopId"),
+            "externalShopId": obj.get("externalShopId"),
+            "operatorId": obj.get("operatorId"),
+            "shopAddress": obj.get("shopAddress"),
+            "divisionId": obj.get("divisionId"),
+            "externalDivisionId": obj.get("externalDivisionId"),
+            "divisionType": obj.get("divisionType"),
+            "shopName": obj.get("shopName")
         })
         return _obj
 

@@ -14,8 +14,10 @@
 
 import os
 import pytest
+from datetime import datetime, timedelta
 
 from dana.payment_gateway.v1.models import *
+from dana.payment_gateway.v1.enum import *
 
 @pytest.fixture
 def consult_pay_request() -> ConsultPayRequest:
@@ -50,4 +52,63 @@ def consult_pay_request() -> ConsultPayRequest:
             ),
             merchant_trans_type="SPECIAL_MOVIE"
         ),
+    )
+
+@pytest.fixture
+def create_order_by_api_request() -> CreateOrderByApiRequest:
+    # Calculate valid date 1 day from now
+    valid_up_to = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S+07:00")
+    
+    return CreateOrderByApiRequest(
+        partner_reference_no=datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        merchant_id=os.getenv("MERCHANT_ID"),
+        amount=Money(
+            value="222000.00",
+            currency="IDR"
+        ),
+        url_params=[
+            UrlParam(
+                url="https://tinknet.my.id/v1/test",
+                type=Type.PAY_RETURN,
+                is_deeplink="Y"
+            ),
+            UrlParam(
+                url="https://tinknet.my.id/v1/test",
+                type=Type.NOTIFICATION,
+                is_deeplink="Y"
+            )
+        ],
+        valid_up_to=valid_up_to,
+        pay_option_details=[
+            PayOptionDetail(
+                pay_method=PayMethod.VIRTUAL_ACCOUNT,
+                pay_option=PayOption.VIRTUAL_ACCOUNT_BNI,
+                trans_amount=Money(
+                    value="222000.00",
+                    currency="IDR"
+                )
+            )
+        ],
+        additional_info=CreateOrderByApiAdditionalInfo(
+            order=OrderApiObject(
+                order_title="Paket Tinknet 10Mb",
+                scenario="API",
+                merchant_trans_type="SPECIAL_MOVIE"
+            ),
+            mcc="5732",
+            env_info=EnvInfo(
+                source_platform=SourcePlatform.IPG,
+                terminal_type=TerminalType.SYSTEM
+            )
+        )
+    )
+
+@pytest.fixture
+def query_payment_request(create_order_by_api_request: CreateOrderByApiRequest) -> QueryPaymentRequest:
+    
+    return QueryPaymentRequest(
+        service_code="54",  # Payment Gateway service code
+        merchant_id=os.getenv("MERCHANT_ID"),
+        original_partner_reference_no=create_order_by_api_request.partner_reference_no,
+        amount=create_order_by_api_request.amount,
     )
