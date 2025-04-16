@@ -11,25 +11,12 @@ Python 3.9.1+
 If the python package is hosted on a repository, you can install directly using:
 
 ```sh
-pip install git+https://github.com/GIT_USER_ID/GIT_REPO_ID.git
-```
-(you may need to run `pip` with root permission: `sudo pip install git+https://github.com/GIT_USER_ID/GIT_REPO_ID.git`)
-
-Then import the package:
-```python
-import dana.payment_gateway.v1
+pip install dana-python-api-client
 ```
 
-### Setuptools
+(you may need to run `pip` with root permission: `sudo pip install dana-python-api-client`)
 
-Install via [Setuptools](http://pypi.python.org/pypi/setuptools).
-
-```sh
-python setup.py install --user
-```
-(or `sudo python setup.py install` to install the package for all users)
-
-Then import the package:
+Then import the package, ex:
 ```python
 import dana.payment_gateway.v1
 ```
