@@ -29,6 +29,7 @@ dependencies = [
 
 [project.urls]
 homepage = "https://dashboard.dana.id/api-docs"
+repository = "https://github.com/dana-id/python_client"
 
 [tool.setuptools.dynamic]
 readme = {file=["README.md", "docs/PaymentGatewayApi.md"], content-type="text/markdown"}
