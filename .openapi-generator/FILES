@@ -21,6 +21,8 @@ dana/payment_gateway/v1/models/create_order_response.py
 dana/payment_gateway/v1/models/create_order_response_additional_info.py
 dana/payment_gateway/v1/models/env_info.py
 dana/payment_gateway/v1/models/finish_notify.py
+dana/payment_gateway/v1/models/finish_notify_additional_info.py
+dana/payment_gateway/v1/models/finish_notify_payment_info.py
 dana/payment_gateway/v1/models/goods.py
 dana/payment_gateway/v1/models/money.py
 dana/payment_gateway/v1/models/order_api_object.py
@@ -31,9 +33,8 @@ dana/payment_gateway/v1/models/pay_option_detail.py
 dana/payment_gateway/v1/models/pay_option_info.py
 dana/payment_gateway/v1/models/payment_view.py
 dana/payment_gateway/v1/models/promo_info.py
-dana/payment_gateway/v1/models/push_notify_additional_info.py
-dana/payment_gateway/v1/models/push_notify_payment_info.py
 dana/payment_gateway/v1/models/query_payment_request.py
+dana/payment_gateway/v1/models/query_payment_request_additional_info.py
 dana/payment_gateway/v1/models/query_payment_response.py
 dana/payment_gateway/v1/models/query_payment_response_additional_info.py
 dana/payment_gateway/v1/models/seller.py
@@ -60,6 +61,8 @@ docs/CreateOrderResponse.md
 docs/CreateOrderResponseAdditionalInfo.md
 docs/EnvInfo.md
 docs/FinishNotify.md
+docs/FinishNotifyAdditionalInfo.md
+docs/FinishNotifyPaymentInfo.md
 docs/Goods.md
 docs/Money.md
 docs/OrderApiObject.md
@@ -71,9 +74,8 @@ docs/PayOptionInfo.md
 docs/PaymentGatewayApi.md
 docs/PaymentView.md
 docs/PromoInfo.md
-docs/PushNotifyAdditionalInfo.md
-docs/PushNotifyPaymentInfo.md
 docs/QueryPaymentRequest.md
+docs/QueryPaymentRequestAdditionalInfo.md
 docs/QueryPaymentResponse.md
 docs/QueryPaymentResponseAdditionalInfo.md
 docs/Seller.md
@@ -101,6 +103,8 @@ test/test_create_order_response.py
 test/test_create_order_response_additional_info.py
 test/test_env_info.py
 test/test_finish_notify.py
+test/test_finish_notify_additional_info.py
+test/test_finish_notify_payment_info.py
 test/test_goods.py
 test/test_money.py
 test/test_order_api_object.py
@@ -112,9 +116,8 @@ test/test_pay_option_info.py
 test/test_payment_gateway_api.py
 test/test_payment_view.py
 test/test_promo_info.py
-test/test_push_notify_additional_info.py
-test/test_push_notify_payment_info.py
 test/test_query_payment_request.py
+test/test_query_payment_request_additional_info.py
 test/test_query_payment_response.py
 test/test_query_payment_response_additional_info.py
 test/test_seller.py

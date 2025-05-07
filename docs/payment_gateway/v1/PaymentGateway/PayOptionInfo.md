@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **charge_amount** | [**Money**](Money.md) |  | [optional] 
 **pay_option_bill_extend_info** | **str** | Extended bill information for pay option | [optional] 
 **extend_info** | **str** | Additional extend information | [optional] 
+**payment_code** | **str** | Payment code | [optional] 
 
 ## Example
 

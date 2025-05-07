@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 **merchant_id** | **str** | Merchant identifier that is unique per each merchant | 
 **sub_merchant_id** | **str** | Information of sub merchant identifier | [optional] 
 **external_store_id** | **str** | Store identifier to indicate to which store this payment belongs to | [optional] 
-**additional_info** | **Dict[str, object]** | Additional information | [optional] 
+**additional_info** | [**QueryPaymentRequestAdditionalInfo**](QueryPaymentRequestAdditionalInfo.md) |  | [optional] 
 
 ## Example
 

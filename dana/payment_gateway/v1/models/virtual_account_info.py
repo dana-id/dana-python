@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
 from typing_extensions import Annotated
 from typing import Optional, Set
@@ -47,7 +47,7 @@ class VirtualAccountInfo(BaseModel, BaseSdkModel):
     """ # noqa: E501
     virtual_account_code: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Virtual account code (required if payMethod is VIRTUAL_ACCOUNT)")
     virtual_account_expiry_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Expiry time of virtual account in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    signature: Annotated[str, Field(strict=True, max_length=128)] = Field(description="Signature of virtual account")
+    signature: StrictStr = Field(description="Signature of virtual account")
     __properties: ClassVar[List[str]] = ["virtualAccountCode", "virtualAccountExpiryTime", "signature"]
 
     @field_validator('virtual_account_expiry_time')

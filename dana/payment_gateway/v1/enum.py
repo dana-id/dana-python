@@ -46,6 +46,9 @@ class Type(str, Enum):
     PAY_RETURN = "PAY_RETURN"
     NOTIFICATION = "NOTIFICATION"
 
+class BusinessScenario(str, Enum):
+    PAYMENT_GATEWAY = "PAYMENT_GATEWAY"
+
 class AcquirementStatus(str, Enum):
     INIT = "INIT"
     SUCCESS = "SUCCESS"

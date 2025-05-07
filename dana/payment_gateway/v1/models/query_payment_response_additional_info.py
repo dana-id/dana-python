@@ -54,6 +54,7 @@ class QueryPaymentResponseAdditionalInfo(BaseModel, BaseSdkModel):
     """
     QueryPaymentResponseAdditionalInfo
     """ # noqa: E501
+    merchant_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Merchant identifier")
     buyer: Optional[Buyer] = None
     seller: Optional[Seller] = None
     amount_detail: Optional[AmountDetail] = Field(default=None)
@@ -66,7 +67,7 @@ class QueryPaymentResponseAdditionalInfo(BaseModel, BaseSdkModel):
     status_detail: Optional[StatusDetail] = Field(default=None)
     close_reason: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Additional information of close reason")
     virtual_account_info: Optional[VirtualAccountInfo] = Field(default=None)
-    __properties: ClassVar[List[str]] = ["buyer", "seller", "amountDetail", "timeDetail", "goods", "shippingInfo", "orderMemo", "paymentViews", "extendInfo", "statusDetail", "closeReason", "virtualAccountInfo"]
+    __properties: ClassVar[List[str]] = ["merchantId", "buyer", "seller", "amountDetail", "timeDetail", "goods", "shippingInfo", "orderMemo", "paymentViews", "extendInfo", "statusDetail", "closeReason", "virtualAccountInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -159,6 +160,7 @@ class QueryPaymentResponseAdditionalInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "merchantId": obj.get("merchantId"),
             "buyer": Buyer.from_dict(obj["buyer"]) if obj.get("buyer") is not None else None,
             "seller": Seller.from_dict(obj["seller"]) if obj.get("seller") is not None else None,
             "amountDetail": AmountDetail.from_dict(obj["amountDetail"]) if obj.get("amountDetail") is not None else None,

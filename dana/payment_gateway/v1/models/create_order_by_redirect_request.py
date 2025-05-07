@@ -132,7 +132,8 @@ class CreateOrderByRedirectRequest(BaseModel, BaseSdkModel):
 
         _obj = cls.model_validate({
             "partnerReferenceNo": obj.get("partnerReferenceNo"),
-            "merchantId": obj.get("merchantId"),
+                       "additionalInfo": CreateOrderByRedirectAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None,
+"merchantId": obj.get("merchantId"),
             "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
             "subMerchantId": obj.get("subMerchantId"),
             "externalStoreId": obj.get("externalStoreId"),

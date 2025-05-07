@@ -35,26 +35,27 @@ from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class StatusDetail(BaseModel, BaseSdkModel):
+class QueryPaymentRequestAdditionalInfo(BaseModel, BaseSdkModel):
     """
-    StatusDetail
+    Additional information
     """ # noqa: E501
-    acquirement_status: Annotated[str, Field(strict=True, max_length=64)] = Field(description="The status of acquirement")
-    frozen: Optional[StrictStr] = Field(default=None, description="Whether the frozen is true or not")
-    cancelled: Optional[StrictStr] = Field(default=None, description="Whether the cancelled is true or not")
-    __properties: ClassVar[List[str]] = ["acquirementStatus", "frozen", "cancelled"]
+    business_scenario: Optional[StrictStr] = Field(default=None, description="Additional information of business scenario")
+    additional_properties: Dict[str, Any] = {}
+    __properties: ClassVar[List[str]] = ["businessScenario"]
 
-    @field_validator('acquirement_status')
-    def acquirement_status_validate_enum(cls, value):
+    @field_validator('business_scenario')
+    def business_scenario_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['INIT', 'SUCCESS', 'CLOSED', 'PAYING', 'MERCHANT_ACCEPT', 'CANCELLED']):
-            raise ValueError("must be one of enum values ('INIT', 'SUCCESS', 'CLOSED', 'PAYING', 'MERCHANT_ACCEPT', 'CANCELLED')")
+        if value is None:
+            return value
+
+        if value not in set(['PAYMENT_GATEWAY']):
+            raise ValueError("must be one of enum values ('PAYMENT_GATEWAY')")
         return value
 
     model_config = ConfigDict(
@@ -76,7 +77,7 @@ class StatusDetail(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of StatusDetail from a JSON string"""
+        """Create an instance of QueryPaymentRequestAdditionalInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -88,8 +89,10 @@ class StatusDetail(BaseModel, BaseSdkModel):
         * `None` is only added to the output dict for nullable fields that
           were set at model initialization. Other fields with value `None`
           are ignored.
+        * Fields in `self.additional_properties` are added to the output dict.
         """
         excluded_fields: Set[str] = set([
+            "additional_properties",
         ])
 
         _dict = self.model_dump(
@@ -97,11 +100,16 @@ class StatusDetail(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # puts key-value pairs in additional_properties in the top level
+        if self.additional_properties is not None:
+            for _key, _value in self.additional_properties.items():
+                _dict[_key] = _value
+
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of StatusDetail from a dict"""
+        """Create an instance of QueryPaymentRequestAdditionalInfo from a dict"""
         if obj is None:
             return None
 
@@ -109,10 +117,13 @@ class StatusDetail(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "acquirementStatus": obj.get("acquirementStatus"),
-            "frozen": obj.get("frozen"),
-            "cancelled": obj.get("cancelled")
+            "businessScenario": obj.get("businessScenario")
         })
+        # store additional fields in additional_properties
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                _obj.additional_properties[_key] = obj.get(_key)
+
         return _obj
 
 

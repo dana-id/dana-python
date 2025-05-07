@@ -803,14 +803,14 @@ class PaymentGatewayApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path='/payment-gateway/v1.0/debit/status.htm',
+            resource_path='/v1.0/debit/status.htm',
             body=query_payment_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
         )
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/payment-gateway/v1.0/debit/status.htm',
+            resource_path='/v1.0/debit/status.htm',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
