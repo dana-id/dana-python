@@ -134,7 +134,9 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
 
         _obj = cls.model_validate({
             "partnerReferenceNo": obj.get("partnerReferenceNo"),
-            "merchantId": obj.get("merchantId"),
+                       "payOptionDetails": [PayOptionDetail.from_dict(_item) for _item in obj["payOptionDetails"]] if obj.get("payOptionDetails") is not None else None,
+            "additionalInfo": CreateOrderByApiAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None,
+"merchantId": obj.get("merchantId"),
             "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
             "subMerchantId": obj.get("subMerchantId"),
             "externalStoreId": obj.get("externalStoreId"),

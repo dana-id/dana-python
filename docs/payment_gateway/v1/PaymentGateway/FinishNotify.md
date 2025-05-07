@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 **created_time** | **str** | Transaction creation time (GMT+7, Jakarta) | 
 **finished_time** | **str** | Transaction completion time (GMT+7, Jakarta) | 
 **external_store_id** | **str** | Store identifier | [optional] 
-**additional_info** | [**PushNotifyAdditionalInfo**](PushNotifyAdditionalInfo.md) |  | [optional] 
+**additional_info** | [**FinishNotifyAdditionalInfo**](FinishNotifyAdditionalInfo.md) |  | [optional] 
 
 ## Example
 

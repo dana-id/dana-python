@@ -53,7 +53,8 @@ class PayOptionInfo(BaseModel, BaseSdkModel):
     charge_amount: Optional[Money] = Field(default=None)
     pay_option_bill_extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extended bill information for pay option")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional extend information")
-    __properties: ClassVar[List[str]] = ["payMethod", "payOption", "payAmount", "transAmount", "chargeAmount", "payOptionBillExtendInfo", "extendInfo"]
+    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment code")
+    __properties: ClassVar[List[str]] = ["payMethod", "payOption", "payAmount", "transAmount", "chargeAmount", "payOptionBillExtendInfo", "extendInfo", "paymentCode"]
 
     @field_validator('pay_method')
     def pay_method_validate_enum(cls, value):
@@ -139,7 +140,8 @@ class PayOptionInfo(BaseModel, BaseSdkModel):
             "transAmount": Money.from_dict(obj["transAmount"]) if obj.get("transAmount") is not None else None,
             "chargeAmount": Money.from_dict(obj["chargeAmount"]) if obj.get("chargeAmount") is not None else None,
             "payOptionBillExtendInfo": obj.get("payOptionBillExtendInfo"),
-            "extendInfo": obj.get("extendInfo")
+            "extendInfo": obj.get("extendInfo"),
+            "paymentCode": obj.get("paymentCode")
         })
         return _obj
 

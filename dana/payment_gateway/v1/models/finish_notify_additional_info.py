@@ -33,29 +33,24 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
+from dana.payment_gateway.v1.models.finish_notify_payment_info import FinishNotifyPaymentInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
 
-class StatusDetail(BaseModel, BaseSdkModel):
+class FinishNotifyAdditionalInfo(BaseModel, BaseSdkModel):
     """
-    StatusDetail
+    FinishNotifyAdditionalInfo
     """ # noqa: E501
-    acquirement_status: Annotated[str, Field(strict=True, max_length=64)] = Field(description="The status of acquirement")
-    frozen: Optional[StrictStr] = Field(default=None, description="Whether the frozen is true or not")
-    cancelled: Optional[StrictStr] = Field(default=None, description="Whether the cancelled is true or not")
-    __properties: ClassVar[List[str]] = ["acquirementStatus", "frozen", "cancelled"]
-
-    @field_validator('acquirement_status')
-    def acquirement_status_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['INIT', 'SUCCESS', 'CLOSED', 'PAYING', 'MERCHANT_ACCEPT', 'CANCELLED']):
-            raise ValueError("must be one of enum values ('INIT', 'SUCCESS', 'CLOSED', 'PAYING', 'MERCHANT_ACCEPT', 'CANCELLED')")
-        return value
+    payment_info: Optional[FinishNotifyPaymentInfo] = Field(default=None)
+    shop_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information of shop")
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extended information (as a JSON string)")
+    extend_info_closed_reason: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Reason for order closure (if order is closed)")
+    __properties: ClassVar[List[str]] = ["paymentInfo", "shopInfo", "extendInfo", "extendInfo.closedReason"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -76,7 +71,7 @@ class StatusDetail(BaseModel, BaseSdkModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of StatusDetail from a JSON string"""
+        """Create an instance of FinishNotifyAdditionalInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -97,11 +92,14 @@ class StatusDetail(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of payment_info
+        if self.payment_info:
+            _dict['paymentInfo'] = self.payment_info.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of StatusDetail from a dict"""
+        """Create an instance of FinishNotifyAdditionalInfo from a dict"""
         if obj is None:
             return None
 
@@ -109,9 +107,10 @@ class StatusDetail(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "acquirementStatus": obj.get("acquirementStatus"),
-            "frozen": obj.get("frozen"),
-            "cancelled": obj.get("cancelled")
+            "paymentInfo": FinishNotifyPaymentInfo.from_dict(obj["paymentInfo"]) if obj.get("paymentInfo") is not None else None,
+            "shopInfo": obj.get("shopInfo"),
+            "extendInfo": obj.get("extendInfo"),
+            "extendInfo.closedReason": obj.get("extendInfo.closedReason")
         })
         return _obj
 

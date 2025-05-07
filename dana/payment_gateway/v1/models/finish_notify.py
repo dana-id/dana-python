@@ -36,8 +36,8 @@ from dana.base.model import BaseSdkModel
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
+from dana.payment_gateway.v1.models.finish_notify_additional_info import FinishNotifyAdditionalInfo
 from dana.payment_gateway.v1.models.money import Money
-from dana.payment_gateway.v1.models.push_notify_additional_info import PushNotifyAdditionalInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
@@ -58,7 +58,7 @@ class FinishNotify(BaseModel, BaseSdkModel):
     created_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Transaction creation time (GMT+7, Jakarta)")
     finished_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Transaction completion time (GMT+7, Jakarta)")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier")
-    additional_info: Optional[PushNotifyAdditionalInfo] = Field(default=None)
+    additional_info: Optional[FinishNotifyAdditionalInfo] = Field(default=None)
     __properties: ClassVar[List[str]] = ["originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "merchantId", "subMerchantId", "amount", "latestTransactionStatus", "transactionStatusDesc", "createdTime", "finishedTime", "externalStoreId", "additionalInfo"]
 
     @field_validator('created_time')
@@ -144,7 +144,7 @@ class FinishNotify(BaseModel, BaseSdkModel):
             "createdTime": obj.get("createdTime"),
             "finishedTime": obj.get("finishedTime"),
             "externalStoreId": obj.get("externalStoreId"),
-            "additionalInfo": PushNotifyAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "additionalInfo": FinishNotifyAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
         })
         return _obj
 

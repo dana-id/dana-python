@@ -5,6 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**merchant_id** | **str** | Merchant identifier | [optional] 
 **buyer** | [**Buyer**](Buyer.md) |  | [optional] 
 **seller** | [**Seller**](Seller.md) |  | [optional] 
 **amount_detail** | [**AmountDetail**](AmountDetail.md) |  | [optional] 

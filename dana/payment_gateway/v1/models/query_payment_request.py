@@ -37,6 +37,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.payment_gateway.v1.models.money import Money
+from dana.payment_gateway.v1.models.query_payment_request_additional_info import QueryPaymentRequestAdditionalInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
@@ -55,7 +56,7 @@ class QueryPaymentRequest(BaseModel, BaseSdkModel):
     merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
     sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
+    additional_info: Optional[QueryPaymentRequestAdditionalInfo] = Field(default=None)
     __properties: ClassVar[List[str]] = ["originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "serviceCode", "transactionDate", "amount", "merchantId", "subMerchantId", "externalStoreId", "additionalInfo"]
 
     @field_validator('transaction_date')
@@ -111,6 +112,9 @@ class QueryPaymentRequest(BaseModel, BaseSdkModel):
         # override the default output from pydantic by calling `to_dict()` of amount
         if self.amount:
             _dict['amount'] = self.amount.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of additional_info
+        if self.additional_info:
+            _dict['additionalInfo'] = self.additional_info.to_dict()
         return _dict
 
     @classmethod
@@ -132,7 +136,7 @@ class QueryPaymentRequest(BaseModel, BaseSdkModel):
             "merchantId": obj.get("merchantId"),
             "subMerchantId": obj.get("subMerchantId"),
             "externalStoreId": obj.get("externalStoreId"),
-            "additionalInfo": obj.get("additionalInfo")
+            "additionalInfo": QueryPaymentRequestAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
         })
         return _obj
 
