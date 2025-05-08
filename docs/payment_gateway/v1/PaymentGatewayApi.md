@@ -34,9 +34,9 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * ENV
 
 ```python
+import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.payment_gateway.v1.models.consult_pay_request import ConsultPayRequest
-from dana.payment_gateway.v1.models.consult_pay_response import ConsultPayResponse
+from dana.payment_gateway.v1 import *
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -99,8 +99,9 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 
 ```python
 from dana.payment_gateway.v1.models.create_order_by_redirect_request import CreateOrderByRedirectRequest
+import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.payment_gateway.v1.models.create_order_response import CreateOrderResponse
+from dana.payment_gateway.v1 import *
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -161,9 +162,9 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY_PATH
 
 ```python
+import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.payment_gateway.v1.models.query_payment_request import QueryPaymentRequest
-from dana.payment_gateway.v1.models.query_payment_response import QueryPaymentResponse
+from dana.payment_gateway.v1 import *
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
