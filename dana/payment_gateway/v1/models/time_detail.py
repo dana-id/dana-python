@@ -33,9 +33,9 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
@@ -45,12 +45,36 @@ class TimeDetail(BaseModel, BaseSdkModel):
     """
     TimeDetail
     """ # noqa: E501
-    created_time: datetime = Field(description="Time of created order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    expiry_time: datetime = Field(description="Time of expiry order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    paid_times: Optional[List[datetime]] = Field(default=None, description="Array of paid order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    confirmed_times: Optional[List[datetime]] = Field(default=None, description="Array of confirmed order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    cancelled_time: Optional[datetime] = Field(default=None, description="Time of cancelled order in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
+    created_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Time of created order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
+    expiry_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Time of expiry order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
+    paid_times: Optional[List[Annotated[str, Field(strict=True, max_length=25)]]] = Field(default=None, description="Array of paid order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
+    confirmed_times: Optional[List[Annotated[str, Field(strict=True, max_length=25)]]] = Field(default=None, description="Array of confirmed order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
+    cancelled_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Time of cancelled order in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
     __properties: ClassVar[List[str]] = ["createdTime", "expiryTime", "paidTimes", "confirmedTimes", "cancelledTime"]
+
+    @field_validator('created_time')
+    def created_time_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
+            raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
+        return value
+
+    @field_validator('expiry_time')
+    def expiry_time_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
+            raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
+        return value
+
+    @field_validator('cancelled_time')
+    def cancelled_time_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if value is None:
+            return value
+
+        if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
+            raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
