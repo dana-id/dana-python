@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**created_time** | **datetime** | Time of created order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | 
-**expiry_time** | **datetime** | Time of expiry order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | 
-**paid_times** | **List[datetime]** | Array of paid order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | [optional] 
-**confirmed_times** | **List[datetime]** | Array of confirmed order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | [optional] 
-**cancelled_time** | **datetime** | Time of cancelled order in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | [optional] 
+**created_time** | **str** | Time of created order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | 
+**expiry_time** | **str** | Time of expiry order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | 
+**paid_times** | **List[str]** | Array of paid order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | [optional] 
+**confirmed_times** | **List[str]** | Array of confirmed order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | [optional] 
+**cancelled_time** | **str** | Time of cancelled order in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | [optional] 
 
 ## Example
 
