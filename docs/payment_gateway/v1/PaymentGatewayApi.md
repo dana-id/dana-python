@@ -4,9 +4,11 @@ All URIs are relative to http://api.sandbox.dana.id for sandbox environment and 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**cancel_order**](PaymentGatewayApi.md#cancel_order) | **POST** /v1.0/debit/cancel.htm | Cancel Order API
 [**consult_pay**](PaymentGatewayApi.md#consult_pay) | **POST** /v1.0/payment-gateway/consult-pay.htm | Consult Pay API
 [**create_order**](PaymentGatewayApi.md#create_order) | **POST** /v1.0/payment-gateway/payment.htm | Create Payment Order
 [**query_payment**](PaymentGatewayApi.md#query_payment) | **POST** /v1.0/debit/status.htm | Query Payment
+[**refund_order**](PaymentGatewayApi.md#refund_order) | **POST** /v1.0/debit/refund.htm | Refund Order API
 
 
 ### Webhooks
@@ -16,6 +18,70 @@ The following webhook notifications may be sent to the URLs specified in your AP
 Model | Description
 ------------- | -------------
 [**FinishNotify**](PaymentGateway/FinishNotify.md) | FinishNotify
+
+# **cancel_order**
+> cancel_order(cancel_order_request) -> CancelOrderResponse 
+
+Cancel Order API
+
+This API is used to cancel the order from merchant's platform to DANA
+
+### Example
+You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
+* ORIGIN
+* X_PARTNER_ID
+* CHANNEL_ID
+* PRIVATE_KEY
+* PRIVATE_KEY_PATH
+
+```python
+import os
+from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
+from dana.payment_gateway.v1 import PaymentGatewayApi
+from dana.payment_gateway.v1.models.CancelOrderRequest import CancelOrderRequest
+from dana.api_client import ApiClient
+from dana.rest import ApiException
+from pprint import pprint
+
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        CHANNEL_ID=os.environ.get("CHANNEL_ID"),
+        ENV=Env.SANDBOX
+    )
+)
+
+with ApiClient(configuration) as api_client:
+    api_instance = PaymentGatewayApi(api_client)
+    cancel_order_request = CancelOrderRequest()
+
+    try:
+        api_response = api_instance.cancel_order(cancel_order_request)
+        print("The response of PaymentGatewayApi->cancel_order:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PaymentGatewayApi->cancel_order: %s\n" % e)
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **cancel_order_request** | [**CancelOrderRequest**](PaymentGateway/CancelOrderRequest.md)|  | 
+
+### Return type
+
+[**CancelOrderResponse**](PaymentGateway/CancelOrderResponse.md)
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Cancel order response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **consult_pay**
 > consult_pay(consult_pay_request) -> ConsultPayResponse 
@@ -36,7 +102,8 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.payment_gateway.v1 import *
+from dana.payment_gateway.v1 import PaymentGatewayApi
+from dana.payment_gateway.v1.models.ConsultPayRequest import ConsultPayRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -52,8 +119,8 @@ configuration = SnapConfiguration(
 )
 
 with ApiClient(configuration) as api_client:
-    api_instance = dana.payment_gateway.v1.PaymentGatewayApi(api_client)
-    consult_pay_request = dana.payment_gateway.v1.ConsultPayRequest()
+    api_instance = PaymentGatewayApi(api_client)
+    consult_pay_request = ConsultPayRequest()
 
     try:
         api_response = api_instance.consult_pay(consult_pay_request)
@@ -98,10 +165,10 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * ENV
 
 ```python
-from dana.payment_gateway.v1.models.create_order_by_redirect_request import CreateOrderByRedirectRequest
+from dana.payment_gateway.v1.models.create_order_by_api_request import CreateOrderByApiRequest
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.payment_gateway.v1 import *
+from dana.payment_gateway.v1 import PaymentGatewayApi
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -117,8 +184,8 @@ configuration = SnapConfiguration(
 )
 
 with ApiClient(configuration) as api_client:
-    api_instance = dana.payment_gateway.v1.PaymentGatewayApi(api_client)
-    create_order_request = dana.payment_gateway.v1.CreateOrderByRedirectRequest()
+    api_instance = PaymentGatewayApi(api_client)
+    create_order_request = CreateOrderByApiRequest()
 
     try:
         api_response = api_instance.create_order(create_order_request)
@@ -132,7 +199,7 @@ with ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **create_order_request** | [**CreateOrderByRedirectRequest**](PaymentGateway/CreateOrderByRedirectRequest.md) or [**CreateOrderByApiRequest**](PaymentGateway/CreateOrderByApiRequest.md)|  | 
+ **create_order_request** | [**CreateOrderByApiRequest**](PaymentGateway/CreateOrderByApiRequest.md) or [**CreateOrderByRedirectRequest**](PaymentGateway/CreateOrderByRedirectRequest.md)|  | 
 
 ### Return type
 
@@ -164,7 +231,8 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.payment_gateway.v1 import *
+from dana.payment_gateway.v1 import PaymentGatewayApi
+from dana.payment_gateway.v1.models.QueryPaymentRequest import QueryPaymentRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -180,8 +248,8 @@ configuration = SnapConfiguration(
 )
 
 with ApiClient(configuration) as api_client:
-    api_instance = dana.payment_gateway.v1.PaymentGatewayApi(api_client)
-    query_payment_request = dana.payment_gateway.v1.QueryPaymentRequest()
+    api_instance = PaymentGatewayApi(api_client)
+    query_payment_request = QueryPaymentRequest()
 
     try:
         api_response = api_instance.query_payment(query_payment_request)
@@ -206,6 +274,70 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Query payment response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **refund_order**
+> refund_order(refund_order_request) -> RefundOrderResponse 
+
+Refund Order API
+
+This API is used to refund the order from merchant's platform to DANA
+
+### Example
+You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
+* ORIGIN
+* X_PARTNER_ID
+* CHANNEL_ID
+* PRIVATE_KEY
+* PRIVATE_KEY_PATH
+
+```python
+import os
+from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
+from dana.payment_gateway.v1 import PaymentGatewayApi
+from dana.payment_gateway.v1.models.RefundOrderRequest import RefundOrderRequest
+from dana.api_client import ApiClient
+from dana.rest import ApiException
+from pprint import pprint
+
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        CHANNEL_ID=os.environ.get("CHANNEL_ID"),
+        ENV=Env.SANDBOX
+    )
+)
+
+with ApiClient(configuration) as api_client:
+    api_instance = PaymentGatewayApi(api_client)
+    refund_order_request = RefundOrderRequest()
+
+    try:
+        api_response = api_instance.refund_order(refund_order_request)
+        print("The response of PaymentGatewayApi->refund_order:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PaymentGatewayApi->refund_order: %s\n" % e)
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **refund_order_request** | [**RefundOrderRequest**](PaymentGateway/RefundOrderRequest.md)|  | 
+
+### Return type
+
+[**RefundOrderResponse**](PaymentGateway/RefundOrderResponse.md)
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Refund order response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

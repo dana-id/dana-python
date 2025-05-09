@@ -112,3 +112,35 @@ def query_payment_request(create_order_by_api_request: CreateOrderByApiRequest) 
         original_partner_reference_no=create_order_by_api_request.partner_reference_no,
         amount=create_order_by_api_request.amount,
     )
+
+@pytest.fixture
+def cancel_order_request(create_order_by_api_request: CreateOrderByApiRequest) -> CancelOrderRequest:
+    
+    return CancelOrderRequest(
+        original_partner_reference_no=create_order_by_api_request.partner_reference_no,
+        merchant_id=os.getenv("MERCHANT_ID"),
+        reason="Customer requested cancellation",
+        amount=create_order_by_api_request.amount,
+    )
+
+@pytest.fixture
+def refund_order_request(create_order_by_api_request):
+    """Fixture to provide a RefundOrderRequest for the tests."""
+    
+    return RefundOrderRequest(
+        original_partner_reference_no="20250303145313698344",
+        original_reference_no="20250303111212800110166621502002622",  # Using the reference_no from query payment
+        merchant_id="216620020005034264607",
+        partner_refund_no=f"REFUND-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}",  # Generate a new unique ID
+        refund_amount=Money(
+            value="10000.00",  # Match the amount from query payment
+            currency="IDR"
+        ),
+        reason="Test refund",
+        additional_info=RefundOrderRequestAdditionalInfo(
+            payout_account_no="20050000000001503276",
+            actor_type="BACK_OFFICE",
+            device_id="TEST-DEVICE-ID",
+            terminal_type="WEB"
+        )
+    )

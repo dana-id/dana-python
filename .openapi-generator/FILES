@@ -6,6 +6,8 @@ dana/payment_gateway/v1/api/payment_gateway_api.py
 dana/payment_gateway/v1/models/__init__.py
 dana/payment_gateway/v1/models/amount_detail.py
 dana/payment_gateway/v1/models/buyer.py
+dana/payment_gateway/v1/models/cancel_order_request.py
+dana/payment_gateway/v1/models/cancel_order_response.py
 dana/payment_gateway/v1/models/consult_pay_payment_info.py
 dana/payment_gateway/v1/models/consult_pay_request.py
 dana/payment_gateway/v1/models/consult_pay_request_additional_info.py
@@ -37,6 +39,9 @@ dana/payment_gateway/v1/models/query_payment_request.py
 dana/payment_gateway/v1/models/query_payment_request_additional_info.py
 dana/payment_gateway/v1/models/query_payment_response.py
 dana/payment_gateway/v1/models/query_payment_response_additional_info.py
+dana/payment_gateway/v1/models/refund_order_request.py
+dana/payment_gateway/v1/models/refund_order_request_additional_info.py
+dana/payment_gateway/v1/models/refund_order_response.py
 dana/payment_gateway/v1/models/seller.py
 dana/payment_gateway/v1/models/shipping_info.py
 dana/payment_gateway/v1/models/shop_info.py
@@ -46,6 +51,8 @@ dana/payment_gateway/v1/models/url_param.py
 dana/payment_gateway/v1/models/virtual_account_info.py
 docs/AmountDetail.md
 docs/Buyer.md
+docs/CancelOrderRequest.md
+docs/CancelOrderResponse.md
 docs/ConsultPayPaymentInfo.md
 docs/ConsultPayRequest.md
 docs/ConsultPayRequestAdditionalInfo.md
@@ -78,6 +85,9 @@ docs/QueryPaymentRequest.md
 docs/QueryPaymentRequestAdditionalInfo.md
 docs/QueryPaymentResponse.md
 docs/QueryPaymentResponseAdditionalInfo.md
+docs/RefundOrderRequest.md
+docs/RefundOrderRequestAdditionalInfo.md
+docs/RefundOrderResponse.md
 docs/Seller.md
 docs/ShippingInfo.md
 docs/ShopInfo.md
@@ -88,6 +98,8 @@ docs/VirtualAccountInfo.md
 test/__init__.py
 test/test_amount_detail.py
 test/test_buyer.py
+test/test_cancel_order_request.py
+test/test_cancel_order_response.py
 test/test_consult_pay_payment_info.py
 test/test_consult_pay_request.py
 test/test_consult_pay_request_additional_info.py
@@ -120,6 +132,9 @@ test/test_query_payment_request.py
 test/test_query_payment_request_additional_info.py
 test/test_query_payment_response.py
 test/test_query_payment_response_additional_info.py
+test/test_refund_order_request.py
+test/test_refund_order_request_additional_info.py
+test/test_refund_order_response.py
 test/test_seller.py
 test/test_shipping_info.py
 test/test_shop_info.py
