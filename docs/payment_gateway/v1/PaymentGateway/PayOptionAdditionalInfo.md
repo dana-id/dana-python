@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**phone_number** | **str** |  | [optional] 
-**payment_code** | **str** |  | [optional] 
+**phone_number** | **str** | User&#39;s phone number | [optional] 
+**payment_code** | **str** | Payment code that used for payment with virtual account | [optional] 
 **promo_infos** | [**List[PromoInfo]**](PromoInfo.md) |  | [optional] 
 
 ## Example

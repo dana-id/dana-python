@@ -46,8 +46,8 @@ class RefundOrderResponse(BaseModel, BaseSdkModel):
     """
     RefundOrderResponse
     """ # noqa: E501
-    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Refer to response code list")
-    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Refer to response code list")
+    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code. Refer to https://dashboard.dana.id/api-docs/read/127#HTML-API-RefundOrder-ResponseCodeandMessage")
+    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Response message. Refer to https://dashboard.dana.id/api-docs/read/127#HTML-API-RefundOrder-ResponseCodeandMessage")
     original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system")
     original_partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Original transaction identifier on partner system")
     original_external_id: Optional[Annotated[str, Field(strict=True, max_length=36)]] = Field(default=None, description="Original external identifier on header message")

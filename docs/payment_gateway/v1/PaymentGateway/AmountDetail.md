@@ -5,13 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**order_amount** | [**Money**](Money.md) | Order amount including cents and currency (ISO format) | 
-**pay_amount** | [**Money**](Money.md) | Pay amount including cents and currency (ISO format) | [optional] 
-**void_amount** | [**Money**](Money.md) | Void amount including cents and currency (ISO format) | [optional] 
-**confirm_amount** | [**Money**](Money.md) | Confirm amount including cents and currency (ISO format) | [optional] 
-**refund_amount** | [**Money**](Money.md) | Refund amount including cents and currency (ISO format) | [optional] 
-**chargeback_amount** | [**Money**](Money.md) | Chargeback amount including cents and currency (ISO format) | [optional] 
-**charge_amount** | [**Money**](Money.md) | Charge amount including cents and currency (ISO format) | [optional] 
+**order_amount** | [**Money**](Money.md) | Order amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | 
+**pay_amount** | [**Money**](Money.md) | Pay amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | [optional] 
+**void_amount** | [**Money**](Money.md) | Void amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | [optional] 
+**confirm_amount** | [**Money**](Money.md) | Confirm amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | [optional] 
+**refund_amount** | [**Money**](Money.md) | Refund amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | [optional] 
+**chargeback_amount** | [**Money**](Money.md) | Chargeback amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | [optional] 
+**charge_amount** | [**Money**](Money.md) | Charge amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | [optional] 
 
 ## Example
 

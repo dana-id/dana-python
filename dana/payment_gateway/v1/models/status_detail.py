@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from typing import Optional, Set
@@ -45,9 +45,9 @@ class StatusDetail(BaseModel, BaseSdkModel):
     """
     StatusDetail
     """ # noqa: E501
-    acquirement_status: Annotated[str, Field(strict=True, max_length=64)] = Field(description="The status of acquirement")
-    frozen: Optional[StrictStr] = Field(default=None, description="Whether the frozen is true or not")
-    cancelled: Optional[StrictStr] = Field(default=None, description="Whether the cancelled is true or not")
+    acquirement_status: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Acquirement status. The enums:<br> * INIT - Order is created but not paid yet<br> * SUCCESS - Order is succeeded<br> * CLOSED - Order is closed<br> * PAYING - Order is paid but not finish<br> * MERCHANT_ACCEPT - Order is accepted by merchant after order is paid for PAY-CONFIRM<br> * CANCELLED - Order is cancelled<br> ")
+    frozen: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Whether the frozen is true or not")
+    cancelled: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Whether the cancelled is true or not")
     __properties: ClassVar[List[str]] = ["acquirementStatus", "frozen", "cancelled"]
 
     @field_validator('acquirement_status')

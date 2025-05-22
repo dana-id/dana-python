@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**response_code** | **str** | Refer to response code list | 
-**response_message** | **str** | Refer to response code list | 
-**original_reference_no** | **str** | Original transaction identifier on DANA system | [optional] 
+**response_code** | **str** | Response code. Refer to https://dashboard.dana.id/api-docs/read/117#HTML-API-CancelOrder-ResponseCodeandMessage | 
+**response_message** | **str** | Response message. Refer to https://dashboard.dana.id/api-docs/read/117#HTML-API-CancelOrder-ResponseCodeandMessage | 
+**original_reference_no** | **str** | Original transaction identifier on DANA system. Present if successfully processed | [optional] 
 **original_partner_reference_no** | **str** | Original transaction identifier on partner system | 
 **original_external_id** | **str** | Original external identifier on header message | [optional] 
-**cancel_time** | **str** | Cancellation date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) | [optional] 
+**cancel_time** | **str** | Cancellation date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if successfully processed | [optional] 
 **transaction_date** | **str** | Transaction date, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) | [optional] 
 **additional_info** | **object** | Additional information | [optional] 
 

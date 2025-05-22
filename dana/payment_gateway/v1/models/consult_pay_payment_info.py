@@ -46,9 +46,9 @@ class ConsultPayPaymentInfo(BaseModel, BaseSdkModel):
     """
     ConsultPayPaymentInfo
     """ # noqa: E501
-    pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    pay_option: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None)
-    promo_infos: Optional[List[PromoInfo]] = Field(default=None)
+    pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Payment method that used to payment. The enums:<br>   * BALANCE - Payment method with balance<br>   * COUPON - Payment method with coupon<br>   * NET_BANKING - Payment method with internet banking<br>   * CREDIT_CARD - Payment method with credit card<br>   * DEBIT_CARD - Payment method with debit card<br>   * VIRTUAL_ACCOUNT - Payment method with virtual account<br>   * OTC - Payment method with OTC<br>   * DIRECT_DEBIT_CREDIT_CARD - Payment method with direct debit of credit card<br>   * DIRECT_DEBIT_DEBIT_CARD - Payment method with direct debit of debit card<br>   * ONLINE_CREDIT - Payment method with online Credit<br>   * LOAN_CREDIT - Payment method with DANA Cicil<br>   * NETWORK_PAY - Payment method with e-wallet<br> ")
+    pay_option: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Payment option that available to used to payment, depends on the payment method. The enums:<br>   * NETWORK_PAY_PG_SPAY - Payment method with ShopeePay e-wallet<br>   * NETWORK_PAY_PG_OVO - Payment method with OVO e-wallet<br>   * NETWORK_PAY_PG_GOPAY - Payment method with GoPay e-wallet<br>   * NETWORK_PAY_PG_LINKAJA - Payment method with LinkAja e-wallet<br>   * NETWORK_PAY_PG_CARD - Payment method with Card<br>   * VIRTUAL_ACCOUNT_BCA - Payment method with BCA virtual account<br>   * VIRTUAL_ACCOUNT_BNI - Payment method with BNI virtual account<br>   * VIRTUAL_ACCOUNT_MANDIRI - Payment method with Mandiri virtual account<br>   * VIRTUAL_ACCOUNT_BRI - Payment method with BRI virtual account<br>   * VIRTUAL_ACCOUNT_BTPN - Payment method with BTPN virtual account<br>   * VIRTUAL_ACCOUNT_CIMB - Payment method with CIMB virtual account<br>   * VIRTUAL_ACCOUNT_PERMATA - Payment method with Permata virtual account<br> ")
+    promo_infos: Optional[List[PromoInfo]] = Field(default=None, description="Additional Information of promotion")
     __properties: ClassVar[List[str]] = ["payMethod", "payOption", "promoInfos"]
 
     @field_validator('pay_method')

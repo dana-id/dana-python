@@ -5,19 +5,19 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**session_id** | **str** |  | [optional] 
-**token_id** | **str** |  | [optional] 
-**website_language** | **str** |  | [optional] 
-**client_ip** | **str** |  | [optional] 
-**os_type** | **str** |  | [optional] 
-**app_version** | **str** |  | [optional] 
-**sdk_version** | **str** |  | [optional] 
-**source_platform** | **str** |  | 
-**order_os_type** | **str** |  | [optional] 
-**merchant_app_version** | **str** |  | [optional] 
-**terminal_type** | **str** |  | 
-**order_terminal_type** | **str** |  | [optional] 
-**extend_info** | **str** |  | [optional] 
+**session_id** | **str** | Session identifier | [optional] 
+**token_id** | **str** | Token identifier | [optional] 
+**website_language** | **str** | Website language | [optional] 
+**client_ip** | **str** | Client IP address | [optional] 
+**os_type** | **str** | Operating system type | [optional] 
+**app_version** | **str** | App version | [optional] 
+**sdk_version** | **str** | SDK version | [optional] 
+**source_platform** | **str** | The source platform is always independent payment gateway (IPG) | 
+**order_os_type** | **str** | Order operating system type | [optional] 
+**merchant_app_version** | **str** | Merchant App version | [optional] 
+**terminal_type** | **str** | Terminal type. The enums:<br /> * APP - Mobile Application<br /> * WEB - Browser Web<br /> * WAP - Mobile Wap<br /> * SYSTEM - System Call<br />  | 
+**order_terminal_type** | **str** | Order terminal type. The enums:<br /> * APP - Mobile Application<br /> * WEB - Browser Web<br /> * WAP - Mobile Wap<br /> * SYSTEM - System Call<br />  | [optional] 
+**extend_info** | **str** | Extend information | [optional] 
 
 ## Example
 

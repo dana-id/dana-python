@@ -45,13 +45,13 @@ class AmountDetail(BaseModel, BaseSdkModel):
     """
     AmountDetail
     """ # noqa: E501
-    order_amount: Money = Field(description="Order amount including cents and currency (ISO format)")
-    pay_amount: Optional[Money] = Field(default=None, description="Pay amount including cents and currency (ISO format)")
-    void_amount: Optional[Money] = Field(default=None, description="Void amount including cents and currency (ISO format)")
-    confirm_amount: Optional[Money] = Field(default=None, description="Confirm amount including cents and currency (ISO format)")
-    refund_amount: Optional[Money] = Field(default=None, description="Refund amount including cents and currency (ISO format)")
-    chargeback_amount: Optional[Money] = Field(default=None, description="Chargeback amount including cents and currency (ISO format)")
-    charge_amount: Optional[Money] = Field(default=None, description="Charge amount including cents and currency (ISO format)")
+    order_amount: Money = Field(description="Order amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    pay_amount: Optional[Money] = Field(default=None, description="Pay amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    void_amount: Optional[Money] = Field(default=None, description="Void amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    confirm_amount: Optional[Money] = Field(default=None, description="Confirm amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    refund_amount: Optional[Money] = Field(default=None, description="Refund amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    chargeback_amount: Optional[Money] = Field(default=None, description="Chargeback amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    charge_amount: Optional[Money] = Field(default=None, description="Charge amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     __properties: ClassVar[List[str]] = ["orderAmount", "payAmount", "voidAmount", "confirmAmount", "refundAmount", "chargebackAmount", "chargeAmount"]
 
     model_config = ConfigDict(

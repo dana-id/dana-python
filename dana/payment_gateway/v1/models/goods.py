@@ -46,16 +46,16 @@ class Goods(BaseModel, BaseSdkModel):
     """
     Goods
     """ # noqa: E501
-    unit: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Goods unit")
-    category: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Goods category")
-    price: Money
-    merchant_shipping_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Shipment identifier provided by merchant")
     merchant_goods_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Goods identifier provided by merchant")
     description: Annotated[str, Field(strict=True, max_length=1024)] = Field(description="Goods description")
-    snapshot_url: Optional[Annotated[str, Field(strict=True, max_length=512)]] = Field(default=None, description="The URL of good’s snapshot web page")
+    category: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Goods category")
+    price: Money = Field(description="Goods price. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    unit: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Goods unit")
     quantity: Annotated[str, Field(strict=True, max_length=16)] = Field(description="Count of items")
+    merchant_shipping_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Shipment identifier provided by merchant")
+    snapshot_url: Optional[Annotated[str, Field(strict=True, max_length=512)]] = Field(default=None, description="The URL of good's snapshot web page")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information")
-    __properties: ClassVar[List[str]] = ["unit", "category", "price", "merchantShippingId", "merchantGoodsId", "description", "snapshotUrl", "quantity", "extendInfo"]
+    __properties: ClassVar[List[str]] = ["merchantGoodsId", "description", "category", "price", "unit", "quantity", "merchantShippingId", "snapshotUrl", "extendInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -112,14 +112,14 @@ class Goods(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "unit": obj.get("unit"),
-            "category": obj.get("category"),
-            "price": Money.from_dict(obj["price"]) if obj.get("price") is not None else None,
-            "merchantShippingId": obj.get("merchantShippingId"),
             "merchantGoodsId": obj.get("merchantGoodsId"),
             "description": obj.get("description"),
-            "snapshotUrl": obj.get("snapshotUrl"),
+            "category": obj.get("category"),
+            "price": Money.from_dict(obj["price"]) if obj.get("price") is not None else None,
+            "unit": obj.get("unit"),
             "quantity": obj.get("quantity"),
+            "merchantShippingId": obj.get("merchantShippingId"),
+            "snapshotUrl": obj.get("snapshotUrl"),
             "extendInfo": obj.get("extendInfo")
         })
         return _obj

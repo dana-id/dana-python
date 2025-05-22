@@ -5,12 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**response_code** | **str** | Response code for the transaction result. Example values include:<br /> * 2005400 - Successful<br /> * 4005400 - Bad Request - Retry request with proper parameter<br /> * 4005401 - Invalid Field Format - Retry request with proper parameter<br /> * 4005402 - Invalid Mandatory Field - Retry request with proper parameter<br /> * 4015400 - Unauthorized. Invalid Signature - Retry request with proper parameter<br /> * 4035402 - Exceeds Transaction Amount Limit - Try to adjust the order amount<br /> * 4035405 - Do Not Honor - Retry request with proper parameter or can contact DANA to check the user/account status<br /> * 4035415 - Transaction Not Permitted - Retry request periodically or consult to DANA<br /> * 4045408 - Invalid Merchant - Retry request with proper parameter<br /> * 4045418 - Inconsistent Request - Retry with proper parameter<br /> * 4295400 - Too Many Requests - Retry request periodically by sending same request payload<br /> * 5005400 - General Error - Retry request periodically<br /> * 5005401 - Internal Server Error - Retry request periodically by sending same request payload<br />  | 
-**response_message** | **str** | Message corresponding to the response code | 
-**reference_no** | **str** | Transaction identifier on DANA system (present if successfully processed) | [optional] 
+**response_code** | **str** | Response code. Refer to https://dashboard.dana.id/api-docs/read/243#paymentgatewayprod-paymentRedirect-ResponseCodeandMessage | 
+**response_message** | **str** | Response message. Refer to https://dashboard.dana.id/api-docs/read/243#paymentgatewayprod-paymentRedirect-ResponseCodeandMessage | 
+**reference_no** | **str** | Transaction identifier on DANA system. Present if successfully processed | [optional] 
 **partner_reference_no** | **str** | Transaction identifier on partner system | 
-**web_redirect_url** | **str** | Checkout URL (present if payment method is not OVO/Virtual Account/QRIS) | [optional] 
-**additional_info** | [**CreateOrderResponseAdditionalInfo**](CreateOrderResponseAdditionalInfo.md) |  | [optional] 
+**web_redirect_url** | **str** | Checkout URLs. Present if successfully processed and payment method is not OVO/Virtual Account/QRIS | [optional] 
+**additional_info** | [**CreateOrderResponseAdditionalInfo**](CreateOrderResponseAdditionalInfo.md) | Additional information | [optional] 
+**external_order_id** | **str** | External order identifier | [optional] 
 
 ## Example
 

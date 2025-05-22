@@ -7,11 +7,11 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **additional_info** | [**CreateOrderByRedirectAdditionalInfo**](CreateOrderByRedirectAdditionalInfo.md) |  | [optional] 
 **partner_reference_no** | **str** | Transaction identifier on partner system | 
-**merchant_id** | **str** | Unique merchant identifier | 
-**amount** | [**Money**](Money.md) |  | 
+**merchant_id** | **str** | Merchant identifier that is unique per each merchant | 
 **sub_merchant_id** | **str** | Information of sub merchant identifier | [optional] 
+**amount** | [**Money**](Money.md) | Amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | 
 **external_store_id** | **str** | Store identifier to indicate to which store this payment belongs to | [optional] 
-**valid_up_to** | **str** | The date and time when the order is valid until in the following format: YYYY-MM-DDTHH:MM:SS+07:00  | [optional] 
+**valid_up_to** | **str** | The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) | [optional] 
 **disabled_pay_methods** | **str** | Payment method(s) that cannot be used for this | [optional] 
 **url_params** | [**List[UrlParam]**](UrlParam.md) | Notify URL that DANA must send the payment notification to | 
 

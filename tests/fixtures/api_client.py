@@ -18,9 +18,10 @@ import pytest
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
 from dana.api_client import ApiClient
 from dana.payment_gateway.v1 import PaymentGatewayApi
+from dana.ipg.v1 import IPGApi
 
 @pytest.fixture(scope="class")
-def api_instance():
+def api_instance_payment_gateway():
     """Fixture to provide an API instance for the tests."""
     auth_settings = AuthSettings(
         PRIVATE_KEY=os.getenv("PRIVATE_KEY"),
@@ -31,7 +32,25 @@ def api_instance():
     )
     config = SnapConfiguration(api_key=auth_settings)
     client = ApiClient(config)
+
     api_instance = PaymentGatewayApi(client)
     
     yield api_instance
+
+@pytest.fixture(scope="class")
+def api_instance_ipg():
+    """Fixture to provide an API instance for the tests."""
+    auth_settings = AuthSettings(
+        PRIVATE_KEY=os.getenv("PRIVATE_KEY"),
+        ORIGIN=os.getenv("ORIGIN"),
+        X_PARTNER_ID=os.getenv("X_PARTNER_ID"),
+        ENV=Env.SANDBOX
+    )
+    config = SnapConfiguration(api_key=auth_settings)
+    client = ApiClient(config)
+
+    api_instance = IPGApi(client)
+    
+    yield api_instance
+
     

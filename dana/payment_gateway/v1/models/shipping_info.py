@@ -46,24 +46,24 @@ class ShippingInfo(BaseModel, BaseSdkModel):
     """
     ShippingInfo
     """ # noqa: E501
-    charge_amount: Optional[Money] = Field(default=None)
-    last_name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Last name")
-    tracking_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Number of tracking")
-    country_name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Name of country")
     merchant_shipping_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant shipping identifier")
+    tracking_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Number of tracking")
+    carrier: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of carrier")
+    charge_amount: Optional[Money] = Field(default=None, description="Promo amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    country_name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Name of country")
+    state_name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Name of state")
     city_name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Name of city")
+    area_name: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Name of area")
     address1: Annotated[str, Field(strict=True, max_length=256)] = Field(description="Information of address 1")
     address2: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Information of address 2")
-    phone_no: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Phone number")
-    area_name: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Name of area")
-    email: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Email")
-    zip_code: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Zip code")
-    state_name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Name of state")
-    fax_no: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Fax number")
-    carrier: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of carrier")
     first_name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="First name")
+    last_name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Last name")
     mobile_no: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Mobile number")
-    __properties: ClassVar[List[str]] = ["chargeAmount", "lastName", "trackingNo", "countryName", "merchantShippingId", "cityName", "address1", "address2", "phoneNo", "areaName", "email", "zipCode", "stateName", "faxNo", "carrier", "firstName", "mobileNo"]
+    phone_no: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Phone number")
+    zip_code: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Zip code")
+    email: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Email")
+    fax_no: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Fax number")
+    __properties: ClassVar[List[str]] = ["merchantShippingId", "trackingNo", "carrier", "chargeAmount", "countryName", "stateName", "cityName", "areaName", "address1", "address2", "firstName", "lastName", "mobileNo", "phoneNo", "zipCode", "email", "faxNo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -120,23 +120,23 @@ class ShippingInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "chargeAmount": Money.from_dict(obj["chargeAmount"]) if obj.get("chargeAmount") is not None else None,
-            "lastName": obj.get("lastName"),
-            "trackingNo": obj.get("trackingNo"),
-            "countryName": obj.get("countryName"),
             "merchantShippingId": obj.get("merchantShippingId"),
+            "trackingNo": obj.get("trackingNo"),
+            "carrier": obj.get("carrier"),
+            "chargeAmount": Money.from_dict(obj["chargeAmount"]) if obj.get("chargeAmount") is not None else None,
+            "countryName": obj.get("countryName"),
+            "stateName": obj.get("stateName"),
             "cityName": obj.get("cityName"),
+            "areaName": obj.get("areaName"),
             "address1": obj.get("address1"),
             "address2": obj.get("address2"),
-            "phoneNo": obj.get("phoneNo"),
-            "areaName": obj.get("areaName"),
-            "email": obj.get("email"),
-            "zipCode": obj.get("zipCode"),
-            "stateName": obj.get("stateName"),
-            "faxNo": obj.get("faxNo"),
-            "carrier": obj.get("carrier"),
             "firstName": obj.get("firstName"),
-            "mobileNo": obj.get("mobileNo")
+            "lastName": obj.get("lastName"),
+            "mobileNo": obj.get("mobileNo"),
+            "phoneNo": obj.get("phoneNo"),
+            "zipCode": obj.get("zipCode"),
+            "email": obj.get("email"),
+            "faxNo": obj.get("faxNo")
         })
         return _obj
 

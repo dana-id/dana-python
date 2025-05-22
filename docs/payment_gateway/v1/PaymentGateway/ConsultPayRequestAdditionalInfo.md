@@ -1,14 +1,13 @@
 # ConsultPayRequestAdditionalInfo
 
-Additional information
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**buyer** | [**Buyer**](Buyer.md) |  | 
-**env_info** | [**EnvInfo**](EnvInfo.md) |  | 
-**merchant_trans_type** | **str** |  | [optional] 
+**buyer** | [**Buyer**](Buyer.md) | Additional information of buyer | 
+**env_info** | [**EnvInfo**](EnvInfo.md) | Additional information of environment info | 
+**merchant_trans_type** | **str** | Additional information of merchant transaction type | [optional] 
 
 ## Example
 

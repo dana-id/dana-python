@@ -52,12 +52,12 @@ class RefundOrderRequest(BaseModel, BaseSdkModel):
     original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system")
     original_partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Original transaction identifier on partner system")
     original_external_id: Optional[Annotated[str, Field(strict=True, max_length=36)]] = Field(default=None, description="Original external identifier on header message")
-    original_capture_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="DANA's capture identifier. Use to refund the corresponding capture order")
+    original_capture_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="DANA's capture identifier. Use to refund the corresponding capture order. Required if auth payment scenario")
     partner_refund_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Reference number from merchant for the refund")
-    refund_amount: Money = Field(description="Refund amount. Contains two sub-fields - 1. Value (Transaction amount, including the cents) and 2. Currency (Currency code based on ISO)")
+    refund_amount: Money = Field(description="Refund amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
     reason: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Refund reason")
-    additional_info: Optional[RefundOrderRequestAdditionalInfo] = Field(default=None)
+    additional_info: Optional[RefundOrderRequestAdditionalInfo] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["merchantId", "subMerchantId", "originalReferenceNo", "originalPartnerReferenceNo", "originalExternalId", "originalCaptureNo", "partnerRefundNo", "refundAmount", "externalStoreId", "reason", "additionalInfo"]
 
     model_config = ConfigDict(

@@ -53,7 +53,7 @@ class CancelOrderRequest(BaseModel, BaseSdkModel):
     sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
     reason: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Cancellation reason")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    amount: Optional[Money] = Field(default=None, description="Amount. Contains two sub fields - Value (Transaction amount, including the cents) and Currency (Currency code based on ISO 4217)")
+    amount: Optional[Money] = Field(default=None, description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "merchantId", "subMerchantId", "reason", "externalStoreId", "amount", "additionalInfo"]
 

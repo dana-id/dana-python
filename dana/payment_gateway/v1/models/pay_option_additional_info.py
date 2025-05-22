@@ -46,8 +46,8 @@ class PayOptionAdditionalInfo(BaseModel, BaseSdkModel):
     """
     PayOptionAdditionalInfo
     """ # noqa: E501
-    phone_number: Optional[Annotated[str, Field(strict=True, max_length=15)]] = Field(default=None)
-    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
+    phone_number: Optional[Annotated[str, Field(strict=True, max_length=15)]] = Field(default=None, description="User's phone number")
+    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment code that used for payment with virtual account")
     promo_infos: Optional[List[PromoInfo]] = Field(default=None)
     __properties: ClassVar[List[str]] = ["phoneNumber", "paymentCode", "promoInfos"]
 

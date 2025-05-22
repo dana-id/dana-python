@@ -10,12 +10,12 @@ Name | Type | Description | Notes
 **original_reference_no** | **str** | Original transaction identifier on DANA system | [optional] 
 **original_partner_reference_no** | **str** | Original transaction identifier on partner system | 
 **original_external_id** | **str** | Original external identifier on header message | [optional] 
-**original_capture_no** | **str** | DANA&#39;s capture identifier. Use to refund the corresponding capture order | [optional] 
+**original_capture_no** | **str** | DANA&#39;s capture identifier. Use to refund the corresponding capture order. Required if auth payment scenario | [optional] 
 **partner_refund_no** | **str** | Reference number from merchant for the refund | 
-**refund_amount** | [**Money**](Money.md) | Refund amount. Contains two sub-fields - 1. Value (Transaction amount, including the cents) and 2. Currency (Currency code based on ISO) | 
+**refund_amount** | [**Money**](Money.md) | Refund amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | 
 **external_store_id** | **str** | Store identifier to indicate to which store this payment belongs to | [optional] 
 **reason** | **str** | Refund reason | [optional] 
-**additional_info** | [**RefundOrderRequestAdditionalInfo**](RefundOrderRequestAdditionalInfo.md) |  | [optional] 
+**additional_info** | [**RefundOrderRequestAdditionalInfo**](RefundOrderRequestAdditionalInfo.md) | Additional information | [optional] 
 
 ## Example
 

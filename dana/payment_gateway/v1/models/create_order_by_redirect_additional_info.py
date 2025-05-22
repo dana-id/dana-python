@@ -47,10 +47,10 @@ class CreateOrderByRedirectAdditionalInfo(BaseModel, BaseSdkModel):
     """
     CreateOrderByRedirectAdditionalInfo
     """ # noqa: E501
-    mcc: Annotated[str, Field(strict=True, max_length=64)]
-    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None)
-    env_info: EnvInfo = Field()
-    order: Optional[OrderRedirectObject] = None
+    mcc: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Additional information of merchant category code. This parameter is used to identify the type of business in which a merchant is engaged. Refer to Details of https://dashboard.dana.id/api-docs/read/197#OpenAPI-MerchantCategoryCode")
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional information of extend such as partner passthrough and risk information")
+    env_info: EnvInfo = Field(description="Additional information of environment info")
+    order: Optional[OrderRedirectObject] = Field(default=None, description="Additional information of order")
     __properties: ClassVar[List[str]] = ["mcc", "extendInfo", "envInfo", "order"]
 
     model_config = ConfigDict(

@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**response_code** | **str** |  | [optional] 
-**response_message** | **str** | The response code - response message:<br /> * 2000000 - Successful<br /> * 4000000 - Bad Request - Retry request with proper parameter<br /> * 4000001 - Invalid format for certain field - Retry request with proper parameter<br /> * 4000002 - Missing or invalid format on mandatory field - Retry request with proper parameter<br /> * 4010000 - Signature is invalid - Retry request with proper parameter<br /> * 4030005 - Account or user status is abnormal - Retry request with proper parameter or can contact DANA to check the user/account status<br /> * 4030015 - Transaction not permitted - Retry request periodically or consult to DANA<br /> * 4040008 - Merchant does not exist or status abnormal - Retry request with proper parameter<br /> * 4290000 - Maximum transaction limit exceeded - Retry request periodically by sending same request payload<br /> * 5000000 - General error - Retry request periodically<br />  | [optional] 
-**payment_infos** | [**List[ConsultPayPaymentInfo]**](ConsultPayPaymentInfo.md) |  | [optional] 
+**response_code** | **str** | Response code. Refer to https://dashboard.dana.id/api-docs/read/237#paymentgatewayprod-ConsultPay-ResponseCodeandMessage | [optional] 
+**response_message** | **str** | Response message. Refer to https://dashboard.dana.id/api-docs/read/237#paymentgatewayprod-ConsultPay-ResponseCodeandMessage | [optional] 
+**payment_infos** | [**List[ConsultPayPaymentInfo]**](ConsultPayPaymentInfo.md) | Define list of payment information that includes payment method and payment option for transaction | [optional] 
 
 ## Example
 

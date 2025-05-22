@@ -47,10 +47,10 @@ class PaymentView(BaseModel, BaseSdkModel):
     PaymentView
     """ # noqa: E501
     cashier_request_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Cashier request identifier")
-    paid_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Paid time in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    pay_option_infos: Optional[List[PayOptionInfo]] = Field(default=None, description="Information of pay options")
+    paid_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Information of paid time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    pay_option_infos: List[PayOptionInfo] = Field(description="Information of pay option")
     pay_request_extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information of pay request")
-    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional extend information")
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information")
     __properties: ClassVar[List[str]] = ["cashierRequestId", "paidTime", "payOptionInfos", "payRequestExtendInfo", "extendInfo"]
 
     @field_validator('paid_time')

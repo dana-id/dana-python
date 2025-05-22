@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**mcc** | **str** |  | 
-**extend_info** | **str** |  | [optional] 
-**env_info** | [**EnvInfo**](EnvInfo.md) |  | 
-**order** | [**OrderRedirectObject**](OrderRedirectObject.md) |  | [optional] 
+**mcc** | **str** | Additional information of merchant category code. This parameter is used to identify the type of business in which a merchant is engaged. Refer to Details of https://dashboard.dana.id/api-docs/read/197#OpenAPI-MerchantCategoryCode | 
+**extend_info** | **str** | Additional information of extend such as partner passthrough and risk information | [optional] 
+**env_info** | [**EnvInfo**](EnvInfo.md) | Additional information of environment info | 
+**order** | [**OrderRedirectObject**](OrderRedirectObject.md) | Additional information of order | [optional] 
 
 ## Example
 

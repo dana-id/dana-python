@@ -47,24 +47,24 @@ class QueryPaymentResponse(BaseModel, BaseSdkModel):
     """
     QueryPaymentResponse
     """ # noqa: E501
-    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Refer to response code list:<br> * 2005500 - Successful<br> * 4005500 - Bad Request - Retry request with proper parameter<br> * 4005501 - Invalid Field Format - Retry request with proper parameter<br> * 4005502 - Invalid Mandatory Field - Retry request with proper parameter<br> * 4015500 - Unauthorized. [reason] - Retry request with proper parameter<br> * 4015501 - Invalid Token (B2B) - Retry request with proper parameter<br> * 4045501 - Transaction Not Found - Try to create a new order<br> * 4295500 - Too Many Requests - Retry request periodically<br> * 5005500 - General Error - Retry request periodically<br> * 5005501 - Internal Server Error - Retry request periodically<br> ")
-    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Refer to response code list ")
-    original_partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on partner system")
-    original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system")
+    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code. Refer to https://dashboard.dana.id/api-docs/read/126#HTML-API-QueryPayment-ResponseCodeandMessage")
+    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Response message. Refer to https://dashboard.dana.id/api-docs/read/126#HTML-API-QueryPayment-ResponseCodeandMessage")
+    original_partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on partner system. Present if transaction found")
+    original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system. Present if transaction found")
     original_external_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Original external identifier on header message")
-    service_code: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Transaction type indicator:<br> - IPG Cashier Pay - SNAP: 54<br> - QRIS CPM (Acquirer) - SNAP: 60<br> - QRIS MPM (Acquirer) - SNAP: 47<br> - Payment Gateway: 54<br> ")
-    latest_transaction_status: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Status code:<br> - 00 = Success. Order has been successfully in final state and paid<br> - 01 = Initiated. Waiting for payment. Mark Payment as Pending<br> - 02 = Paying. The order is in process, not in final state, payment is success. Mark Payment as Success<br> - 05 = Cancelled. Order has been cancelled. Mark Payment as Failed<br> - 07 = Not found. Order is not found. Mark Payment as Failed<br> ")
+    service_code: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Transaction type indicator is based on the service code of the original transaction request:<br> - IPG Cashier Pay - SNAP: 54<br> - QRIS CPM (Acquirer) - SNAP: 60<br> - QRIS MPM (Acquirer) - SNAP: 47<br> - Payment Gateway: 54<br> ")
+    latest_transaction_status: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Category code for the status of the transaction. The values include:<br> - 00 = Success, the order has been successfully in final state and paid<br> - 01 = Initiated, the order has been created, but has not been paid<br> - 02 = Paying, the order is in process, not in final state, payment is success<br> - 05 = Cancelled, the order has been closed<br> - 07 = Not found, the order is not found<br> ")
     transaction_status_desc: Optional[Annotated[str, Field(strict=True, max_length=50)]] = Field(default=None, description="Description of transaction status")
     original_response_code: Optional[Annotated[str, Field(strict=True, max_length=7)]] = Field(default=None, description="Original response code")
     original_response_message: Optional[Annotated[str, Field(strict=True, max_length=150)]] = Field(default=None, description="Original response message")
     session_id: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Session identifier")
     request_id: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Transaction request identifier")
-    trans_amount: Optional[Money] = Field(default=None)
-    amount: Optional[Money] = None
-    fee_amount: Optional[Money] = Field(default=None)
-    paid_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Payment timestamp in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    title: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Brief description of transaction")
-    additional_info: Optional[QueryPaymentResponseAdditionalInfo] = Field(default=None)
+    trans_amount: Optional[Money] = Field(default=None, description="Trans amount. Present if transaction found. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    amount: Optional[Money] = Field(default=None, description="Amount. Present if transaction found. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    fee_amount: Optional[Money] = Field(default=None, description="Fee amount. Present if transaction found. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    paid_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Transaction paid time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if transaction is paid")
+    title: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Brief description. Present if transaction found")
+    additional_info: Optional[QueryPaymentResponseAdditionalInfo] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "serviceCode", "latestTransactionStatus", "transactionStatusDesc", "originalResponseCode", "originalResponseMessage", "sessionId", "requestID", "transAmount", "amount", "feeAmount", "paidTime", "title", "additionalInfo"]
 
     @field_validator('paid_time')

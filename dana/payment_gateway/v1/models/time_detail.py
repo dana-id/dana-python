@@ -45,11 +45,11 @@ class TimeDetail(BaseModel, BaseSdkModel):
     """
     TimeDetail
     """ # noqa: E501
-    created_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Time of created order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    expiry_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Time of expiry order, format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    paid_times: Optional[List[Annotated[str, Field(strict=True, max_length=25)]]] = Field(default=None, description="Array of paid order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    confirmed_times: Optional[List[Annotated[str, Field(strict=True, max_length=25)]]] = Field(default=None, description="Array of confirmed order times in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    cancelled_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Time of cancelled order in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
+    created_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Time of created order, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    expiry_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Time of expiry order, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    paid_times: Optional[List[Annotated[str, Field(strict=True, max_length=25)]]] = Field(default=None, description="Time of paid order, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    confirmed_times: Optional[List[Annotated[str, Field(strict=True, max_length=25)]]] = Field(default=None, description="Time of confirmed order, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    cancelled_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Time of cancelled order, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
     __properties: ClassVar[List[str]] = ["createdTime", "expiryTime", "paidTimes", "confirmedTimes", "cancelledTime"]
 
     @field_validator('created_time')

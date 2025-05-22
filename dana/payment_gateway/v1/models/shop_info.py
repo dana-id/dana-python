@@ -45,14 +45,14 @@ class ShopInfo(BaseModel, BaseSdkModel):
     """
     ShopInfo
     """ # noqa: E501
-    shop_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Shop identifier (required if externalShopId is blank)")
-    external_shop_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="External shop identifier (required if shopId is blank)")
-    operator_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Operator identifier")
-    shop_address: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Shop address")
-    division_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Division identifier")
-    external_division_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="External division identifier")
-    division_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Division type")
-    shop_name: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Shop name")
+    shop_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of shop identifier. Required if externalShopId is blank")
+    external_shop_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of external shop identifier. Required if shopId is blank")
+    operator_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of operator identifier")
+    shop_address: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Information of shop address")
+    division_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of division identifier")
+    external_division_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of external division identifier")
+    division_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of division type")
+    shop_name: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Information of shop name")
     __properties: ClassVar[List[str]] = ["shopId", "externalShopId", "operatorId", "shopAddress", "divisionId", "externalDivisionId", "divisionType", "shopName"]
 
     model_config = ConfigDict(

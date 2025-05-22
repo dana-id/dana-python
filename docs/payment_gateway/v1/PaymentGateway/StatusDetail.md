@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**acquirement_status** | **str** | The status of acquirement | 
+**acquirement_status** | **str** | Acquirement status. The enums:<br /> * INIT - Order is created but not paid yet<br /> * SUCCESS - Order is succeeded<br /> * CLOSED - Order is closed<br /> * PAYING - Order is paid but not finish<br /> * MERCHANT_ACCEPT - Order is accepted by merchant after order is paid for PAY-CONFIRM<br /> * CANCELLED - Order is cancelled<br />  | 
 **frozen** | **str** | Whether the frozen is true or not | [optional] 
 **cancelled** | **str** | Whether the cancelled is true or not | [optional] 
 

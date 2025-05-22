@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **sub_merchant_id** | **str** | Information of sub merchant identifier | [optional] 
 **reason** | **str** | Cancellation reason | [optional] 
 **external_store_id** | **str** | Store identifier to indicate to which store this payment belongs to | [optional] 
-**amount** | [**Money**](Money.md) | Amount. Contains two sub fields - Value (Transaction amount, including the cents) and Currency (Currency code based on ISO 4217) | [optional] 
+**amount** | [**Money**](Money.md) | Amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | [optional] 
 **additional_info** | **object** | Additional information | [optional] 
 
 ## Example

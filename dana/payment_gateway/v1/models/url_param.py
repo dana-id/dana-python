@@ -45,9 +45,9 @@ class UrlParam(BaseModel, BaseSdkModel):
     """
     UrlParam
     """ # noqa: E501
-    url: Annotated[str, Field(strict=True, max_length=512)]
-    type: Annotated[str, Field(strict=True, max_length=32)]
-    is_deeplink: Annotated[str, Field(strict=True, max_length=1)] = Field()
+    url: Annotated[str, Field(strict=True, max_length=512)] = Field(description="URL link")
+    type: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Url param. The enums:<br> * PAY_RETURN - When finish payment, DANA will notify to the URL that has been defined by<br> * NOTIFICATION - After the payment, the user will be redirected to merchant page, this is mandatory<br> ")
+    is_deeplink: Annotated[str, Field(strict=True, max_length=1)] = Field(description="Deeplink URL or not")
     __properties: ClassVar[List[str]] = ["url", "type", "isDeeplink"]
 
     @field_validator('type')

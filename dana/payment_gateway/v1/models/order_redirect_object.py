@@ -48,13 +48,13 @@ class OrderRedirectObject(BaseModel, BaseSdkModel):
     """
     OrderRedirectObject
     """ # noqa: E501
-    order_title: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
-    buyer: Optional[Buyer] = None
-    goods: Optional[List[Goods]] = None
-    shipping_info: Optional[List[ShippingInfo]] = Field(default=None)
-    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None)
-    scenario: Optional[Annotated[str, Field(strict=True, max_length=64)]] = None
+    order_title: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Additional information of order title")
+    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of merchant transaction type")
+    buyer: Optional[Buyer] = Field(default=None, description="Additional information of buyer")
+    goods: Optional[List[Goods]] = Field(default=None, description="Additional information of goods")
+    shipping_info: Optional[List[ShippingInfo]] = Field(default=None, description="Additional information of shipping info")
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional information of extend")
+    scenario: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="For Payment Gateway Drop-in scenario, need to fill it as REDIRECT")
     __properties: ClassVar[List[str]] = ["orderTitle", "merchantTransType", "buyer", "goods", "shippingInfo", "extendInfo", "scenario"]
 
     @field_validator('scenario')

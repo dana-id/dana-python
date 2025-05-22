@@ -16,5 +16,5 @@
 # import apis into api package
 from dana.payment_gateway.v1.api.payment_gateway_api import PaymentGatewayApi
 from typing import Union
-from dana.payment_gateway.v1.models.create_order_by_api_request import CreateOrderByApiRequest
 from dana.payment_gateway.v1.models.create_order_by_redirect_request import CreateOrderByRedirectRequest
+from dana.payment_gateway.v1.models.create_order_by_api_request import CreateOrderByApiRequest

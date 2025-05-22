@@ -47,10 +47,10 @@ class FinishNotifyPaymentInfo(BaseModel, BaseSdkModel):
     FinishNotifyPaymentInfo
     """ # noqa: E501
     cashier_request_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Cashier request identifier")
-    paid_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Time of paid transaction (format in YYYY-MM-DDTHH:mm:ss+07:00)")
-    pay_option_infos: List[PayOptionInfo] = Field(description="Information of pay options")
+    paid_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Information of paid time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    pay_option_infos: List[PayOptionInfo] = Field(description="Information of pay option. Refer to payOptionInfos for the detailed")
     pay_request_extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information of pay request")
-    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional extended information")
+    extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information")
     __properties: ClassVar[List[str]] = ["cashierRequestId", "paidTime", "payOptionInfos", "payRequestExtendInfo", "extendInfo"]
 
     @field_validator('paid_time')

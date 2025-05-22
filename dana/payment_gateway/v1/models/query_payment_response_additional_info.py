@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.payment_gateway.v1.models.amount_detail import AmountDetail
@@ -54,20 +54,20 @@ class QueryPaymentResponseAdditionalInfo(BaseModel, BaseSdkModel):
     """
     QueryPaymentResponseAdditionalInfo
     """ # noqa: E501
-    merchant_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Merchant identifier")
-    buyer: Optional[Buyer] = None
-    seller: Optional[Seller] = None
-    amount_detail: Optional[AmountDetail] = Field(default=None)
-    time_detail: Optional[TimeDetail] = Field(default=None)
+    buyer: Optional[Buyer] = Field(default=None, description="Additional information of buyer")
+    seller: Optional[Seller] = Field(default=None, description="Additional information of seller")
+    amount_detail: Optional[AmountDetail] = Field(default=None, description="Additional information of amount detail. Present if transaction found")
+    time_detail: Optional[TimeDetail] = Field(default=None, description="Additional information of time detail. Present if transaction found")
     goods: Optional[List[Goods]] = Field(default=None, description="Additional information of goods")
     shipping_info: Optional[List[ShippingInfo]] = Field(default=None, description="Additional information of shipping")
     order_memo: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of memo")
-    payment_views: Optional[List[PaymentView]] = Field(default=None, description="Additional information of payment views")
+    payment_views: Optional[List[PaymentView]] = Field(default=None, description="Additional information of payment views. Present if transaction found")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional information of extend")
-    status_detail: Optional[StatusDetail] = Field(default=None)
+    status_detail: Optional[StatusDetail] = Field(default=None, description="Additional information of status detail")
     close_reason: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Additional information of close reason")
-    virtual_account_info: Optional[VirtualAccountInfo] = Field(default=None)
-    __properties: ClassVar[List[str]] = ["merchantId", "buyer", "seller", "amountDetail", "timeDetail", "goods", "shippingInfo", "orderMemo", "paymentViews", "extendInfo", "statusDetail", "closeReason", "virtualAccountInfo"]
+    virtual_account_info: Optional[VirtualAccountInfo] = Field(default=None, description="Additional information of virtual account. Only use for Payment Gateway service")
+    merchant_id: Optional[StrictStr] = Field(default=None, description="Merchant identifier")
+    __properties: ClassVar[List[str]] = ["buyer", "seller", "amountDetail", "timeDetail", "goods", "shippingInfo", "orderMemo", "paymentViews", "extendInfo", "statusDetail", "closeReason", "virtualAccountInfo", "merchantId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -160,7 +160,6 @@ class QueryPaymentResponseAdditionalInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "merchantId": obj.get("merchantId"),
             "buyer": Buyer.from_dict(obj["buyer"]) if obj.get("buyer") is not None else None,
             "seller": Seller.from_dict(obj["seller"]) if obj.get("seller") is not None else None,
             "amountDetail": AmountDetail.from_dict(obj["amountDetail"]) if obj.get("amountDetail") is not None else None,
@@ -172,7 +171,8 @@ class QueryPaymentResponseAdditionalInfo(BaseModel, BaseSdkModel):
             "extendInfo": obj.get("extendInfo"),
             "statusDetail": StatusDetail.from_dict(obj["statusDetail"]) if obj.get("statusDetail") is not None else None,
             "closeReason": obj.get("closeReason"),
-            "virtualAccountInfo": VirtualAccountInfo.from_dict(obj["virtualAccountInfo"]) if obj.get("virtualAccountInfo") is not None else None
+            "virtualAccountInfo": VirtualAccountInfo.from_dict(obj["virtualAccountInfo"]) if obj.get("virtualAccountInfo") is not None else None,
+            "merchantId": obj.get("merchantId")
         })
         return _obj
 

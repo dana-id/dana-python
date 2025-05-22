@@ -45,11 +45,11 @@ from pydantic.alias_generators import to_camel
 
 class ConsultPayRequestAdditionalInfo(BaseModel, BaseSdkModel):
     """
-    Additional information
+    ConsultPayRequestAdditionalInfo
     """ # noqa: E501
-    buyer: Buyer
-    env_info: EnvInfo = Field()
-    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None)
+    buyer: Buyer = Field(description="Additional information of buyer")
+    env_info: EnvInfo = Field(description="Additional information of environment info")
+    merchant_trans_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of merchant transaction type")
     __properties: ClassVar[List[str]] = ["buyer", "envInfo", "merchantTransType"]
 
     model_config = ConfigDict(

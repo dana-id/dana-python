@@ -46,9 +46,9 @@ class PromoInfo(BaseModel, BaseSdkModel):
     """
     PromoInfo
     """ # noqa: E501
-    promo_amount: Money = Field()
-    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field()
-    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field()
+    promo_amount: Money = Field(description="Promo amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    promo_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Promo identifier")
+    promo_type: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Type's of promo, value always DIRECT_DISCOUNT")
     __properties: ClassVar[List[str]] = ["promoAmount", "promoId", "promoType"]
 
     model_config = ConfigDict(
