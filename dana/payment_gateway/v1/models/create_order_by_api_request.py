@@ -52,14 +52,14 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
     pay_option_details: List[PayOptionDetail] = Field()
     additional_info: Optional[CreateOrderByApiAdditionalInfo] = Field(default=None)
     partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Transaction identifier on partner system")
-    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Unique merchant identifier")
-    amount: Money
+    merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
     sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
+    amount: Money = Field(description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    valid_up_to: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="The date and time when the order is valid until in the following format: YYYY-MM-DDTHH:MM:SS+07:00 ")
+    valid_up_to: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
     disabled_pay_methods: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method(s) that cannot be used for this")
     url_params: List[UrlParam] = Field(description="Notify URL that DANA must send the payment notification to")
-    __properties: ClassVar[List[str]] = ["partnerReferenceNo", "merchantId", "amount", "subMerchantId", "externalStoreId", "validUpTo", "disabledPayMethods", "urlParams"]
+    __properties: ClassVar[List[str]] = ["partnerReferenceNo", "merchantId", "subMerchantId", "amount", "externalStoreId", "validUpTo", "disabledPayMethods", "urlParams"]
 
     @field_validator('valid_up_to')
     def valid_up_to_validate_regular_expression(cls, value):
@@ -137,8 +137,8 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
                        "payOptionDetails": [PayOptionDetail.from_dict(_item) for _item in obj["payOptionDetails"]] if obj.get("payOptionDetails") is not None else None,
             "additionalInfo": CreateOrderByApiAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None,
 "merchantId": obj.get("merchantId"),
-            "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
             "subMerchantId": obj.get("subMerchantId"),
+            "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
             "externalStoreId": obj.get("externalStoreId"),
             "validUpTo": obj.get("validUpTo"),
             "disabledPayMethods": obj.get("disabledPayMethods"),

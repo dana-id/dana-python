@@ -5,13 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**order_title** | **str** |  | 
-**merchant_trans_type** | **str** |  | [optional] 
-**buyer** | [**Buyer**](Buyer.md) |  | [optional] 
-**goods** | [**List[Goods]**](Goods.md) |  | [optional] 
-**shipping_info** | [**List[ShippingInfo]**](ShippingInfo.md) |  | [optional] 
-**extend_info** | **str** |  | [optional] 
-**scenario** | **str** |  | [optional] 
+**order_title** | **str** | Additional information of order title | 
+**merchant_trans_type** | **str** | Additional information of merchant transaction type | [optional] 
+**buyer** | [**Buyer**](Buyer.md) | Additional information of buyer | [optional] 
+**goods** | [**List[Goods]**](Goods.md) | Additional information of goods | [optional] 
+**shipping_info** | [**List[ShippingInfo]**](ShippingInfo.md) | Additional information of shipping info | [optional] 
+**extend_info** | **str** | Additional information of extend | [optional] 
+**scenario** | **str** | For Payment Gateway Drop-in scenario, need to fill it as REDIRECT | [optional] 
 
 ## Example
 

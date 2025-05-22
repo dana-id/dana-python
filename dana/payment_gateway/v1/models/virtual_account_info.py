@@ -33,8 +33,8 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
@@ -45,14 +45,17 @@ class VirtualAccountInfo(BaseModel, BaseSdkModel):
     """
     VirtualAccountInfo
     """ # noqa: E501
-    virtual_account_code: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Virtual account code (required if payMethod is VIRTUAL_ACCOUNT)")
-    virtual_account_expiry_time: Annotated[str, Field(strict=True, max_length=25)] = Field(description="Expiry time of virtual account in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time)")
-    signature: StrictStr = Field(description="Signature of virtual account")
+    virtual_account_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Virtual account code. Present if successfully processed and payment method is VIRTUAL_ACCOUNT")
+    virtual_account_expiry_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Expiry time of virtual account, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if successfully processed and payment method is VIRTUAL_ACCOUNT")
+    signature: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Signature of virtual account. Present if successfully processed and payment method is VIRTUAL_ACCOUNT")
     __properties: ClassVar[List[str]] = ["virtualAccountCode", "virtualAccountExpiryTime", "signature"]
 
     @field_validator('virtual_account_expiry_time')
     def virtual_account_expiry_time_validate_regular_expression(cls, value):
         """Validates the regular expression"""
+        if value is None:
+            return value
+
         if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
             raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
         return value

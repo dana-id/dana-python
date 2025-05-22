@@ -5,14 +5,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**unit** | **str** | Goods unit | [optional] 
-**category** | **str** | Goods category | 
-**price** | [**Money**](Money.md) |  | 
-**merchant_shipping_id** | **str** | Shipment identifier provided by merchant | [optional] 
 **merchant_goods_id** | **str** | Goods identifier provided by merchant | 
 **description** | **str** | Goods description | 
-**snapshot_url** | **str** | The URL of good’s snapshot web page | [optional] 
+**category** | **str** | Goods category | 
+**price** | [**Money**](Money.md) | Goods price. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | 
+**unit** | **str** | Goods unit | [optional] 
 **quantity** | **str** | Count of items | 
+**merchant_shipping_id** | **str** | Shipment identifier provided by merchant | [optional] 
+**snapshot_url** | **str** | The URL of good&#39;s snapshot web page | [optional] 
 **extend_info** | **str** | Extend information | [optional] 
 
 ## Example

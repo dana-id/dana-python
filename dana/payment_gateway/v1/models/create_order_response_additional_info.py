@@ -45,7 +45,7 @@ class CreateOrderResponseAdditionalInfo(BaseModel, BaseSdkModel):
     """
     CreateOrderResponseAdditionalInfo
     """ # noqa: E501
-    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment code (only for Virtual Account / QRIS)")
+    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of payment code. Only use for Payment Gateway service. Present if payment using Virtual Account/QRIS")
     __properties: ClassVar[List[str]] = ["paymentCode"]
 
     model_config = ConfigDict(

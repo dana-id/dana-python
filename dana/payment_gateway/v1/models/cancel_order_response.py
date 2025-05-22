@@ -45,12 +45,12 @@ class CancelOrderResponse(BaseModel, BaseSdkModel):
     """
     CancelOrderResponse
     """ # noqa: E501
-    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Refer to response code list")
-    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Refer to response code list")
-    original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system")
+    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code. Refer to https://dashboard.dana.id/api-docs/read/117#HTML-API-CancelOrder-ResponseCodeandMessage")
+    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Response message. Refer to https://dashboard.dana.id/api-docs/read/117#HTML-API-CancelOrder-ResponseCodeandMessage")
+    original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system. Present if successfully processed")
     original_partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Original transaction identifier on partner system")
     original_external_id: Optional[Annotated[str, Field(strict=True, max_length=36)]] = Field(default=None, description="Original external identifier on header message")
-    cancel_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Cancellation date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    cancel_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Cancellation date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if successfully processed")
     transaction_date: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Transaction date, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "originalReferenceNo", "originalPartnerReferenceNo", "originalExternalId", "cancelTime", "transactionDate", "additionalInfo"]

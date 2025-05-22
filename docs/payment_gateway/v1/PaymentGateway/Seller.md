@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**external_user_type** | **str** |  | [optional] 
-**nickname** | **str** |  | [optional] 
-**external_user_id** | **str** |  | [optional] 
-**user_id** | **str** |  | [optional] 
+**external_user_type** | **str** | Type of external user. Required if externalUserId is filled | [optional] 
+**nickname** | **str** | Nickname, user&#39;s nick name in DANA&#39;s | [optional] 
+**external_user_id** | **str** | External user identifier. Required if externalUserType is filled | [optional] 
+**user_id** | **str** | DANA&#39;s user identifier | [optional] 
 
 ## Example
 

@@ -45,8 +45,8 @@ class Money(BaseModel, BaseSdkModel):
     """
     Money
     """ # noqa: E501
-    value: Annotated[str, Field(strict=True, max_length=19)] = Field(description="Value of amount. Following ISO-4217, for IDR the value includes 2 decimal digits separated with point e.g. IDR 10.000,- will be placed with 10000.00")
-    currency: Annotated[str, Field(strict=True, max_length=3)] = Field(description="Currency of money following ISO-4217")
+    value: Annotated[str, Field(strict=True, max_length=19)] = Field(description="Value of amount. Following ISO-4217, for IDR the value includes 2 decimal digits separated with point e.g. ,IDR 10.000,- will be placed with 10000.00")
+    currency: Annotated[str, Field(strict=True, max_length=3)] = Field(description="Currency. Following ISO-4217")
     __properties: ClassVar[List[str]] = ["value", "currency"]
 
     model_config = ConfigDict(

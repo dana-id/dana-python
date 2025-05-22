@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**virtual_account_code** | **str** | Virtual account code (required if payMethod is VIRTUAL_ACCOUNT) | 
-**virtual_account_expiry_time** | **str** | Expiry time of virtual account in format YYYY-MM-DDTHH:mm:ss+07:00 (Jakarta time) | 
-**signature** | **str** | Signature of virtual account | 
+**virtual_account_code** | **str** | Virtual account code. Present if successfully processed and payment method is VIRTUAL_ACCOUNT | [optional] 
+**virtual_account_expiry_time** | **str** | Expiry time of virtual account, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if successfully processed and payment method is VIRTUAL_ACCOUNT | [optional] 
+**signature** | **str** | Signature of virtual account. Present if successfully processed and payment method is VIRTUAL_ACCOUNT | [optional] 
 
 ## Example
 

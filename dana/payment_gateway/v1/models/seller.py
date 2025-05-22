@@ -45,10 +45,10 @@ class Seller(BaseModel, BaseSdkModel):
     """
     Seller
     """ # noqa: E501
-    external_user_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
-    nickname: Optional[Annotated[str, Field(strict=True, max_length=64)]] = None
-    external_user_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
-    user_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
+    external_user_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Type of external user. Required if externalUserId is filled")
+    nickname: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Nickname, user's nick name in DANA's")
+    external_user_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="External user identifier. Required if externalUserType is filled")
+    user_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="DANA's user identifier")
     __properties: ClassVar[List[str]] = ["externalUserType", "nickname", "externalUserId", "userId"]
 
     model_config = ConfigDict(

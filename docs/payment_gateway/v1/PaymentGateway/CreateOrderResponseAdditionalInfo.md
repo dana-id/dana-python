@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**payment_code** | **str** | Payment code (only for Virtual Account / QRIS) | [optional] 
+**payment_code** | **str** | Additional information of payment code. Only use for Payment Gateway service. Present if payment using Virtual Account/QRIS | [optional] 
 
 ## Example
 

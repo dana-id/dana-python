@@ -33,9 +33,13 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
+from dana.payment_gateway.v1.models.actor_context import ActorContext
+from dana.payment_gateway.v1.models.audit_info import AuditInfo
+from dana.payment_gateway.v1.models.env_info import EnvInfo
+from dana.payment_gateway.v1.models.refund_option_bill import RefundOptionBill
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
@@ -43,20 +47,30 @@ from pydantic.alias_generators import to_camel
 
 class RefundOrderRequestAdditionalInfo(BaseModel, BaseSdkModel):
     """
-    Additional information
+    RefundOrderRequestAdditionalInfo
     """ # noqa: E501
     payout_account_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of payout account number. This param need to be filled if want to refund to specific payout account not that specified by DANA")
     refund_applied_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Additional information of refund applied time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
-    actor_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of actor type, refer to ActorTypeEnum")
+    actor_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of actor type. The enums:<br> * USER - User<br> * MERCHANT - Merchant<br * MERCHANT_OPERATOR - Merchant operator<br> * BACK_OFFICE - Back office<br> * SYSTEM - System<br> ")
     return_charge_to_payer: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of return charge to payer")
     destination: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of destination")
-    env_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information of environment")
-    audit_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information of audit")
-    actor_context: Optional[Dict[str, Any]] = Field(default=None, description="Additional information of actor context")
-    refund_option_bill: Optional[List[Dict[str, Any]]] = Field(default=None, description="Additional information of refund option bill")
+    env_info: Optional[EnvInfo] = Field(default=None, description="Additional information of environment")
+    audit_info: Optional[AuditInfo] = Field(default=None, description="Additional information of audit")
+    actor_context: Optional[ActorContext] = Field(default=None, description="Additional information of actor context")
+    refund_option_bill: Optional[List[RefundOptionBill]] = Field(default=None, description="Additional information of refund option bill")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional information of extend")
     async_refund: Optional[Annotated[str, Field(strict=True, max_length=5)]] = Field(default=None, description="Additional information of async refund to determine the process of refund whether sync or async. The values is true/false")
     __properties: ClassVar[List[str]] = ["payoutAccountNo", "refundAppliedTime", "actorType", "returnChargeToPayer", "destination", "envInfo", "auditInfo", "actorContext", "refundOptionBill", "extendInfo", "asyncRefund"]
+
+    @field_validator('actor_type')
+    def actor_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['USER', 'MERCHANT', 'MERCHANT_OPERATOR', 'BACK_OFFICE', 'SYSTEM']):
+            raise ValueError("must be one of enum values ('USER', 'MERCHANT', 'MERCHANT_OPERATOR', 'BACK_OFFICE', 'SYSTEM')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -98,6 +112,22 @@ class RefundOrderRequestAdditionalInfo(BaseModel, BaseSdkModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of env_info
+        if self.env_info:
+            _dict['envInfo'] = self.env_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of audit_info
+        if self.audit_info:
+            _dict['auditInfo'] = self.audit_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of actor_context
+        if self.actor_context:
+            _dict['actorContext'] = self.actor_context.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in refund_option_bill (list)
+        _items = []
+        if self.refund_option_bill:
+            for _item_refund_option_bill in self.refund_option_bill:
+                if _item_refund_option_bill:
+                    _items.append(_item_refund_option_bill.to_dict())
+            _dict['refundOptionBill'] = _items
         return _dict
 
     @classmethod
@@ -115,10 +145,10 @@ class RefundOrderRequestAdditionalInfo(BaseModel, BaseSdkModel):
             "actorType": obj.get("actorType"),
             "returnChargeToPayer": obj.get("returnChargeToPayer"),
             "destination": obj.get("destination"),
-            "envInfo": obj.get("envInfo"),
-            "auditInfo": obj.get("auditInfo"),
-            "actorContext": obj.get("actorContext"),
-            "refundOptionBill": obj.get("refundOptionBill"),
+            "envInfo": EnvInfo.from_dict(obj["envInfo"]) if obj.get("envInfo") is not None else None,
+            "auditInfo": AuditInfo.from_dict(obj["auditInfo"]) if obj.get("auditInfo") is not None else None,
+            "actorContext": ActorContext.from_dict(obj["actorContext"]) if obj.get("actorContext") is not None else None,
+            "refundOptionBill": [RefundOptionBill.from_dict(_item) for _item in obj["refundOptionBill"]] if obj.get("refundOptionBill") is not None else None,
             "extendInfo": obj.get("extendInfo"),
             "asyncRefund": obj.get("asyncRefund")
         })

@@ -48,8 +48,8 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
     ConsultPayRequest
     """ # noqa: E501
     merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
-    amount: Money
-    additional_info: ConsultPayRequestAdditionalInfo = Field()
+    amount: Money = Field(description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
+    additional_info: ConsultPayRequestAdditionalInfo = Field(description="Additional information")
     __properties: ClassVar[List[str]] = ["merchantId", "amount", "additionalInfo"]
 
     model_config = ConfigDict(

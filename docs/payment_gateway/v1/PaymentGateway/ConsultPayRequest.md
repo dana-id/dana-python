@@ -6,8 +6,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **merchant_id** | **str** | Merchant identifier that is unique per each merchant | 
-**amount** | [**Money**](Money.md) |  | 
-**additional_info** | [**ConsultPayRequestAdditionalInfo**](ConsultPayRequestAdditionalInfo.md) |  | 
+**amount** | [**Money**](Money.md) | Amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | 
+**additional_info** | [**ConsultPayRequestAdditionalInfo**](ConsultPayRequestAdditionalInfo.md) | Additional information | 
 
 ## Example
 

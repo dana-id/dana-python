@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**url** | **str** |  | 
-**type** | **str** |  | 
-**is_deeplink** | **str** |  | 
+**url** | **str** | URL link | 
+**type** | **str** | Url param. The enums:<br /> * PAY_RETURN - When finish payment, DANA will notify to the URL that has been defined by<br /> * NOTIFICATION - After the payment, the user will be redirected to merchant page, this is mandatory<br />  | 
+**is_deeplink** | **str** | Deeplink URL or not | 
 
 ## Example
 

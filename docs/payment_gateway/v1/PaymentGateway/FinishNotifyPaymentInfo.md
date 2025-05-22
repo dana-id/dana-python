@@ -6,10 +6,10 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **cashier_request_id** | **str** | Cashier request identifier | 
-**paid_time** | **str** | Time of paid transaction (format in YYYY-MM-DDTHH:mm:ss+07:00) | 
-**pay_option_infos** | [**List[PayOptionInfo]**](PayOptionInfo.md) | Information of pay options | 
+**paid_time** | **str** | Information of paid time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) | 
+**pay_option_infos** | [**List[PayOptionInfo]**](PayOptionInfo.md) | Information of pay option. Refer to payOptionInfos for the detailed | 
 **pay_request_extend_info** | **str** | Extend information of pay request | [optional] 
-**extend_info** | **str** | Additional extended information | [optional] 
+**extend_info** | **str** | Extend information | [optional] 
 
 ## Example
 

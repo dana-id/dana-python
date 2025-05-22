@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.payment_gateway.v1.models.create_order_response_additional_info import CreateOrderResponseAdditionalInfo
@@ -46,13 +46,14 @@ class CreateOrderResponse(BaseModel, BaseSdkModel):
     """
     CreateOrderResponse
     """ # noqa: E501
-    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code for the transaction result. Example values include:<br> * 2005400 - Successful<br> * 4005400 - Bad Request - Retry request with proper parameter<br> * 4005401 - Invalid Field Format - Retry request with proper parameter<br> * 4005402 - Invalid Mandatory Field - Retry request with proper parameter<br> * 4015400 - Unauthorized. Invalid Signature - Retry request with proper parameter<br> * 4035402 - Exceeds Transaction Amount Limit - Try to adjust the order amount<br> * 4035405 - Do Not Honor - Retry request with proper parameter or can contact DANA to check the user/account status<br> * 4035415 - Transaction Not Permitted - Retry request periodically or consult to DANA<br> * 4045408 - Invalid Merchant - Retry request with proper parameter<br> * 4045418 - Inconsistent Request - Retry with proper parameter<br> * 4295400 - Too Many Requests - Retry request periodically by sending same request payload<br> * 5005400 - General Error - Retry request periodically<br> * 5005401 - Internal Server Error - Retry request periodically by sending same request payload<br> ")
-    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Message corresponding to the response code")
-    reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Transaction identifier on DANA system (present if successfully processed)")
+    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code. Refer to https://dashboard.dana.id/api-docs/read/243#paymentgatewayprod-paymentRedirect-ResponseCodeandMessage")
+    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Response message. Refer to https://dashboard.dana.id/api-docs/read/243#paymentgatewayprod-paymentRedirect-ResponseCodeandMessage")
+    reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Transaction identifier on DANA system. Present if successfully processed")
     partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Transaction identifier on partner system")
-    web_redirect_url: Optional[Annotated[str, Field(strict=True, max_length=2048)]] = Field(default=None, description="Checkout URL (present if payment method is not OVO/Virtual Account/QRIS)")
-    additional_info: Optional[CreateOrderResponseAdditionalInfo] = Field(default=None)
-    __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "referenceNo", "partnerReferenceNo", "webRedirectUrl", "additionalInfo"]
+    web_redirect_url: Optional[Annotated[str, Field(strict=True, max_length=2048)]] = Field(default=None, description="Checkout URLs. Present if successfully processed and payment method is not OVO/Virtual Account/QRIS")
+    additional_info: Optional[CreateOrderResponseAdditionalInfo] = Field(default=None, description="Additional information")
+    external_order_id: Optional[StrictStr] = Field(default=None, description="External order identifier")
+    __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "referenceNo", "partnerReferenceNo", "webRedirectUrl", "additionalInfo", "externalOrderId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -114,7 +115,8 @@ class CreateOrderResponse(BaseModel, BaseSdkModel):
             "referenceNo": obj.get("referenceNo"),
             "partnerReferenceNo": obj.get("partnerReferenceNo"),
             "webRedirectUrl": obj.get("webRedirectUrl"),
-            "additionalInfo": CreateOrderResponseAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "additionalInfo": CreateOrderResponseAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None,
+            "externalOrderId": obj.get("externalOrderId")
         })
         return _obj
 

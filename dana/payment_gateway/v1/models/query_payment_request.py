@@ -37,7 +37,6 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.payment_gateway.v1.models.money import Money
-from dana.payment_gateway.v1.models.query_payment_request_additional_info import QueryPaymentRequestAdditionalInfo
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
@@ -47,16 +46,16 @@ class QueryPaymentRequest(BaseModel, BaseSdkModel):
     """
     QueryPaymentRequest
     """ # noqa: E501
-    original_partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on partner system")
-    original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system")
+    original_partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on partner system. Required if originalReferenceNo is not filled")
+    original_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Original transaction identifier on DANA system. Required if originalPartnerReferenceNo is not filled")
     original_external_id: Optional[Annotated[str, Field(strict=True, max_length=36)]] = Field(default=None, description="Original external identifier on header message")
     service_code: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Transaction type indicator is based on the service code of the original transaction request:<br> - IPG Cashier Pay - SNAP: 54<br> - QRIS CPM (Acquirer) - SNAP: 60<br> - QRIS MPM (Acquirer) - SNAP: 47<br> - Payment Gateway: 54<br> ")
-    transaction_date: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Transaction date in format YYYY-MM-DDTHH:mm:ss+07:00 (GMT+7, Jakarta time)")
-    amount: Optional[Money] = None
+    transaction_date: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Transaction date, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    amount: Optional[Money] = Field(default=None, description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
     sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    additional_info: Optional[QueryPaymentRequestAdditionalInfo] = Field(default=None)
+    additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "serviceCode", "transactionDate", "amount", "merchantId", "subMerchantId", "externalStoreId", "additionalInfo"]
 
     @field_validator('transaction_date')
@@ -112,9 +111,6 @@ class QueryPaymentRequest(BaseModel, BaseSdkModel):
         # override the default output from pydantic by calling `to_dict()` of amount
         if self.amount:
             _dict['amount'] = self.amount.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of additional_info
-        if self.additional_info:
-            _dict['additionalInfo'] = self.additional_info.to_dict()
         return _dict
 
     @classmethod
@@ -136,7 +132,7 @@ class QueryPaymentRequest(BaseModel, BaseSdkModel):
             "merchantId": obj.get("merchantId"),
             "subMerchantId": obj.get("subMerchantId"),
             "externalStoreId": obj.get("externalStoreId"),
-            "additionalInfo": QueryPaymentRequestAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "additionalInfo": obj.get("additionalInfo")
         })
         return _obj
 
