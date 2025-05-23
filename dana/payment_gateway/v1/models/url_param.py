@@ -53,6 +53,8 @@ class UrlParam(BaseModel, BaseSdkModel):
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
+        if value == "":
+            return value
         if value not in set(['PAY_RETURN', 'NOTIFICATION']):
             raise ValueError("must be one of enum values ('PAY_RETURN', 'NOTIFICATION')")
         return value
