@@ -66,7 +66,7 @@ class PayOptionInfo(BaseModel, BaseSdkModel):
     @field_validator('pay_option')
     def pay_option_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
+        if not value:
             return value
 
         if value not in set(['NETWORK_PAY_PG_SPAY', 'NETWORK_PAY_PG_OVO', 'NETWORK_PAY_PG_GOPAY', 'NETWORK_PAY_PG_LINKAJA', 'NETWORK_PAY_PG_CARD', 'VIRTUAL_ACCOUNT_BCA', 'VIRTUAL_ACCOUNT_BNI', 'VIRTUAL_ACCOUNT_MANDIRI', 'VIRTUAL_ACCOUNT_BRI', 'VIRTUAL_ACCOUNT_BTPN', 'VIRTUAL_ACCOUNT_CIMB', 'VIRTUAL_ACCOUNT_PERMATA']):

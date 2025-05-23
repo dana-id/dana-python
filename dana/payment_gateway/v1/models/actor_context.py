@@ -52,7 +52,7 @@ class ActorContext(BaseModel, BaseSdkModel):
     @field_validator('actor_type')
     def actor_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
+        if not value:
             return value
 
         if value not in set(['USER', 'MERCHANT', 'MERCHANT_OPERATOR', 'BACK_OFFICE', 'SYSTEM']):

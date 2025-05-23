@@ -60,7 +60,7 @@ class OrderApiObject(BaseModel, BaseSdkModel):
     @field_validator('scenario')
     def scenario_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
+        if not value:
             return value
 
         if value not in set(['API']):

@@ -53,7 +53,7 @@ class RefundOptionBill(BaseModel, BaseSdkModel):
     @field_validator('pay_method')
     def pay_method_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
+        if not value:
             return value
 
         if value not in set(['BALANCE', 'COUPON', 'NET_BANKING', 'CREDIT_CARD', 'DEBIT_CARD', 'VIRTUAL_ACCOUNT', 'OTC', 'DIRECT_DEBIT_CREDIT_CARD', 'DIRECT_DEBIT_DEBIT_CARD', 'ONLINE_CREDIT', 'LOAN_CREDIT']):
