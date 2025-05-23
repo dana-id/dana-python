@@ -77,7 +77,7 @@ class EnvInfo(BaseModel, BaseSdkModel):
     @field_validator('order_terminal_type')
     def order_terminal_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
+        if not value:
             return value
 
         if value not in set(['APP', 'WEB', 'WAP', 'SYSTEM']):
