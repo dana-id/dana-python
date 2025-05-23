@@ -53,6 +53,8 @@ class StatusDetail(BaseModel, BaseSdkModel):
     @field_validator('acquirement_status')
     def acquirement_status_validate_enum(cls, value):
         """Validates the enum"""
+        if value == "":
+            return value
         if value not in set(['INIT', 'SUCCESS', 'CLOSED', 'PAYING', 'MERCHANT_ACCEPT', 'CANCELLED']):
             raise ValueError("must be one of enum values ('INIT', 'SUCCESS', 'CLOSED', 'PAYING', 'MERCHANT_ACCEPT', 'CANCELLED')")
         return value

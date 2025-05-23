@@ -63,6 +63,8 @@ class EnvInfo(BaseModel, BaseSdkModel):
     @field_validator('source_platform')
     def source_platform_validate_enum(cls, value):
         """Validates the enum"""
+        if value == "":
+            return value
         if value not in set(['IPG']):
             raise ValueError("must be one of enum values ('IPG')")
         return value
@@ -70,6 +72,8 @@ class EnvInfo(BaseModel, BaseSdkModel):
     @field_validator('terminal_type')
     def terminal_type_validate_enum(cls, value):
         """Validates the enum"""
+        if value == "":
+            return value
         if value not in set(['APP', 'WEB', 'WAP', 'SYSTEM']):
             raise ValueError("must be one of enum values ('APP', 'WEB', 'WAP', 'SYSTEM')")
         return value
