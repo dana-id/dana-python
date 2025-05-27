@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **partner_reference_no** | **str** | Unique transaction identifier on partner system which assigned to each transaction | [optional] 
 **link_id** | **str** | Information of link identifier | [optional] 
 **token_id** | **str** | Information of token identifier | [optional] 
-**additional_info** | [**AccountUnbindingRequestAdditionalInfo**](AccountUnbindingRequestAdditionalInfo.md) |  | [optional] 
+**additional_info** | [**AccountUnbindingRequestAdditionalInfo**](AccountUnbindingRequestAdditionalInfo.md) | Additional information | 
 
 ## Example
 

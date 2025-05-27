@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**resource_type** | **str** | Information of resource type. List of resource retrieved - OTT | [optional] 
+**resource_type** | **str** | Information of resource type. List of resource retrieved: OTT | [optional] 
 **value** | **str** | Value of OTT | [optional] 
 
 ## Example

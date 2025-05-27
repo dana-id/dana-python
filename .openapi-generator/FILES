@@ -23,7 +23,6 @@ dana/ipg/v1/models/buyer.py
 dana/ipg/v1/models/cancel_order_request.py
 dana/ipg/v1/models/cancel_order_response.py
 dana/ipg/v1/models/env_info.py
-dana/ipg/v1/models/get_o_auth_url_response.py
 dana/ipg/v1/models/goods.py
 dana/ipg/v1/models/international_order_info.py
 dana/ipg/v1/models/international_order_info_exchange_rate.py
@@ -44,7 +43,6 @@ dana/ipg/v1/models/refund_order_request.py
 dana/ipg/v1/models/refund_order_request_additional_info.py
 dana/ipg/v1/models/refund_order_response.py
 dana/ipg/v1/models/refund_promo_info.py
-dana/ipg/v1/models/seamless_data.py
 dana/ipg/v1/models/seller.py
 dana/ipg/v1/models/service_info.py
 dana/ipg/v1/models/shipping_info.py
@@ -71,7 +69,6 @@ docs/Buyer.md
 docs/CancelOrderRequest.md
 docs/CancelOrderResponse.md
 docs/EnvInfo.md
-docs/GetOAuthUrlResponse.md
 docs/Goods.md
 docs/IPGApi.md
 docs/IPGPaymentRequest.md
@@ -93,7 +90,6 @@ docs/RefundOrderRequest.md
 docs/RefundOrderRequestAdditionalInfo.md
 docs/RefundOrderResponse.md
 docs/RefundPromoInfo.md
-docs/SeamlessData.md
 docs/Seller.md
 docs/ServiceInfo.md
 docs/ShippingInfo.md
@@ -121,7 +117,6 @@ test/test_buyer.py
 test/test_cancel_order_request.py
 test/test_cancel_order_response.py
 test/test_env_info.py
-test/test_get_o_auth_url_response.py
 test/test_goods.py
 test/test_international_order_info.py
 test/test_international_order_info_exchange_rate.py
@@ -143,7 +138,6 @@ test/test_refund_order_request.py
 test/test_refund_order_request_additional_info.py
 test/test_refund_order_response.py
 test/test_refund_promo_info.py
-test/test_seamless_data.py
 test/test_seller.py
 test/test_service_info.py
 test/test_shipping_info.py

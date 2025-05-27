@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.ipg.v1.models.apply_token_response_additional_info import ApplyTokenResponseAdditionalInfo
@@ -46,14 +46,14 @@ class ApplyTokenResponse(BaseModel, BaseSdkModel):
     """
     ApplyTokenResponse
     """ # noqa: E501
-    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Refer to response code list:<br> * 2007400 - Successful<br> * 4007400 - Bad Request - Retry request with proper parameter<br> * 4007401 - Invalid Field Format - Retry request with proper parameter<br> * 4007402 - Invalid Mandatory Field - Retry request with proper parameter<br> * 4017400 - Unauthorized. [reason] - Retry request with proper parameter<br> * 4297400 - Too Many Requests - Retry request periodically by sending same request payload<br> * 5007400 - General Error - Retry request periodically<br> * 5007401 - Internal Server Error - Retry request periodically by sending same request payload<br> ")
-    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Refer to response code list")
-    token_type: Optional[StrictStr] = Field(default=None, description="Token type")
-    access_token: StrictStr = Field(description="Access token that can be used as user authorization")
-    access_token_expiry_time: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="Access token expiry time")
-    refresh_token: Optional[StrictStr] = Field(default=None, description="Token that can be used to refresh the accessToken when it expires")
-    refresh_token_expiry_time: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="Refresh token expiry time")
-    additional_info: Optional[ApplyTokenResponseAdditionalInfo] = Field(default=None)
+    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code. Refer to https://dashboard.dana.id/api-docs/read/110#HTML-ApplyToken-ResponseCodeandMessage")
+    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Response message. Refer to https://dashboard.dana.id/api-docs/read/110#HTML-ApplyToken-ResponseCodeandMessage")
+    token_type: Optional[Annotated[str, Field(strict=True, max_length=7)]] = Field(default=None, description="Token type. Present if successfully processed")
+    access_token: Annotated[str, Field(strict=True, max_length=512)] = Field(description="This token is called Customer Token that will be used as a parameter on header in other API “Authorization-Customer”. Present if successfully processed")
+    access_token_expiry_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Expiry time for access token was given to user, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if successfully processed")
+    refresh_token: Optional[Annotated[str, Field(strict=True, max_length=512)]] = Field(default=None, description="This token is used for refresh session if existing token has been expired. Present if successfully processed")
+    refresh_token_expiry_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Expiry time for refresh token was given to user, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if successfully processed")
+    additional_info: Optional[ApplyTokenResponseAdditionalInfo] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "tokenType", "accessToken", "accessTokenExpiryTime", "refreshToken", "refreshTokenExpiryTime", "additionalInfo"]
 
     @field_validator('access_token_expiry_time')

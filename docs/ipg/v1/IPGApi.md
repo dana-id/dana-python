@@ -4,19 +4,18 @@ All URIs are relative to http://api.sandbox.dana.id for sandbox environment and 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**account_unbinding**](IPGApi.md#account_unbinding) | **POST** /v1.0/registration-account-unbinding.htm | Account unbinding process
-[**apply_ott**](IPGApi.md#apply_ott) | **POST** /rest/v1.1/qr/apply-ott | Apply One Time Token
-[**apply_token**](IPGApi.md#apply_token) | **POST** /v1.0/access-token/b2b2c.htm | Account binding process to get user token
-[**cancel_order**](IPGApi.md#cancel_order) | **POST** /v1.0/debit/cancel.htm | Cancel Order API
-[**get_o_auth_url**](IPGApi.md#get_o_auth_url) | **GET** /v1.0/get-auth-code | Get OAuth 2.0 URL for end user authentication
-[**ipg_payment**](IPGApi.md#ipg_payment) | **POST** /rest/redirection/v1.0/debit/payment-host-to-host | Process IPG payment
-[**query_payment**](IPGApi.md#query_payment) | **POST** /rest/v1.1/debit/status | Query Payment API
-[**refund_order**](IPGApi.md#refund_order) | **POST** /v1.0/debit/refund.htm | Refund Order API
+[**account_unbinding**](IPGApi.md#account_unbinding) | **POST** /v1.0/registration-account-unbinding.htm | Account unbinding - Binding
+[**apply_ott**](IPGApi.md#apply_ott) | **POST** /rest/v1.1/qr/apply-ott | Apply OTT - IPG
+[**apply_token**](IPGApi.md#apply_token) | **POST** /v1.0/access-token/b2b2c.htm | Apply Token, required by Apply OTT - Binding
+[**cancel_order**](IPGApi.md#cancel_order) | **POST** /v1.0/debit/cancel.htm | Cancel Order - IPG
+[**ipg_payment**](IPGApi.md#ipg_payment) | **POST** /rest/redirection/v1.0/debit/payment-host-to-host | IPG payment - IPG
+[**query_payment**](IPGApi.md#query_payment) | **POST** /rest/v1.1/debit/status | Query Payment - IPG
+[**refund_order**](IPGApi.md#refund_order) | **POST** /v1.0/debit/refund.htm | Refund Order - IPG
 
 # **account_unbinding**
 > account_unbinding(account_unbinding_request) -> AccountUnbindingResponse 
 
-Account unbinding process
+Account unbinding - Binding
 
 This API is used to reverses the account binding process by revoking the accessToken and refreshToken
 
@@ -61,7 +60,7 @@ with ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **account_unbinding_request** | [**AccountUnbindingRequest**](IPG/AccountUnbindingRequest.md)| Account unbinding request body | 
+ **account_unbinding_request** | [**AccountUnbindingRequest**](IPG/AccountUnbindingRequest.md)|  | 
 
 ### Return type
 
@@ -71,14 +70,14 @@ Name | Type | Description  | Notes
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Successful operation |  -  |
+**200** | Account unbinding response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apply_ott**
 > apply_ott(apply_ott_request) -> ApplyOTTResponse 
 
-Apply One Time Token
+Apply OTT - IPG
 
 This API is used to get one time token that will be used as authorization parameter upon redirecting to DANA
 
@@ -123,7 +122,7 @@ with ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **apply_ott_request** | [**ApplyOTTRequest**](IPG/ApplyOTTRequest.md)| Apply OTT request body | 
+ **apply_ott_request** | [**ApplyOTTRequest**](IPG/ApplyOTTRequest.md)|  | 
 
 ### Return type
 
@@ -133,14 +132,14 @@ Name | Type | Description  | Notes
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Successful operation |  -  |
+**200** | Apply OTT response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apply_token**
 > apply_token(apply_token_request) -> ApplyTokenResponse 
 
-Account binding process to get user token
+Apply Token, required by Apply OTT - Binding
 
 This API is used to finalized account binding process by exchanging the authCode into accessToken that can be used as user authorization
 
@@ -186,7 +185,7 @@ with ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **apply_token_request** | [**ApplyTokenAuthorizationCodeRequest**](IPG/ApplyTokenAuthorizationCodeRequest.md) or [**ApplyTokenRefreshTokenRequest**](IPG/ApplyTokenRefreshTokenRequest.md)| Apply token request body | 
+ **apply_token_request** | [**ApplyTokenAuthorizationCodeRequest**](IPG/ApplyTokenAuthorizationCodeRequest.md) or [**ApplyTokenRefreshTokenRequest**](IPG/ApplyTokenRefreshTokenRequest.md)|  | 
 
 ### Return type
 
@@ -196,14 +195,14 @@ Name | Type | Description  | Notes
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Successful operation |  -  |
+**200** | Apply token response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **cancel_order**
 > cancel_order(cancel_order_request) -> CancelOrderResponse 
 
-Cancel Order API
+Cancel Order - IPG
 
 This API is used to cancel the order from merchant's platform to DANA
 
@@ -262,81 +261,10 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **get_o_auth_url**
-> get_o_auth_url(partner_id, timestamp, external_id, channel_id, scopes, redirect_url, state, merchant_id=merchant_id, sub_merchant_id=sub_merchant_id, seamless_data=seamless_data, lang=lang, allow_registration=allow_registration) -> GetOAuthUrlResponse 
-
-Get OAuth 2.0 URL for end user authentication
-
-TThis API is used to generate OAuth 2.0 redirect URL to DANA to initiate account binding process where the user will be able to register/login from DANA page
-
-### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
-
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* ENV
-```python
-import os
-from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.payment_gateway.v1 import IPGApi
-from dana.api_client import ApiClient
-from dana.rest import ApiException
-from pprint import pprint
-
-configuration = SnapConfiguration(
-    api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
-        ORIGIN=os.environ.get("ORIGIN"),
-        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
-    )
-)
-
-with ApiClient(configuration) as api_client:
-    api_instance = IPGApi(api_client)
-
-    try:
-        api_response = api_instance.get_o_auth_url(partner_id, timestamp, external_id, channel_id, scopes, redirect_url, state, merchant_id=merchant_id, sub_merchant_id=sub_merchant_id, seamless_data=seamless_data, lang=lang, allow_registration=allow_registration)
-        print("The response of IPGApi->get_o_auth_url:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling IPGApi->get_o_auth_url: %s\n" % e)
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **partner_id** | **str**| Information of partner identifier | 
- **timestamp** | **str**| Transaction date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) | 
- **external_id** | **str**| Information of partner identifier | 
- **channel_id** | **str**| Information of channel identifier | 
- **scopes** | [**List[str]**](str.md)| The scopes of the authorization | 
- **redirect_url** | **str**| When user authorization is success, the user will be redirected to this URL | 
- **state** | **str**| Random string for CSRF protection purposes | 
- **merchant_id** | **str**| Merchant identifier that is unique per each merchant | [optional] 
- **sub_merchant_id** | **str**| Information of sub merchant identifier | [optional] 
- **seamless_data** | [**SeamlessData**](.md)| Option for binding process. This is a JSON object that will be automatically URL-encoded.  | [optional] 
- **lang** | **str**| Service language code, ISO 639-1 | [optional] 
- **allow_registration** | **str**| If value equals true, provider may enable registration process during binding. Default true | [optional] 
-
-### Return type
-
-[**GetOAuthUrlResponse**](IPG/GetOAuthUrlResponse.md)
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Successful operation |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **ipg_payment**
 > ipg_payment(ipg_payment_request) -> IPGPaymentResponse 
 
-Process IPG payment
+IPG payment - IPG
 
 This API is used to initiate payment from merchant's platform to DANA
 
@@ -391,14 +319,14 @@ Name | Type | Description  | Notes
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Payment consultation request sent |  -  |
+**200** | IPG payment response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **query_payment**
 > query_payment(query_payment_request) -> QueryPaymentResponse 
 
-Query Payment API
+Query Payment - IPG
 
 This API is used to inquiry payment status and information from merchant's platform to DANA
 
@@ -460,7 +388,7 @@ Name | Type | Description  | Notes
 # **refund_order**
 > refund_order(refund_order_request) -> RefundOrderResponse 
 
-Refund Order API
+Refund Order - IPG
 
 This API is used to refund the order from merchant's platform to DANA
 

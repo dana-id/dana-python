@@ -69,6 +69,7 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Cancel order response |  -  |
+**202** | Cancel order in progress response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -317,6 +318,155 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Refund order response |  -  |
+**202** | Refund order in progress response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# Enum Types
+## acquirementStatus
+| Value | Description |
+|-------|-------------|
+| `INIT` | Order is created but not paid yet |
+| `SUCCESS` | Order is succeeded |
+| `CLOSED` | Order is closed |
+| `PAYING` | Order is paid but not finish |
+| `MERCHANT_ACCEPT` | Order is accepted by merchant after order is paid for PAY-CONFIRM |
+| `CANCELLED` | Order is cancelled |
+
+## actorType
+| Value | Description |
+|-------|-------------|
+| `USER` | User |
+| `MERCHANT` | Merchant<br |
+| `MERCHANT_OPERATOR` | Merchant operator |
+| `BACK_OFFICE` | Back office |
+| `SYSTEM` | System |
+
+## orderTerminalType
+| Value | Description |
+|-------|-------------|
+| `APP` | Mobile Application |
+| `WEB` | Browser Web |
+| `WAP` | Mobile Wap |
+| `SYSTEM` | System Call |
+
+## payMethod
+| Value | Description |
+|-------|-------------|
+| `BALANCE` | Payment method with balance |
+| `COUPON` | Payment method with coupon |
+| `NET_BANKING` | Payment method with internet banking |
+| `CREDIT_CARD` | Payment method with credit card |
+| `DEBIT_CARD` | Payment method with debit card |
+| `VIRTUAL_ACCOUNT` | Payment method with virtual account |
+| `OTC` | Payment method with OTC |
+| `DIRECT_DEBIT_CREDIT_CARD` | Payment method with direct debit of credit card |
+| `DIRECT_DEBIT_DEBIT_CARD` | Payment method with direct debit of debit card |
+| `ONLINE_CREDIT` | Payment method with online Credit |
+| `LOAN_CREDIT` | Payment method with DANA Cicil |
+| `NETWORK_PAY` | Payment method with e-wallet |
+
+## payOption
+| Value | Description |
+|-------|-------------|
+| `NETWORK_PAY_PG_SPAY` | Payment method with ShopeePay e-wallet |
+| `NETWORK_PAY_PG_OVO` | Payment method with OVO e-wallet |
+| `NETWORK_PAY_PG_GOPAY` | Payment method with GoPay e-wallet |
+| `NETWORK_PAY_PG_LINKAJA` | Payment method with LinkAja e-wallet |
+| `NETWORK_PAY_PG_CARD` | Payment method with Card |
+| `VIRTUAL_ACCOUNT_BCA` | Payment method with BCA virtual account |
+| `VIRTUAL_ACCOUNT_BNI` | Payment method with BNI virtual account |
+| `VIRTUAL_ACCOUNT_MANDIRI` | Payment method with Mandiri virtual account |
+| `VIRTUAL_ACCOUNT_BRI` | Payment method with BRI virtual account |
+| `VIRTUAL_ACCOUNT_BTPN` | Payment method with BTPN virtual account |
+| `VIRTUAL_ACCOUNT_CIMB` | Payment method with CIMB virtual account |
+| `VIRTUAL_ACCOUNT_PERMATA` | Payment method with Permata virtual account |
+
+## sourcePlatform
+| Value | Description |
+|-------|-------------|
+| `IPG` |  |
+
+## terminalType
+| Value | Description |
+|-------|-------------|
+| `APP` | Mobile Application |
+| `WEB` | Browser Web |
+| `WAP` | Mobile Wap |
+| `SYSTEM` | System Call |
+
+## type
+| Value | Description |
+|-------|-------------|
+| `PAY_RETURN` | When finish payment, DANA will notify to the URL that has been defined by |
+| `NOTIFICATION` | After the payment, the user will be redirected to merchant page, this is mandatory |
+
+# WebhookParser
+
+This section demonstrates how to securely verify and parse DANA webhook notifications using the `WebhookParser` utility from the Python SDK.
+
+## Example
+```python
+import os
+from dana.webhook import WebhookParser
+
+# Replace with your actual DANA public key (PEM format)
+DANA_PUBLIC_KEY = os.getenv("DANA_PUBLIC_KEY")
+
+# Example HTTP request data from your webhook handler
+http_method = "POST"
+relative_path_url = "/v1.0/debit/notify"
+headers = {
+    "X-SIGNATURE": "<signature-from-header>",
+    "X-TIMESTAMP": "<timestamp-from-header>"
+}
+body = '{"original_partner_reference_no": "123...", ...}'  # Raw JSON string from request body
+
+parser = WebhookParser(DANA_PUBLIC_KEY)
+
+try:
+    finish_notify = parser.parse_webhook(
+        http_method=http_method,
+        relative_path_url=relative_path_url,
+        headers=headers,
+        body=body
+    )
+    print(finish_notify.original_partner_reference_no)
+except ValueError as e:
+    print(f"Webhook verification failed: {e}")
+```
+
+## API Reference
+
+### `WebhookParser`
+
+**Constructor:**
+```python
+WebhookParser(gateway_public_key_pem: str)
+```
+- `gateway_public_key_pem`: PEM-formatted public key string for signature verification.
+
+**Method:**
+```python
+parse_webhook(http_method: str, relative_path_url: str, headers: dict, body: str) -> FinishNotify
+```
+- `http_method`: HTTP method of the webhook request (e.g., `POST`).
+- `relative_path_url`: The relative URL path (e.g., `/v1.0/debit/notify`).
+- `headers`: Dictionary containing at least `X-SIGNATURE` and `X-TIMESTAMP`.
+- `body`: Raw JSON string of the webhook payload.
+- **Returns:** `FinishNotify` model with parsed data.
+- **Raises:** `ValueError` if signature verification fails or the payload is invalid.
+
+## Security Notes
+- Always use the official public key provided by DANA for webhook verification.
+- Reject any webhook requests that fail signature verification or have malformed payloads.
+- Never trust webhook data unless it passes verification.
+
+## Webhook Notification Models
+
+The following webhook notification models may be received:
+
+Model | Description
+------------- | -------------
+[**FinishNotify**](PaymentGateway/FinishNotify.md) | FinishNotify
 

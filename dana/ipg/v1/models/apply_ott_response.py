@@ -46,9 +46,9 @@ class ApplyOTTResponse(BaseModel, BaseSdkModel):
     """
     ApplyOTTResponse
     """ # noqa: E501
-    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Refer to response code list")
-    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Refer to response code list")
-    user_resources: List[ApplyOTTResponseUserResourcesInner] = Field()
+    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code. https://dashboard.dana.id/api-docs/read/109#HTML-API-ApplyOTT-ResponseCodeandMessage")
+    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Response message. https://dashboard.dana.id/api-docs/read/109#HTML-API-ApplyOTT-ResponseCodeandMessage")
+    user_resources: List[ApplyOTTResponseUserResourcesInner] = Field(description="User resources")
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "userResources", "additionalInfo"]
 

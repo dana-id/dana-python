@@ -1,6 +1,5 @@
 # ApplyTokenResponseAdditionalInfo
 
-Additional information
 
 ## Properties
 

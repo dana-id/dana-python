@@ -81,8 +81,8 @@ def create_order_by_api_request() -> CreateOrderByApiRequest:
         valid_up_to=valid_up_to,
         pay_option_details=[
             PayOptionDetail(
-                pay_method=PayMethod.VIRTUAL_ACCOUNT,
-                pay_option=PayOption.VIRTUAL_ACCOUNT_BNI,
+                pay_method=PayMethod.BALANCE,
+                pay_option="",
                 trans_amount=Money(
                     value="222000.00",
                     currency="IDR"
@@ -144,3 +144,7 @@ def refund_order_request(create_order_by_api_request):
             terminal_type="WEB"
         )
     )
+
+@pytest.fixture
+def webhook_key_pair():
+    return os.getenv("WEBHOOK_PUBLIC_KEY"), os.getenv("WEBHOOK_PRIVATE_KEY")

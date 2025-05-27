@@ -45,7 +45,7 @@ class ApplyOTTResponseUserResourcesInner(BaseModel, BaseSdkModel):
     """
     ApplyOTTResponseUserResourcesInner
     """ # noqa: E501
-    resource_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of resource type. List of resource retrieved - OTT")
+    resource_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of resource type. List of resource retrieved: OTT")
     value: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Value of OTT")
     __properties: ClassVar[List[str]] = ["resourceType", "value"]
 

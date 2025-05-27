@@ -45,8 +45,8 @@ class AccountUnbindingResponse(BaseModel, BaseSdkModel):
     """
     AccountUnbindingResponse
     """ # noqa: E501
-    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Refer to response code list")
-    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Refer to response code list")
+    response_code: Annotated[str, Field(strict=True, max_length=7)] = Field(description="Response code. Refer to https://dashboard.dana.id/api-docs/read/108#HTML-AccountUnbinding-ResponseCodeandMessage")
+    response_message: Annotated[str, Field(strict=True, max_length=150)] = Field(description="Response message. Refer to https://dashboard.dana.id/api-docs/read/108#HTML-AccountUnbinding-ResponseCodeandMessage")
     reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Transaction identifier on DANA system")
     partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Unique transaction identifier on partner system which assigned to each transaction")
     merchant_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Merchant identifier that is unique per each merchant")

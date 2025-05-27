@@ -51,7 +51,7 @@ class AccountUnbindingRequest(BaseModel, BaseSdkModel):
     partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Unique transaction identifier on partner system which assigned to each transaction")
     link_id: Optional[Annotated[str, Field(strict=True, max_length=24)]] = Field(default=None, description="Information of link identifier")
     token_id: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Information of token identifier")
-    additional_info: Optional[AccountUnbindingRequestAdditionalInfo] = Field(default=None)
+    additional_info: AccountUnbindingRequestAdditionalInfo = Field(description="Additional information")
     __properties: ClassVar[List[str]] = ["merchantId", "subMerchantId", "partnerReferenceNo", "linkId", "tokenId", "additionalInfo"]
 
     model_config = ConfigDict(

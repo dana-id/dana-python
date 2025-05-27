@@ -33,8 +33,9 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List
+from typing_extensions import Annotated
 from dana.ipg.v1.models.apply_ott_request_additional_info import ApplyOTTRequestAdditionalInfo
 from typing import Optional, Set
 from typing_extensions import Self
@@ -45,8 +46,17 @@ class ApplyOTTRequest(BaseModel, BaseSdkModel):
     """
     ApplyOTTRequest
     """ # noqa: E501
+    user_resources: List[Annotated[str, Field(strict=True, max_length=64)]] = Field()
     additional_info: ApplyOTTRequestAdditionalInfo = Field()
-    __properties: ClassVar[List[str]] = ["additionalInfo"]
+    __properties: ClassVar[List[str]] = ["userResources", "additionalInfo"]
+
+    @field_validator('user_resources')
+    def user_resources_validate_enum(cls, value):
+        """Validates the enum"""
+        for i in value:
+            if i not in set(['OTT']):
+                raise ValueError("each list item must be one of ('OTT')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -103,6 +113,7 @@ class ApplyOTTRequest(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "userResources": obj.get("userResources"),
             "additionalInfo": ApplyOTTRequestAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
         })
         return _obj

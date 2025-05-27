@@ -6,6 +6,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **additional_info** | **Dict[str, object]** | Additional information | [optional] 
+**grant_type** | **str** | Apply token request type. The value is AUTHORIZATION_CODE | 
+**auth_code** | **str** | Authorization code. Please refer to https://dashboard.dana.id/api-docs/read/125. Required if grantType is AUTHORIZATION_CODE | 
+**refresh_token** | **str** | This token is used for refresh session if existing token has been expired | [optional] 
 
 ## Example
 

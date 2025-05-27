@@ -43,7 +43,7 @@ from pydantic.alias_generators import to_camel
 
 class ApplyTokenResponseAdditionalInfo(BaseModel, BaseSdkModel):
     """
-    Additional information
+    ApplyTokenResponseAdditionalInfo
     """ # noqa: E501
     user_info: Optional[ApplyTokenResponseAdditionalInfoUserInfo] = Field(default=None)
     __properties: ClassVar[List[str]] = ["userInfo"]

@@ -25,9 +25,6 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union, Type
 from typing_extensions import Annotated
 from dana.utils import url
-from pydantic import Field, StrictStr, field_validator
-from typing import List, Optional
-from typing_extensions import Annotated
 from dana.ipg.v1.models.account_unbinding_request import AccountUnbindingRequest
 from dana.ipg.v1.models.account_unbinding_response import AccountUnbindingResponse
 from dana.ipg.v1.models.apply_ott_request import ApplyOTTRequest
@@ -35,14 +32,12 @@ from dana.ipg.v1.models.apply_ott_response import ApplyOTTResponse
 from dana.ipg.v1.models.apply_token_response import ApplyTokenResponse
 from dana.ipg.v1.models.cancel_order_request import CancelOrderRequest
 from dana.ipg.v1.models.cancel_order_response import CancelOrderResponse
-from dana.ipg.v1.models.get_o_auth_url_response import GetOAuthUrlResponse
 from dana.ipg.v1.models.ipg_payment_request import IPGPaymentRequest
 from dana.ipg.v1.models.ipg_payment_response import IPGPaymentResponse
 from dana.ipg.v1.models.query_payment_request import QueryPaymentRequest
 from dana.ipg.v1.models.query_payment_response import QueryPaymentResponse
 from dana.ipg.v1.models.refund_order_request import RefundOrderRequest
 from dana.ipg.v1.models.refund_order_response import RefundOrderResponse
-from dana.ipg.v1.models.seamless_data import SeamlessData
 from dana.api_response import ApiResponse
 from dana.rest import RESTResponseType
 from dana.base.types import RequestSerialized
@@ -64,7 +59,7 @@ class IPGApi:
     @validate_call
     def account_unbinding(
         self,
-        account_unbinding_request: Annotated[AccountUnbindingRequest, Field(description="Account unbinding request body")],
+        account_unbinding_request: AccountUnbindingRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -78,9 +73,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> AccountUnbindingResponse:
-        """Account unbinding process
+        """Account unbinding - Binding
         This API is used to reverses the account binding process by revoking the accessToken and refreshToken
-        :param account_unbinding_request: Account unbinding request body (required)
+        :param account_unbinding_request: (required)
         :type account_unbinding_request: AccountUnbindingRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -125,7 +120,7 @@ class IPGApi:
     @validate_call
     def account_unbinding_with_http_info(
         self,
-        account_unbinding_request: Annotated[AccountUnbindingRequest, Field(description="Account unbinding request body")],
+        account_unbinding_request: AccountUnbindingRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -139,9 +134,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[AccountUnbindingResponse]:
-        """Account unbinding process
+        """Account unbinding - Binding
         This API is used to reverses the account binding process by revoking the accessToken and refreshToken
-        :param account_unbinding_request: Account unbinding request body (required)
+        :param account_unbinding_request: (required)
         :type account_unbinding_request: AccountUnbindingRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -186,7 +181,7 @@ class IPGApi:
     @validate_call
     def account_unbinding_without_preload_content(
         self,
-        account_unbinding_request: Annotated[AccountUnbindingRequest, Field(description="Account unbinding request body")],
+        account_unbinding_request: AccountUnbindingRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -200,9 +195,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Account unbinding process
+        """Account unbinding - Binding
         This API is used to reverses the account binding process by revoking the accessToken and refreshToken
-        :param account_unbinding_request: Account unbinding request body (required)
+        :param account_unbinding_request: (required)
         :type account_unbinding_request: AccountUnbindingRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -296,7 +291,7 @@ class IPGApi:
     @validate_call
     def apply_ott(
         self,
-        apply_ott_request: Annotated[ApplyOTTRequest, Field(description="Apply OTT request body")],
+        apply_ott_request: ApplyOTTRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -310,9 +305,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApplyOTTResponse:
-        """Apply One Time Token
+        """Apply OTT - IPG
         This API is used to get one time token that will be used as authorization parameter upon redirecting to DANA
-        :param apply_ott_request: Apply OTT request body (required)
+        :param apply_ott_request: (required)
         :type apply_ott_request: ApplyOTTRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -357,7 +352,7 @@ class IPGApi:
     @validate_call
     def apply_ott_with_http_info(
         self,
-        apply_ott_request: Annotated[ApplyOTTRequest, Field(description="Apply OTT request body")],
+        apply_ott_request: ApplyOTTRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -371,9 +366,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[ApplyOTTResponse]:
-        """Apply One Time Token
+        """Apply OTT - IPG
         This API is used to get one time token that will be used as authorization parameter upon redirecting to DANA
-        :param apply_ott_request: Apply OTT request body (required)
+        :param apply_ott_request: (required)
         :type apply_ott_request: ApplyOTTRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -418,7 +413,7 @@ class IPGApi:
     @validate_call
     def apply_ott_without_preload_content(
         self,
-        apply_ott_request: Annotated[ApplyOTTRequest, Field(description="Apply OTT request body")],
+        apply_ott_request: ApplyOTTRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -432,9 +427,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Apply One Time Token
+        """Apply OTT - IPG
         This API is used to get one time token that will be used as authorization parameter upon redirecting to DANA
-        :param apply_ott_request: Apply OTT request body (required)
+        :param apply_ott_request: (required)
         :type apply_ott_request: ApplyOTTRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -557,7 +552,7 @@ class IPGApi:
     @validate_call
     def apply_token(
         self,
-        apply_token_request: Annotated[Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest], Field(description="Apply token request body")],
+        apply_token_request: Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest], # Was ApplyTokenRequest
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -571,9 +566,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApplyTokenResponse:
-        """Account binding process to get user token
+        """Apply Token, required by Apply OTT - Binding
         This API is used to finalized account binding process by exchanging the authCode into accessToken that can be used as user authorization
-        :param apply_token_request: Apply token request body (required)
+        :param apply_token_request: (required)
         :type apply_token_request: Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest] # Was ApplyTokenRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -618,7 +613,7 @@ class IPGApi:
     @validate_call
     def apply_token_with_http_info(
         self,
-        apply_token_request: Annotated[Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest], Field(description="Apply token request body")],
+        apply_token_request: Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest], # Was ApplyTokenRequest
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -632,9 +627,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[ApplyTokenResponse]:
-        """Account binding process to get user token
+        """Apply Token, required by Apply OTT - Binding
         This API is used to finalized account binding process by exchanging the authCode into accessToken that can be used as user authorization
-        :param apply_token_request: Apply token request body (required)
+        :param apply_token_request: (required)
         :type apply_token_request: Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest] # Was ApplyTokenRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -679,7 +674,7 @@ class IPGApi:
     @validate_call
     def apply_token_without_preload_content(
         self,
-        apply_token_request: Annotated[Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest], Field(description="Apply token request body")],
+        apply_token_request: Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest], # Was ApplyTokenRequest
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -693,9 +688,9 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Account binding process to get user token
+        """Apply Token, required by Apply OTT - Binding
         This API is used to finalized account binding process by exchanging the authCode into accessToken that can be used as user authorization
-        :param apply_token_request: Apply token request body (required)
+        :param apply_token_request: (required)
         :type apply_token_request: Union[ApplyTokenAuthorizationCodeRequest, ApplyTokenRefreshTokenRequest] # Was ApplyTokenRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -830,7 +825,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> CancelOrderResponse:
-        """Cancel Order API
+        """Cancel Order - IPG
         This API is used to cancel the order from merchant's platform to DANA
         :param cancel_order_request: (required)
         :type cancel_order_request: CancelOrderRequest
@@ -891,7 +886,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[CancelOrderResponse]:
-        """Cancel Order API
+        """Cancel Order - IPG
         This API is used to cancel the order from merchant's platform to DANA
         :param cancel_order_request: (required)
         :type cancel_order_request: CancelOrderRequest
@@ -952,7 +947,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Cancel Order API
+        """Cancel Order - IPG
         This API is used to cancel the order from merchant's platform to DANA
         :param cancel_order_request: (required)
         :type cancel_order_request: CancelOrderRequest
@@ -1072,405 +1067,6 @@ class IPGApi:
             _generated_auth=_generated_auth,
         )
     @validate_call
-    def get_o_auth_url(
-        self,
-        partner_id: Annotated[str, Field(strict=True, max_length=64, description="Information of partner identifier")],
-        timestamp: Annotated[str, Field(strict=True, max_length=25, description="Transaction date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")],
-        external_id: Annotated[str, Field(strict=True, max_length=64, description="Information of partner identifier")],
-        channel_id: Annotated[str, Field(strict=True, max_length=64, description="Information of channel identifier")],
-        scopes: Annotated[List[StrictStr], Field(description="The scopes of the authorization")],
-        redirect_url: Annotated[str, Field(strict=True, max_length=256, description="When user authorization is success, the user will be redirected to this URL")],
-        state: Annotated[str, Field(strict=True, max_length=32, description="Random string for CSRF protection purposes")],
-        merchant_id: Annotated[Optional[Annotated[str, Field(strict=True, max_length=64)]], Field(description="Merchant identifier that is unique per each merchant")] = None,
-        sub_merchant_id: Annotated[Optional[Annotated[str, Field(strict=True, max_length=32)]], Field(description="Information of sub merchant identifier")] = None,
-        seamless_data: Annotated[Optional[SeamlessData], Field(description="Option for binding process. This is a JSON object that will be automatically URL-encoded. ")] = None,
-        lang: Annotated[Optional[Annotated[str, Field(strict=True, max_length=2)]], Field(description="Service language code, ISO 639-1")] = None,
-        allow_registration: Annotated[Optional[Annotated[str, Field(strict=True, max_length=1)]], Field(description="If value equals true, provider may enable registration process during binding. Default true")] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> GetOAuthUrlResponse:
-        """Get OAuth 2.0 URL for end user authentication
-        TThis API is used to generate OAuth 2.0 redirect URL to DANA to initiate account binding process where the user will be able to register/login from DANA page
-        :param partner_id: Information of partner identifier (required)
-        :type partner_id: str
-        :param timestamp: Transaction date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) (required)
-        :type timestamp: str
-        :param external_id: Information of partner identifier (required)
-        :type external_id: str
-        :param channel_id: Information of channel identifier (required)
-        :type channel_id: str
-        :param scopes: The scopes of the authorization (required)
-        :type scopes: List[str]
-        :param redirect_url: When user authorization is success, the user will be redirected to this URL (required)
-        :type redirect_url: str
-        :param state: Random string for CSRF protection purposes (required)
-        :type state: str
-        :param merchant_id: Merchant identifier that is unique per each merchant
-        :type merchant_id: str
-        :param sub_merchant_id: Information of sub merchant identifier
-        :type sub_merchant_id: str
-        :param seamless_data: Option for binding process. This is a JSON object that will be automatically URL-encoded. 
-        :type seamless_data: SeamlessData
-        :param lang: Service language code, ISO 639-1
-        :type lang: str
-        :param allow_registration: If value equals true, provider may enable registration process during binding. Default true
-        :type allow_registration: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-        _param = self._get_o_auth_url_serialize(
-            partner_id=partner_id,
-            timestamp=timestamp,
-            external_id=external_id,
-            channel_id=channel_id,
-            scopes=scopes,
-            redirect_url=redirect_url,
-            state=state,
-            merchant_id=merchant_id,
-            sub_merchant_id=sub_merchant_id,
-            seamless_data=seamless_data,
-            lang=lang,
-            allow_registration=allow_registration,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GetOAuthUrlResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-    @validate_call
-    def get_o_auth_url_with_http_info(
-        self,
-        partner_id: Annotated[str, Field(strict=True, max_length=64, description="Information of partner identifier")],
-        timestamp: Annotated[str, Field(strict=True, max_length=25, description="Transaction date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")],
-        external_id: Annotated[str, Field(strict=True, max_length=64, description="Information of partner identifier")],
-        channel_id: Annotated[str, Field(strict=True, max_length=64, description="Information of channel identifier")],
-        scopes: Annotated[List[StrictStr], Field(description="The scopes of the authorization")],
-        redirect_url: Annotated[str, Field(strict=True, max_length=256, description="When user authorization is success, the user will be redirected to this URL")],
-        state: Annotated[str, Field(strict=True, max_length=32, description="Random string for CSRF protection purposes")],
-        merchant_id: Annotated[Optional[Annotated[str, Field(strict=True, max_length=64)]], Field(description="Merchant identifier that is unique per each merchant")] = None,
-        sub_merchant_id: Annotated[Optional[Annotated[str, Field(strict=True, max_length=32)]], Field(description="Information of sub merchant identifier")] = None,
-        seamless_data: Annotated[Optional[SeamlessData], Field(description="Option for binding process. This is a JSON object that will be automatically URL-encoded. ")] = None,
-        lang: Annotated[Optional[Annotated[str, Field(strict=True, max_length=2)]], Field(description="Service language code, ISO 639-1")] = None,
-        allow_registration: Annotated[Optional[Annotated[str, Field(strict=True, max_length=1)]], Field(description="If value equals true, provider may enable registration process during binding. Default true")] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[GetOAuthUrlResponse]:
-        """Get OAuth 2.0 URL for end user authentication
-        TThis API is used to generate OAuth 2.0 redirect URL to DANA to initiate account binding process where the user will be able to register/login from DANA page
-        :param partner_id: Information of partner identifier (required)
-        :type partner_id: str
-        :param timestamp: Transaction date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) (required)
-        :type timestamp: str
-        :param external_id: Information of partner identifier (required)
-        :type external_id: str
-        :param channel_id: Information of channel identifier (required)
-        :type channel_id: str
-        :param scopes: The scopes of the authorization (required)
-        :type scopes: List[str]
-        :param redirect_url: When user authorization is success, the user will be redirected to this URL (required)
-        :type redirect_url: str
-        :param state: Random string for CSRF protection purposes (required)
-        :type state: str
-        :param merchant_id: Merchant identifier that is unique per each merchant
-        :type merchant_id: str
-        :param sub_merchant_id: Information of sub merchant identifier
-        :type sub_merchant_id: str
-        :param seamless_data: Option for binding process. This is a JSON object that will be automatically URL-encoded. 
-        :type seamless_data: SeamlessData
-        :param lang: Service language code, ISO 639-1
-        :type lang: str
-        :param allow_registration: If value equals true, provider may enable registration process during binding. Default true
-        :type allow_registration: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-        _param = self._get_o_auth_url_serialize(
-            partner_id=partner_id,
-            timestamp=timestamp,
-            external_id=external_id,
-            channel_id=channel_id,
-            scopes=scopes,
-            redirect_url=redirect_url,
-            state=state,
-            merchant_id=merchant_id,
-            sub_merchant_id=sub_merchant_id,
-            seamless_data=seamless_data,
-            lang=lang,
-            allow_registration=allow_registration,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GetOAuthUrlResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-    @validate_call
-    def get_o_auth_url_without_preload_content(
-        self,
-        partner_id: Annotated[str, Field(strict=True, max_length=64, description="Information of partner identifier")],
-        timestamp: Annotated[str, Field(strict=True, max_length=25, description="Transaction date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")],
-        external_id: Annotated[str, Field(strict=True, max_length=64, description="Information of partner identifier")],
-        channel_id: Annotated[str, Field(strict=True, max_length=64, description="Information of channel identifier")],
-        scopes: Annotated[List[StrictStr], Field(description="The scopes of the authorization")],
-        redirect_url: Annotated[str, Field(strict=True, max_length=256, description="When user authorization is success, the user will be redirected to this URL")],
-        state: Annotated[str, Field(strict=True, max_length=32, description="Random string for CSRF protection purposes")],
-        merchant_id: Annotated[Optional[Annotated[str, Field(strict=True, max_length=64)]], Field(description="Merchant identifier that is unique per each merchant")] = None,
-        sub_merchant_id: Annotated[Optional[Annotated[str, Field(strict=True, max_length=32)]], Field(description="Information of sub merchant identifier")] = None,
-        seamless_data: Annotated[Optional[SeamlessData], Field(description="Option for binding process. This is a JSON object that will be automatically URL-encoded. ")] = None,
-        lang: Annotated[Optional[Annotated[str, Field(strict=True, max_length=2)]], Field(description="Service language code, ISO 639-1")] = None,
-        allow_registration: Annotated[Optional[Annotated[str, Field(strict=True, max_length=1)]], Field(description="If value equals true, provider may enable registration process during binding. Default true")] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Get OAuth 2.0 URL for end user authentication
-        TThis API is used to generate OAuth 2.0 redirect URL to DANA to initiate account binding process where the user will be able to register/login from DANA page
-        :param partner_id: Information of partner identifier (required)
-        :type partner_id: str
-        :param timestamp: Transaction date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) (required)
-        :type timestamp: str
-        :param external_id: Information of partner identifier (required)
-        :type external_id: str
-        :param channel_id: Information of channel identifier (required)
-        :type channel_id: str
-        :param scopes: The scopes of the authorization (required)
-        :type scopes: List[str]
-        :param redirect_url: When user authorization is success, the user will be redirected to this URL (required)
-        :type redirect_url: str
-        :param state: Random string for CSRF protection purposes (required)
-        :type state: str
-        :param merchant_id: Merchant identifier that is unique per each merchant
-        :type merchant_id: str
-        :param sub_merchant_id: Information of sub merchant identifier
-        :type sub_merchant_id: str
-        :param seamless_data: Option for binding process. This is a JSON object that will be automatically URL-encoded. 
-        :type seamless_data: SeamlessData
-        :param lang: Service language code, ISO 639-1
-        :type lang: str
-        :param allow_registration: If value equals true, provider may enable registration process during binding. Default true
-        :type allow_registration: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-        _param = self._get_o_auth_url_serialize(
-            partner_id=partner_id,
-            timestamp=timestamp,
-            external_id=external_id,
-            channel_id=channel_id,
-            scopes=scopes,
-            redirect_url=redirect_url,
-            state=state,
-            merchant_id=merchant_id,
-            sub_merchant_id=sub_merchant_id,
-            seamless_data=seamless_data,
-            lang=lang,
-            allow_registration=allow_registration,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GetOAuthUrlResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-    def _get_o_auth_url_serialize(
-        self,
-        partner_id: Type[BaseSdkModel],
-        timestamp: Type[BaseSdkModel],
-        external_id: Type[BaseSdkModel],
-        channel_id: Type[BaseSdkModel],
-        scopes: Type[BaseSdkModel],
-        redirect_url: Type[BaseSdkModel],
-        state: Type[BaseSdkModel],
-        merchant_id: Type[BaseSdkModel],
-        sub_merchant_id: Type[BaseSdkModel],
-        seamless_data: Type[BaseSdkModel],
-        lang: Type[BaseSdkModel],
-        allow_registration: Type[BaseSdkModel],
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-        _host = None
-        _collection_formats: Dict[str, str] = {
-            'scopes': 'multi',
-        }
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-        # process the path parameters
-        # process the query parameters
-        if partner_id is not None:
-            _query_params.append(('partnerId', partner_id))
-        if timestamp is not None:
-            _query_params.append(('timestamp', timestamp))
-        if external_id is not None:
-            _query_params.append(('externalId', external_id))
-        if channel_id is not None:
-            _query_params.append(('channelId', channel_id))
-        if merchant_id is not None:
-            _query_params.append(('merchantId', merchant_id))
-        if sub_merchant_id is not None:
-            _query_params.append(('subMerchantId', sub_merchant_id))
-        if seamless_data is not None:
-            _query_params.append(('seamlessData', url.encode(seamless_data.to_dict())))
-            _query_params.append(('seamlessSign', url.sign(seamless_data.to_dict(), self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'))))
-        if scopes is not None:
-            _query_params.append(('scopes', scopes))
-        if redirect_url is not None:
-            _query_params.append(('redirectUrl', redirect_url))
-        if state is not None:
-            _query_params.append(('state', state))
-        if lang is not None:
-            _query_params.append(('lang', lang))
-        if allow_registration is not None:
-            _query_params.append(('allowRegistration', allow_registration))
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-        # authentication setting
-        _auth_settings: List[str] = [
-            'PRIVATE_KEY', 
-            'PRIVATE_KEY_PATH', 
-            'ENV'
-        ]
-        return self.api_client.param_serialize(
-            method='GET',
-            resource_path='/v1.0/get-auth-code',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
-        )
-    @validate_call
     def ipg_payment(
         self,
         ipg_payment_request: IPGPaymentRequest,
@@ -1487,7 +1083,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> IPGPaymentResponse:
-        """Process IPG payment
+        """IPG payment - IPG
         This API is used to initiate payment from merchant's platform to DANA
         :param ipg_payment_request: (required)
         :type ipg_payment_request: IPGPaymentRequest
@@ -1548,7 +1144,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[IPGPaymentResponse]:
-        """Process IPG payment
+        """IPG payment - IPG
         This API is used to initiate payment from merchant's platform to DANA
         :param ipg_payment_request: (required)
         :type ipg_payment_request: IPGPaymentRequest
@@ -1609,7 +1205,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Process IPG payment
+        """IPG payment - IPG
         This API is used to initiate payment from merchant's platform to DANA
         :param ipg_payment_request: (required)
         :type ipg_payment_request: IPGPaymentRequest
@@ -1746,7 +1342,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> QueryPaymentResponse:
-        """Query Payment API
+        """Query Payment - IPG
         This API is used to inquiry payment status and information from merchant's platform to DANA
         :param query_payment_request: (required)
         :type query_payment_request: QueryPaymentRequest
@@ -1807,7 +1403,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[QueryPaymentResponse]:
-        """Query Payment API
+        """Query Payment - IPG
         This API is used to inquiry payment status and information from merchant's platform to DANA
         :param query_payment_request: (required)
         :type query_payment_request: QueryPaymentRequest
@@ -1868,7 +1464,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Query Payment API
+        """Query Payment - IPG
         This API is used to inquiry payment status and information from merchant's platform to DANA
         :param query_payment_request: (required)
         :type query_payment_request: QueryPaymentRequest
@@ -2004,7 +1600,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RefundOrderResponse:
-        """Refund Order API
+        """Refund Order - IPG
         This API is used to refund the order from merchant's platform to DANA
         :param refund_order_request: (required)
         :type refund_order_request: RefundOrderRequest
@@ -2065,7 +1661,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[RefundOrderResponse]:
-        """Refund Order API
+        """Refund Order - IPG
         This API is used to refund the order from merchant's platform to DANA
         :param refund_order_request: (required)
         :type refund_order_request: RefundOrderRequest
@@ -2126,7 +1722,7 @@ class IPGApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Refund Order API
+        """Refund Order - IPG
         This API is used to refund the order from merchant's platform to DANA
         :param refund_order_request: (required)
         :type refund_order_request: RefundOrderRequest

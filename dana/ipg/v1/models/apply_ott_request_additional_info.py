@@ -47,7 +47,7 @@ class ApplyOTTRequestAdditionalInfo(BaseModel, BaseSdkModel):
     """ # noqa: E501
     access_token: Annotated[str, Field(strict=True, max_length=512)] = Field(description="Contains customer token, which has been obtained from binding process")
     end_user_ip_address: Optional[Annotated[str, Field(strict=True, max_length=15)]] = Field(default=None, description="IP address of the end user (customer) using IPv4 format")
-    device_id: Optional[Annotated[str, Field(strict=True, max_length=400)]] = Field(default=None, description="Device identification on which the API services is currently being accessed by the end user (customer)")
+    device_id: Annotated[str, Field(strict=True, max_length=400)] = Field(description="Device identification on which the API services is currently being accessed by the end user (customer)")
     latitude: Optional[Annotated[str, Field(strict=True, max_length=10)]] = Field(default=None, description="Location on which the API services is currently being accessed by the end user (customer), refer to ISO 6709 standard representation of geographic point location by coordinates")
     longitude: Optional[Annotated[str, Field(strict=True, max_length=10)]] = Field(default=None, description="Location on which the API services is currently being accessed by the end user (customer), refer to ISO 6709 Standard representation of geographic point location by coordinates")
     __properties: ClassVar[List[str]] = ["accessToken", "endUserIpAddress", "deviceId", "latitude", "longitude"]

@@ -52,7 +52,6 @@ from dana.ipg.v1.models.buyer import Buyer
 from dana.ipg.v1.models.cancel_order_request import CancelOrderRequest
 from dana.ipg.v1.models.cancel_order_response import CancelOrderResponse
 from dana.ipg.v1.models.env_info import EnvInfo
-from dana.ipg.v1.models.get_o_auth_url_response import GetOAuthUrlResponse
 from dana.ipg.v1.models.goods import Goods
 from dana.ipg.v1.models.ipg_payment_request import IPGPaymentRequest
 from dana.ipg.v1.models.ipg_payment_request_additional_info import IPGPaymentRequestAdditionalInfo
@@ -73,7 +72,6 @@ from dana.ipg.v1.models.refund_order_request import RefundOrderRequest
 from dana.ipg.v1.models.refund_order_request_additional_info import RefundOrderRequestAdditionalInfo
 from dana.ipg.v1.models.refund_order_response import RefundOrderResponse
 from dana.ipg.v1.models.refund_promo_info import RefundPromoInfo
-from dana.ipg.v1.models.seamless_data import SeamlessData
 from dana.ipg.v1.models.seller import Seller
 from dana.ipg.v1.models.service_info import ServiceInfo
 from dana.ipg.v1.models.shipping_info import ShippingInfo

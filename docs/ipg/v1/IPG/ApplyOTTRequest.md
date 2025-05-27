@@ -5,6 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**user_resources** | **List[str]** |  | 
 **additional_info** | [**ApplyOTTRequestAdditionalInfo**](ApplyOTTRequestAdditionalInfo.md) |  | 
 
 ## Example
