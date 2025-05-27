@@ -43,7 +43,7 @@ from pydantic.alias_generators import to_camel
 
 class ApplyTokenResponseAdditionalInfoUserInfo(BaseModel, BaseSdkModel):
     """
-    User information
+    Additional information of user. Contains publicUserId
     """ # noqa: E501
     public_user_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Static unique identifier for one user")
     __properties: ClassVar[List[str]] = ["publicUserId"]

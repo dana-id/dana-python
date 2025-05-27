@@ -102,6 +102,7 @@ class PaymentGatewayApi:
         )
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "CancelOrderResponse",
+            '202': "CancelOrderResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -163,6 +164,7 @@ class PaymentGatewayApi:
         )
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "CancelOrderResponse",
+            '202': "CancelOrderResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -224,6 +226,7 @@ class PaymentGatewayApi:
         )
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "CancelOrderResponse",
+            '202': "CancelOrderResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1136,6 +1139,7 @@ class PaymentGatewayApi:
         )
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "RefundOrderResponse",
+            '202': "RefundOrderResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1197,6 +1201,7 @@ class PaymentGatewayApi:
         )
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "RefundOrderResponse",
+            '202': "RefundOrderResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1258,6 +1263,7 @@ class PaymentGatewayApi:
         )
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "RefundOrderResponse",
+            '202': "RefundOrderResponse",
         }
         response_data = self.api_client.call_api(
             *_param,

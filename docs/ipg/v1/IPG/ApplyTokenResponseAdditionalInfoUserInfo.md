@@ -1,6 +1,6 @@
 # ApplyTokenResponseAdditionalInfoUserInfo
 
-User information
+Additional information of user. Contains publicUserId
 
 ## Properties
 

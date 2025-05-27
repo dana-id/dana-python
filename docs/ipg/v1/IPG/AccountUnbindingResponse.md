@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**response_code** | **str** | Refer to response code list | 
-**response_message** | **str** | Refer to response code list | 
+**response_code** | **str** | Response code. Refer to https://dashboard.dana.id/api-docs/read/108#HTML-AccountUnbinding-ResponseCodeandMessage | 
+**response_message** | **str** | Response message. Refer to https://dashboard.dana.id/api-docs/read/108#HTML-AccountUnbinding-ResponseCodeandMessage | 
 **reference_no** | **str** | Transaction identifier on DANA system | [optional] 
 **partner_reference_no** | **str** | Unique transaction identifier on partner system which assigned to each transaction | [optional] 
 **merchant_id** | **str** | Merchant identifier that is unique per each merchant | [optional] 

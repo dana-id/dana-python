@@ -5,14 +5,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**response_code** | **str** | Refer to response code list:<br /> * 2007400 - Successful<br /> * 4007400 - Bad Request - Retry request with proper parameter<br /> * 4007401 - Invalid Field Format - Retry request with proper parameter<br /> * 4007402 - Invalid Mandatory Field - Retry request with proper parameter<br /> * 4017400 - Unauthorized. [reason] - Retry request with proper parameter<br /> * 4297400 - Too Many Requests - Retry request periodically by sending same request payload<br /> * 5007400 - General Error - Retry request periodically<br /> * 5007401 - Internal Server Error - Retry request periodically by sending same request payload<br />  | 
-**response_message** | **str** | Refer to response code list | 
-**token_type** | **str** | Token type | [optional] 
-**access_token** | **str** | Access token that can be used as user authorization | 
-**access_token_expiry_time** | **str** | Access token expiry time | [optional] 
-**refresh_token** | **str** | Token that can be used to refresh the accessToken when it expires | [optional] 
-**refresh_token_expiry_time** | **str** | Refresh token expiry time | [optional] 
-**additional_info** | [**ApplyTokenResponseAdditionalInfo**](ApplyTokenResponseAdditionalInfo.md) |  | [optional] 
+**response_code** | **str** | Response code. Refer to https://dashboard.dana.id/api-docs/read/110#HTML-ApplyToken-ResponseCodeandMessage | 
+**response_message** | **str** | Response message. Refer to https://dashboard.dana.id/api-docs/read/110#HTML-ApplyToken-ResponseCodeandMessage | 
+**token_type** | **str** | Token type. Present if successfully processed | [optional] 
+**access_token** | **str** | This token is called Customer Token that will be used as a parameter on header in other API “Authorization-Customer”. Present if successfully processed | 
+**access_token_expiry_time** | **str** | Expiry time for access token was given to user, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if successfully processed | [optional] 
+**refresh_token** | **str** | This token is used for refresh session if existing token has been expired. Present if successfully processed | [optional] 
+**refresh_token_expiry_time** | **str** | Expiry time for refresh token was given to user, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time). Present if successfully processed | [optional] 
+**additional_info** | [**ApplyTokenResponseAdditionalInfo**](ApplyTokenResponseAdditionalInfo.md) | Additional information | [optional] 
 
 ## Example
 

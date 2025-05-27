@@ -46,8 +46,8 @@ class ApplyTokenRefreshTokenRequest(BaseModel, BaseSdkModel):
     ApplyTokenRefreshTokenRequest
     """ # noqa: E501
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
-    grant_type: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Apply token request type. The values are AUTHORIZATION_CODE or REFRESH_TOKEN")
-    auth_code: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default='')
+    grant_type: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Apply token request type. The value is REFRESH_TOKEN")
+    auth_code: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Authorization code. Please refer to https://dashboard.dana.id/api-docs/read/125. Required if grantType is AUTHORIZATION_CODE")
     refresh_token: Annotated[str, Field(strict=True, max_length=512)] = Field(description="This token is used for refresh session if existing token has been expired")
     __properties: ClassVar[List[str]] = ["additionalInfo", "grantType", "authCode", "refreshToken"]
 
@@ -112,7 +112,7 @@ class ApplyTokenRefreshTokenRequest(BaseModel, BaseSdkModel):
         _obj = cls.model_validate({
             "additionalInfo": obj.get("additionalInfo"),
             "grantType": obj.get("grantType"),
-            "authCode": obj.get("authCode") if obj.get("authCode") is not None else '',
+            "authCode": obj.get("authCode"),
             "refreshToken": obj.get("refreshToken")
         })
         return _obj

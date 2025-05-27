@@ -33,8 +33,9 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
@@ -45,7 +46,17 @@ class ApplyTokenAuthorizationCodeRequest(BaseModel, BaseSdkModel):
     ApplyTokenAuthorizationCodeRequest
     """ # noqa: E501
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
-    __properties: ClassVar[List[str]] = ["additionalInfo"]
+    grant_type: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Apply token request type. The value is AUTHORIZATION_CODE")
+    auth_code: Annotated[str, Field(strict=True, max_length=256)] = Field(description="Authorization code. Please refer to https://dashboard.dana.id/api-docs/read/125. Required if grantType is AUTHORIZATION_CODE")
+    refresh_token: Optional[Annotated[str, Field(strict=True, max_length=512)]] = Field(default=None, description="This token is used for refresh session if existing token has been expired")
+    __properties: ClassVar[List[str]] = ["additionalInfo", "grantType", "authCode", "refreshToken"]
+
+    @field_validator('grant_type')
+    def grant_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['AUTHORIZATION_CODE']):
+            raise ValueError("must be one of enum values ('AUTHORIZATION_CODE')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -99,7 +110,10 @@ class ApplyTokenAuthorizationCodeRequest(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "additionalInfo": obj.get("additionalInfo")
+            "additionalInfo": obj.get("additionalInfo"),
+            "grantType": obj.get("grantType"),
+            "authCode": obj.get("authCode"),
+            "refreshToken": obj.get("refreshToken")
         })
         return _obj
 

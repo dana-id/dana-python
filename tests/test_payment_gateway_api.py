@@ -11,13 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import json
 from dana.payment_gateway.v1 import PaymentGatewayApi
-from dana.payment_gateway.v1.models import ConsultPayPaymentInfo, ConsultPayRequest, CreateOrderByApiRequest, QueryPaymentRequest, CancelOrderRequest, RefundOrderRequest
+from dana.payment_gateway.v1.models import ConsultPayPaymentInfo, ConsultPayRequest, CreateOrderByApiRequest, QueryPaymentRequest, CancelOrderRequest, RefundOrderRequest, FinishNotifyRequest
 from dana.rest import ApiException
+from dana.webhook import WebhookParser
+from dana.utils.snap_header import SnapHeader
 # Import fixtures directly from their modules to avoid circular imports
 from tests.fixtures.api_client import api_instance_payment_gateway
-from tests.fixtures.payment_gateway import consult_pay_request, create_order_by_api_request, query_payment_request, cancel_order_request, refund_order_request
+from tests.fixtures.payment_gateway import consult_pay_request, create_order_by_api_request, query_payment_request, cancel_order_request, refund_order_request, webhook_key_pair
+
 
 
 class TestPaymentGatewayApi:
@@ -129,3 +132,42 @@ class TestPaymentGatewayApi:
     #         assert refund_response.result.partner_refund_no == live_refund_order_request.partner_refund_no, "Partner refund number mismatch in refund result"
         
     #     print("Refund test passed with a successful API response.")
+
+class TestWebhookParser:
+    def test_webhook_signature_and_parsing_success(self, webhook_key_pair):
+        public_key, private_key = webhook_key_pair
+        parser = WebhookParser(gateway_public_key_pem=public_key)
+        webhook_http_method = "POST"
+        webhook_relative_url = "/v1.0/debit/notify"
+        webhook_body_dict = {
+            "originalPartnerReferenceNo": "TESTPN20240101001",
+            "originalReferenceNo": "TESTREF20240101001",
+            "merchantId": "TESTMERCH001",
+            "subMerchantId": "TESTSUBMERCH001",
+            "amount": {"value": "15000.00", "currency": "IDR"},
+            "latestTransactionStatus": "00",
+            "transactionStatusDesc": "Success",
+            "createdTime": "2024-01-01T10:00:00+07:00",
+            "finishedTime": "2024-01-01T10:00:05+07:00"
+        }
+        webhook_body_str = json.dumps(webhook_body_dict, separators=(",", ":"))
+        # Generate signature headers with SnapHeader
+        generated_headers = SnapHeader.get_snap_generated_auth(
+            method=webhook_http_method,
+            resource_path=webhook_relative_url,
+            body=webhook_body_str,
+            private_key=private_key
+        )
+        headers = {
+            "X-TIMESTAMP": generated_headers["X-TIMESTAMP"]["value"],
+            "X-SIGNATURE": generated_headers["X-SIGNATURE"]["value"]
+        }
+        result = parser.parse_webhook(
+            http_method=webhook_http_method,
+            relative_path_url=webhook_relative_url,
+            headers=headers,
+            body=webhook_body_str
+        )
+        assert isinstance(result, FinishNotifyRequest)
+        assert result.to_dict() == webhook_body_dict
+

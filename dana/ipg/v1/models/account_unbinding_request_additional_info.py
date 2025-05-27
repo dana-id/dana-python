@@ -33,8 +33,8 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
@@ -46,7 +46,31 @@ class AccountUnbindingRequestAdditionalInfo(BaseModel, BaseSdkModel):
     AccountUnbindingRequestAdditionalInfo
     """ # noqa: E501
     access_token: Annotated[str, Field(strict=True, max_length=512)] = Field(description="Contains customer token, which has been obtained from binding process")
-    __properties: ClassVar[List[str]] = ["accessToken"]
+    end_user_ip_address: Optional[Annotated[str, Field(strict=True, max_length=15)]] = Field(default=None, description="IP address of the end user (customer) using IPv4 format")
+    device_id: Annotated[str, Field(strict=True, max_length=400)] = Field(description="Device identification on which the API services is currently being accessed by the end user (customer)")
+    latitude: Optional[Annotated[str, Field(strict=True, max_length=10)]] = Field(default=None, description="Location on which the API services is currently being accessed by the end user (customer), refer to ISO 6709 standard representation of geographic point location by coordinates")
+    longitude: Optional[Annotated[str, Field(strict=True, max_length=10)]] = Field(default=None, description="Location on which the API services is currently being accessed by the end user (customer), refer to ISO 6709 Standard representation of geographic point location by coordinates")
+    __properties: ClassVar[List[str]] = ["accessToken", "endUserIpAddress", "deviceId", "latitude", "longitude"]
+
+    @field_validator('latitude')
+    def latitude_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if value is None:
+            return value
+
+        if not re.match(r"^[-+]?[0-9]{1,2}([.][0-9]{1,4})?$", value):
+            raise ValueError(r"must validate the regular expression /^[-+]?[0-9]{1,2}([.][0-9]{1,4})?$/")
+        return value
+
+    @field_validator('longitude')
+    def longitude_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if value is None:
+            return value
+
+        if not re.match(r"^[-+]?[0-9]{1,2}([.][0-9]{1,4})?$", value):
+            raise ValueError(r"must validate the regular expression /^[-+]?[0-9]{1,2}([.][0-9]{1,4})?$/")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -100,7 +124,11 @@ class AccountUnbindingRequestAdditionalInfo(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "accessToken": obj.get("accessToken")
+            "accessToken": obj.get("accessToken"),
+            "endUserIpAddress": obj.get("endUserIpAddress"),
+            "deviceId": obj.get("deviceId"),
+            "latitude": obj.get("latitude"),
+            "longitude": obj.get("longitude")
         })
         return _obj
 
