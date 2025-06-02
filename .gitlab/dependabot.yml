@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/" # Directory containing the requirements.txt file
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "dependabot"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"
+    reviewers:
+      - "rangga.putra"
