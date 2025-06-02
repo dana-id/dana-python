@@ -70,6 +70,7 @@ class PayMethod(str, Enum):
     DIRECT_DEBIT_DEBIT_CARD = "DIRECT_DEBIT_DEBIT_CARD"
     ONLINE_CREDIT = "ONLINE_CREDIT"
     LOAN_CREDIT = "LOAN_CREDIT"
+    NETWORK_PAY = "NETWORK_PAY"
 
 class PayMethod(str, Enum):
     BALANCE = "BALANCE"
