@@ -410,8 +410,14 @@ This section demonstrates how to securely verify and parse DANA webhook notifica
 import os
 from dana.webhook import WebhookParser
 
-# Replace with your actual DANA public key (PEM format)
-DANA_PUBLIC_KEY = os.getenv("DANA_PUBLIC_KEY")
+# You can provide the public key directly as a string or via a file path.
+# The parser will prioritize public_key_path if both are provided.
+
+# Option 1: Provide public key as a string
+# DANA_PUBLIC_KEY_STRING = os.getenv("DANA_PUBLIC_KEY_STRING") 
+
+# Option 2: Provide path to public key file (recommended for production)
+DANA_PUBLIC_KEY_PATH = os.getenv("DANA_PUBLIC_KEY_PATH") # e.g., "/path/to/your/dana_public_key.pem"
 
 # Example HTTP request data from your webhook handler
 http_method = "POST"
@@ -422,7 +428,11 @@ headers = {
 }
 body = '{"original_partner_reference_no": "123...", ...}'  # Raw JSON string from request body
 
-parser = WebhookParser(DANA_PUBLIC_KEY)
+# Initialize WebhookParser, prioritizing path if provided
+# parser = WebhookParser(public_key=DANA_PUBLIC_KEY_STRING) # If using string
+parser = WebhookParser(public_key_path=DANA_PUBLIC_KEY_PATH) # If using path
+# Or, if you want to provide both and let the SDK prioritize:
+# parser = WebhookParser(public_key=DANA_PUBLIC_KEY_STRING, public_key_path=DANA_PUBLIC_KEY_PATH)
 
 try:
     finish_notify = parser.parse_webhook(
@@ -442,9 +452,12 @@ except ValueError as e:
 
 **Constructor:**
 ```python
-WebhookParser(gateway_public_key_pem: str)
+WebhookParser(public_key: str = None, public_key_path: str = None)
 ```
-- `gateway_public_key_pem`: PEM-formatted public key string for signature verification.
+- `public_key` (str, optional): The DANA gateway's public key as a PEM formatted string. This is used if `public_key_path` is not provided or is empty. Defaults to `None`.
+- `public_key_path` (str, optional): The file path to the DANA gateway's public key PEM file. If provided, this will be prioritized over the `public_key` string. Defaults to `None`.
+
+One of `public_key` or `public_key_path` must be provided.
 
 **Method:**
 ```python
@@ -454,7 +467,7 @@ parse_webhook(http_method: str, relative_path_url: str, headers: dict, body: str
 - `relative_path_url`: The relative URL path (e.g., `/v1.0/debit/notify`).
 - `headers`: Dictionary containing at least `X-SIGNATURE` and `X-TIMESTAMP`.
 - `body`: Raw JSON string of the webhook payload.
-- **Returns:** `FinishNotify` model with parsed data.
+- **Returns:** `FinishNotifyRequest` model with parsed data.
 - **Raises:** `ValueError` if signature verification fails or the payload is invalid.
 
 ## Security Notes
@@ -468,5 +481,5 @@ The following webhook notification models may be received:
 
 Model | Description
 ------------- | -------------
-[**FinishNotify**](PaymentGateway/FinishNotify.md) | FinishNotify
+[**FinishNotifyRequest**](PaymentGateway/FinishNotifyRequest.md) | Represents the standard notification payload for payment events.
 

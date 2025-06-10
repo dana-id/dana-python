@@ -11,10 +11,10 @@ Python 3.9.1+
 If the python package is hosted on a repository, you can install directly using:
 
 ```sh
-pip install dana-python-api-client
+pip install dana-python
 ```
 
-(you may need to run `pip` with root permission: `sudo pip install dana-python-api-client`)
+(you may need to run `pip` with root permission: `sudo pip install dana-python`)
 
 Then import the package, ex:
 ```python

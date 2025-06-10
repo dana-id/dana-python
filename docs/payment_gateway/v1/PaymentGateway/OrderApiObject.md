@@ -11,6 +11,8 @@ Name | Type | Description | Notes
 **goods** | [**List[Goods]**](Goods.md) | Additional information of goods | [optional] 
 **shipping_info** | [**List[ShippingInfo]**](ShippingInfo.md) | Additional information of shipping info | [optional] 
 **extend_info** | **str** | Additional information of extend | [optional] 
+**created_time** | **str** | Additional information of created time | [optional] 
+**order_memo** | **str** | Additional information of order | [optional] 
 **scenario** | **str** | For Payment Gateway scenario, need to fill it as API | [optional] 
 
 ## Example

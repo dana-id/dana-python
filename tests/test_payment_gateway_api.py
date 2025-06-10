@@ -136,7 +136,7 @@ class TestPaymentGatewayApi:
 class TestWebhookParser:
     def test_webhook_signature_and_parsing_success(self, webhook_key_pair):
         public_key, private_key = webhook_key_pair
-        parser = WebhookParser(gateway_public_key_pem=public_key)
+        parser = WebhookParser(public_key=public_key)
         webhook_http_method = "POST"
         webhook_relative_url = "/v1.0/debit/notify"
         webhook_body_dict = {

@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.payment_gateway.v1.models.buyer import Buyer
@@ -54,8 +54,10 @@ class OrderRedirectObject(BaseModel, BaseSdkModel):
     goods: Optional[List[Goods]] = Field(default=None, description="Additional information of goods")
     shipping_info: Optional[List[ShippingInfo]] = Field(default=None, description="Additional information of shipping info")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional information of extend")
+    created_time: Optional[StrictStr] = Field(default=None, description="Additional information of created time")
+    order_memo: Optional[StrictStr] = Field(default=None, description="Additional information of order")
     scenario: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="For Payment Gateway Drop-in scenario, need to fill it as REDIRECT")
-    __properties: ClassVar[List[str]] = ["orderTitle", "merchantTransType", "buyer", "goods", "shippingInfo", "extendInfo", "scenario"]
+    __properties: ClassVar[List[str]] = ["orderTitle", "merchantTransType", "buyer", "goods", "shippingInfo", "extendInfo", "createdTime", "orderMemo", "scenario"]
 
     @field_validator('scenario')
     def scenario_validate_enum(cls, value):
@@ -142,6 +144,8 @@ class OrderRedirectObject(BaseModel, BaseSdkModel):
             "goods": [Goods.from_dict(_item) for _item in obj["goods"]] if obj.get("goods") is not None else None,
             "shippingInfo": [ShippingInfo.from_dict(_item) for _item in obj["shippingInfo"]] if obj.get("shippingInfo") is not None else None,
             "extendInfo": obj.get("extendInfo"),
+            "createdTime": obj.get("createdTime"),
+            "orderMemo": obj.get("orderMemo"),
             "scenario": obj.get("scenario")
         })
         return _obj

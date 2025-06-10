@@ -15,7 +15,9 @@
 import base64
 import hashlib
 import json
+import os
 
+from pathlib import Path
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -26,14 +28,77 @@ class WebhookParser:
     """
     Verifies incoming webhook signatures and parse webhook request into FinishNotifyRequest object
     """
-    def __init__(self, gateway_public_key_pem: str):
-        self.public_key = serialization.load_pem_public_key(
-            gateway_public_key_pem.encode("utf-8")
-        )
+    def __init__(self, public_key: str = None, public_key_path: str = None):
+        """
+        Initializes the WebhookParser.
+        Args:
+            public_key (str, optional): The public key as a string. Defaults to None.
+            public_key_path (str, optional): Path to the public key PEM file. Defaults to None.
+                                          If provided, this will be prioritized over public_key.
+        Raises:
+            ValueError: If neither public_key nor public_key_path is provided,
+                        if the key file cannot be read, or if the key format is invalid.
+        """
+        key_input_content = ""
+        if public_key_path:
+            try:
+                key_input_content = Path(public_key_path).read_text().strip()
+            except Exception as e:
+                raise ValueError(f"Failed to read key from file path '{public_key_path}': {e}")
+        elif public_key:
+            key_input_content = public_key.strip()
+        else:
+            raise ValueError("Either 'public_key' or 'public_key_path' must be provided.")
+
+        if not key_input_content:
+             raise ValueError("Key content is empty.")
+
+        normalized_key_pem = self._normalize_pem_key(key_input_content)
+        try:
+            self.public_key = serialization.load_pem_public_key(
+                normalized_key_pem.encode("utf-8")
+            )
+        except Exception as e:
+            # Catch specific exceptions from cryptography if possible, or re-raise with context
+            raise ValueError(f"Failed to load public key: {e}. Processed key: \n{normalized_key_pem}")
+
+    def _normalize_pem_key(self, key_content: str) -> str:
+        """
+        Normalizes various key input formats (already read from file or string) to a standard PEM string.
+        Args:
+            key_content (str): The raw key content string.
+        Returns:
+            str: The normalized PEM formatted key string.
+        """        
+        if "\\n" in key_content and "-----BEGIN" in key_content and "-----END" in key_content:
+            key_content = key_content.replace("\\n", "\n")
+        
+        has_begin_marker = "-----BEGIN" in key_content
+        has_end_marker = "-----END" in key_content
+
+        if has_begin_marker and has_end_marker:
+            return key_content
+        elif not has_begin_marker and not has_end_marker:
+            base64_key_data = key_content.replace("\n", "").strip()
+            if not base64_key_data:
+                raise ValueError("Key content is empty after removing newlines and markers.")
+            
+            key_type_header = "PUBLIC KEY"
+            
+            pem_lines = [f"-----BEGIN {key_type_header}-----"]
+            for i in range(0, len(base64_key_data), 64):
+                pem_lines.append(base64_key_data[i:i+64])
+            pem_lines.append(f"-----END {key_type_header}-----")
+            return "\n".join(pem_lines)
+        else:
+            raise ValueError(
+                "Invalid key format: Key has incomplete PEM markers or an unrecognized structure. "
+                "Ensure the key is a valid file path, a full PEM string (multi-line or env-style with \\n), "
+                "or a base64 key data string (with or without newlines, without PEM markers)."
+            )
 
     @staticmethod
     def _minify_json(json_str: str) -> str:
-        # Remove whitespace and sort keys
         obj = json.loads(json_str)
         return json.dumps(obj, separators=(",", ":"))
 
