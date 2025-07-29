@@ -51,7 +51,7 @@ class RefundOrderRequestAdditionalInfo(BaseModel, BaseSdkModel):
     """ # noqa: E501
     payout_account_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of payout account number. This param need to be filled if want to refund to specific payout account not that specified by DANA")
     refund_applied_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Additional information of refund applied time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
-    actor_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of actor type. The enums:<br> * USER - User<br> * MERCHANT - Merchant<br * MERCHANT_OPERATOR - Merchant operator<br> * BACK_OFFICE - Back office<br> * SYSTEM - System<br> ")
+    actor_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of actor type. The enums:<br> * USER - User<br> * MERCHANT - Merchant<br> * MERCHANT_OPERATOR - Merchant operator<br> * BACK_OFFICE - Back office<br> * SYSTEM - System<br> ")
     return_charge_to_payer: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of return charge to payer")
     destination: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of destination")
     env_info: Optional[EnvInfo] = Field(default=None, description="Additional information of environment")

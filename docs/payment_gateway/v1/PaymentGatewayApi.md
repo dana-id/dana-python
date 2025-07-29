@@ -154,6 +154,7 @@ from dana.payment_gateway.v1.models.create_order_by_redirect_request import Crea
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
 from dana.payment_gateway.v1 import PaymentGatewayApi
+from dana.payment_gateway.v1.models.CreateOrderRequest import CreateOrderRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -337,7 +338,7 @@ Name | Type | Description  | Notes
 | Value | Description |
 |-------|-------------|
 | `USER` | User |
-| `MERCHANT` | Merchant<br |
+| `MERCHANT` | Merchant |
 | `MERCHANT_OPERATOR` | Merchant operator |
 | `BACK_OFFICE` | Back office |
 | `SYSTEM` | System |

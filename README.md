@@ -1,4 +1,4 @@
-# dana
+# dana-python
 SDK for DANA API (https://dashboard.dana.id/api-docs) 
 
 ## Requirements.
@@ -30,5 +30,5 @@ Please follow the [installation procedure](#installation--usage) and then go to 
 API | Description
 ------------- | -------------
 [**PaymentGatewayApi**](docs/payment_gateway/v1/PaymentGatewayApi.md) | API for doing operations in DANA Payment Gateway (Gapura)
-[**IPGApi**](docs/ipg/v1/IPGApi.md) | API for enabling the user to make payment from merchant’s platform with redirecting to DANA’s platform
+[**WidgetApi**](docs/widget/v1/WidgetApi.md) | API for enabling the user to make payment from merchant’s platform with redirecting to DANA’s platform
 

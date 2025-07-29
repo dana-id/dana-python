@@ -16,9 +16,12 @@ import os
 import pytest
 
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
+from dana.utils.open_api_configuration import OpenApiConfiguration, OpenApiAuthSettings
 from dana.api_client import ApiClient
 from dana.payment_gateway.v1 import PaymentGatewayApi
-from dana.ipg.v1 import IPGApi
+from dana.widget.v1 import WidgetApi
+from dana.disbursement.v1 import DisbursementApi
+from dana.merchant_management.v1 import MerchantManagementApi
 
 @pytest.fixture(scope="class")
 def api_instance_payment_gateway():
@@ -38,7 +41,7 @@ def api_instance_payment_gateway():
     yield api_instance
 
 @pytest.fixture(scope="class")
-def api_instance_ipg():
+def api_instance_widget():
     """Fixture to provide an API instance for the tests."""
     auth_settings = AuthSettings(
         PRIVATE_KEY=os.getenv("PRIVATE_KEY"),
@@ -49,8 +52,41 @@ def api_instance_ipg():
     config = SnapConfiguration(api_key=auth_settings)
     client = ApiClient(config)
 
-    api_instance = IPGApi(client)
+    api_instance = WidgetApi(client)
     
     yield api_instance
 
     
+@pytest.fixture(scope="class")
+def api_instance_disbursement():
+    """Fixture to provide a Disbursement API instance for the tests."""
+    auth_settings = AuthSettings(
+        PRIVATE_KEY=os.getenv("PRIVATE_KEY"),
+        ORIGIN=os.getenv("ORIGIN"),
+        X_PARTNER_ID=os.getenv("X_PARTNER_ID"),
+        CHANNEL_ID=os.getenv("CHANNEL_ID"),
+        ENV=Env.SANDBOX
+    )
+    config = SnapConfiguration(api_key=auth_settings)
+    client = ApiClient(config)
+
+    api_instance = DisbursementApi(client)
+    
+    yield api_instance
+
+@pytest.fixture(scope="class")
+def api_instance_merchant_management():
+    """Fixture to provide a Merchant Management API instance for the tests."""
+    auth_settings = OpenApiAuthSettings(
+        CLIENT_SECRET=os.getenv("CLIENT_SECRET"),
+        CLIENT_ID=os.getenv("CLIENT_ID"),
+        ENV=Env.SANDBOX,
+        PRIVATE_KEY=os.getenv("PRIVATE_KEY"),
+        X_PARTNER_ID=os.getenv("X_PARTNER_ID")
+    )
+    config = OpenApiConfiguration(api_key=auth_settings)
+    client = ApiClient(config)
+
+    api_instance = MerchantManagementApi(client)
+    
+    yield api_instance

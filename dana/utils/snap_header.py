@@ -51,6 +51,11 @@ class SnapHeader:
         X_PARTNER_ID, X_EXTERNALID, X_IP_ADDRESS, 
         X_DEVICE_ID, X_LATITUDE, X_LONGITUDE, CHANNEL_ID
     ]
+    SnapUnbindingAccountRuntimeHeaders: List[str] = [
+        AUTHORIZATION_CUSTOMER, X_TIMESTAMP, X_SIGNATURE, 
+        X_PARTNER_ID, X_EXTERNALID, X_IP_ADDRESS, 
+        X_DEVICE_ID, X_LATITUDE, X_LONGITUDE, CHANNEL_ID
+    ]
 
     @staticmethod
     def merge_with_snap_runtime_headers(auth_from_users: List[str], scenario: str="") -> List[str]:
@@ -71,7 +76,7 @@ class SnapHeader:
             ]
             return list(set(filtered_auth).union(SnapHeader.SnapApplyTokenRuntimeHeaders))
 
-        elif scenario == "apply_ott":
+        elif scenario == "apply_ott" or scenario == "unbinding_account":
             return list(set(filtered_auth).union(SnapHeader.SnapApplyOTTRuntimeHeaders))
         
         else:
@@ -144,17 +149,19 @@ class SnapHeader:
                 X_CLIENT_KEY: generateApiKeyAuthSetting(key=X_CLIENT_KEY, value=client_key),
                 CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221')
             }
-        elif scenario == "apply_ott":
+        elif scenario == "apply_ott" or scenario == "unbinding_account":
             external_id = str(uuid.uuid4())
             body_dict: dict = json.loads(body)
+
             return {
+                AUTHORIZATION_CUSTOMER: generateApiKeyAuthSetting(key=AUTHORIZATION_CUSTOMER, value=f"Bearer {body_dict.get('additionalInfo', {}).get('accessToken', '')}"),
                 X_TIMESTAMP: generateApiKeyAuthSetting(key=X_TIMESTAMP, value=timestamp),
                 X_SIGNATURE: generateApiKeyAuthSetting(key=X_SIGNATURE, value=encoded_signature),
                 X_EXTERNALID: generateApiKeyAuthSetting(key=X_EXTERNALID, value=external_id),
-                X_IP_ADDRESS: generateApiKeyAuthSetting(key=X_IP_ADDRESS, value=body_dict.get('end_user_ip_address', '')),
-                X_DEVICE_ID: generateApiKeyAuthSetting(key=X_DEVICE_ID, value=body_dict.get('device_id', '')),
-                X_LATITUDE: generateApiKeyAuthSetting(key=X_LATITUDE, value=body_dict.get('latitude', '')),
-                X_LONGITUDE: generateApiKeyAuthSetting(key=X_LONGITUDE, value=body_dict.get('longitude', '')),
+                X_IP_ADDRESS: generateApiKeyAuthSetting(key=X_IP_ADDRESS, value=body_dict.get('additionalInfo', {}).get('endUserIpAddress', '')),
+                X_DEVICE_ID: generateApiKeyAuthSetting(key=X_DEVICE_ID, value=body_dict.get('additionalInfo', {}).get('deviceId', '')),
+                X_LATITUDE: generateApiKeyAuthSetting(key=X_LATITUDE, value=body_dict.get('additionalInfo', {}).get('latitude', '')),
+                X_LONGITUDE: generateApiKeyAuthSetting(key=X_LONGITUDE, value=body_dict.get('additionalInfo', {}).get('longitude', '')),
                 CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221')
             }
         else:

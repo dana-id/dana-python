@@ -22,7 +22,7 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
-from dana.payment_gateway.v1.models.finish_notify_request import FinishNotifyRequest
+from dana.webhook.finish_notify_request import FinishNotifyRequest
 
 class WebhookParser:
     """
