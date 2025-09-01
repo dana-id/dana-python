@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import uuid
 import pytest
 from datetime import datetime, timezone, timedelta
 from dana.widget.v1.api import WidgetApi
@@ -21,6 +22,11 @@ from dana.widget.v1.models.apply_ott_request import ApplyOTTRequest
 from dana.widget.v1.models.apply_ott_request_additional_info import ApplyOTTRequestAdditionalInfo
 from dana.widget.v1.models.widget_payment_request import WidgetPaymentRequest, WidgetPaymentRequestAdditionalInfo
 from dana.widget.v1.models.account_unbinding_request import AccountUnbindingRequest, AccountUnbindingRequestAdditionalInfo
+from dana.widget.v1.models.balance_inquiry_request import BalanceInquiryRequest
+from dana.widget.v1.models.balance_inquiry_request_additional_info import BalanceInquiryRequestAdditionalInfo
+from dana.widget.v1.models.query_payment_request import QueryPaymentRequest
+from dana.widget.v1.models.cancel_order_request import CancelOrderRequest
+from dana.widget.v1.models.refund_order_request import RefundOrderRequest
 from dana.widget.v1.models import Money, Order, EnvInfo
 from dana.widget.v1.enum import SourcePlatform, TerminalType
 from dana.widget.v1.models.apply_token_response import ApplyTokenResponse
@@ -36,7 +42,7 @@ def authorization_code():
 
 
 @pytest.fixture(scope="function")
-def apply_token_request(authorization_code: str):
+def apply_token_request(authorization_code: str) -> ApplyTokenAuthorizationCodeRequest:
     """Fixture to provide an ApplyToken request with authorization code."""
     if not authorization_code:
         pytest.skip("Authorization code not available")
@@ -81,7 +87,6 @@ def apply_ott_request(api_instance_widget: WidgetApi, apply_token_request: Apply
         additional_info=additional_info
     )
 
-
 @pytest.fixture(scope="function")
 def widget_payment_request() -> WidgetPaymentRequest:
     """Fixture to provide an WidgetPaymentRequest."""
@@ -121,18 +126,8 @@ def widget_payment_request() -> WidgetPaymentRequest:
     )
 
 
-@pytest.fixture(scope="function")
-def account_unbinding_request(api_instance_widget: WidgetApi, apply_token_request: ApplyTokenAuthorizationCodeRequest):
+def account_unbinding_request(access_token: str) -> AccountUnbindingRequest:
     """Fixture to provide AccountUnbindingRequest built from an access token."""
-    # Obtain access token first
-    token_response: ApplyTokenResponse = None
-    try:
-        token_response = api_instance_widget.apply_token(apply_token_request)
-    except Exception as e:
-        pytest.skip(f"Could not obtain access token: {e}")
-
-    if not token_response or not hasattr(token_response, "access_token"):
-        pytest.skip("Access token not available in response")
 
     merchant_id = os.getenv("MERCHANT_ID")
     if not merchant_id:
@@ -141,7 +136,7 @@ def account_unbinding_request(api_instance_widget: WidgetApi, apply_token_reques
     device_id = "Mozilla / 5.0(Windows NT 10.0; Win64; x64)"
 
     additional_info = AccountUnbindingRequestAdditionalInfo(
-        access_token=token_response.access_token,
+        access_token=access_token,
         device_id=device_id,
         latitude="-6.108",
         longitude="10.845",
@@ -152,4 +147,86 @@ def account_unbinding_request(api_instance_widget: WidgetApi, apply_token_reques
     return AccountUnbindingRequest(
         merchant_id=merchant_id,
         additional_info=additional_info,
+    )
+
+
+def balance_inquiry_request(access_token: str) -> BalanceInquiryRequest:
+    """Fixture to provide BalanceInquiryRequest built from an access token."""
+
+    partner_reference_no = str(uuid.uuid4())
+
+    additional_info_dict = {
+        "access_token": access_token,
+        "device_id": "Dummy Device ID"
+    }
+    
+    additional_info = BalanceInquiryRequestAdditionalInfo(**additional_info_dict)
+
+    return BalanceInquiryRequest(
+        partner_reference_no=partner_reference_no,
+        balance_types=["BALANCE"],
+        additional_info=additional_info,
+    )
+
+
+@pytest.fixture(scope="function")
+def widget_query_payment_request(widget_payment_request):
+    
+    # Handle nullable parameters safely
+    original_partner_reference_no = None
+    if widget_payment_request is not None:
+        original_partner_reference_no = widget_payment_request.partner_reference_no
+    
+    # Use the same merchant ID as other fixtures
+    merchant_id = os.environ.get('DANA_MERCHANT_ID', '216620010016033632482')
+    
+    return QueryPaymentRequest(
+        service_code="54",
+        merchant_id=merchant_id,
+        original_partner_reference_no=original_partner_reference_no,
+    )
+
+
+@pytest.fixture(scope="function")
+def widget_cancel_order_request(widget_payment_request):
+    """Fixture to provide a CancelOrderRequest using an original payment request."""
+    
+    # Get the widget payment request from pytest's fixture injection
+    original_partner_reference_no = None
+    merchant_id = os.environ.get('DANA_MERCHANT_ID', '216620010016033632482')
+    
+    if widget_payment_request is not None:
+        original_partner_reference_no = widget_payment_request.partner_reference_no
+
+    return CancelOrderRequest(
+        original_partner_reference_no=original_partner_reference_no,
+        merchant_id=merchant_id,
+        reason="User cancelled order"
+    )
+
+
+@pytest.fixture(scope="function")
+def widget_refund_order_request(widget_payment_request):
+    """Fixture to provide a RefundOrderRequest using an original payment request."""
+    
+    # Handle nullable parameter safely
+    original_partner_reference_no = None
+    merchant_id = os.environ.get('MERCHANT_ID', '216620010016033632482')
+    
+    if widget_payment_request is not None:
+        original_partner_reference_no = widget_payment_request.partner_reference_no
+    
+    # Generate a UUID for refund reference number, similar to PHP's implementation
+    partner_refund_no = str(uuid.uuid4())
+    
+    refund_amount = Money(
+        value="10000.00",
+        currency="IDR"
+    )
+    
+    return RefundOrderRequest(
+        merchant_id=merchant_id,
+        original_partner_reference_no=original_partner_reference_no,
+        partner_refund_no=partner_refund_no,
+        refund_amount=refund_amount
     )

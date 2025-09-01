@@ -46,6 +46,7 @@ OpenApiAuthSettings = TypedDict(
     {
         "CLIENT_SECRET": APIKeyAuthSetting,
         "CLIENT_ID": APIKeyAuthSetting,
+        "DANA_ENV": APIKeyAuthSetting,
         "ENV": APIKeyAuthSetting,
         "ACCESS_TOKEN": APIKeyAuthSetting,
         "PRIVATE_KEY": APIKeyAuthSetting,
@@ -96,6 +97,7 @@ class OpenApiConfiguration(BaseConfiguration):
     auth_settings = OpenApiAuthSettings(
         CLIENT_SECRET=os.getenv("CLIENT_SECRET"),
         CLIENT_ID=os.getenv("CLIENT_ID"),
+        DANA_ENV=os.getenv("DANA_ENV"),
         ENV=Env.SANDBOX
     )
     config = OpenApiConfiguration(api_key=auth_settings)
@@ -132,9 +134,9 @@ class OpenApiConfiguration(BaseConfiguration):
         self.ignore_operation_servers = ignore_operation_servers
         
         # Set host based on environment
-        if api_key and "ENV" in api_key:
-            self.host = "https://api.sandbox.dana.id" if api_key["ENV"] == Env.SANDBOX else \
-                       "https://api.saas.dana.id" if api_key["ENV"] == Env.PRODUCTION else None
+        if api_key and ("DANA_ENV" in api_key or "ENV" in api_key):
+            self.host = "https://api.sandbox.dana.id" if (api_key["DANA_ENV"] == Env.SANDBOX or api_key["ENV"] == Env.SANDBOX) else \
+                       "https://api.saas.dana.id" if (api_key["DANA_ENV"] == Env.PRODUCTION or api_key["ENV"] == Env.PRODUCTION) else None
             self._base_path = self.host
         else:
             self.host = host or "https://api.sandbox.dana.id"
@@ -329,10 +331,10 @@ class OpenApiConfiguration(BaseConfiguration):
 
     def get_host_settings(self) -> List[HostSetting]:
         """Gets an array of host settings"""
-        if self.api_key and "ENV" in self.api_key:
-            if self.api_key["ENV"] == Env.SANDBOX:
+        if self.api_key and ("DANA_ENV" in self.api_key or "ENV" in self.api_key):
+            if self.api_key["DANA_ENV"] == Env.SANDBOX or self.api_key["ENV"] == Env.SANDBOX:
                 return [{'url': "https://api.sandbox.dana.id", 'description': "Sandbox server"}]
-            elif self.api_key["ENV"] == Env.PRODUCTION:
+            elif self.api_key["DANA_ENV"] == Env.PRODUCTION or self.api_key["ENV"] == Env.PRODUCTION:
                 return [{'url': "https://api.saas.dana.id", 'description': "Production server"}]
         
         return [{'url': "https://api.sandbox.dana.id", 'description': "Default sandbox server"}]

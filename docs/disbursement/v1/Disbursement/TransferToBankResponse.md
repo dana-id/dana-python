@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **reference_no** | **str** | Transaction identifier on DANA system | [optional] 
 **partner_reference_no** | **str** | Unique transaction identifier on partner system which assigned to each transaction<br /> Notes:<br /> If the partner receives a timeout or an unexpected response from DANA and partner expects to perform retry request to DANA, please use the partnerReferenceNo that is the same as the one used in the transaction request process before  | [optional] 
 **transaction_date** | **str** | Transaction date, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) | [optional] 
-**reference_number** | **str** | Reference number | 
+**reference_number** | **str** | Reference number | [optional] 
 **additional_info** | **object** | Additional information | [optional] 
 
 ## Example

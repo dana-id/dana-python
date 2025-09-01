@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **state** | **str** | Random string for CSRF protection purposes | [optional] 
 **lang** | **str** | Service language code. ISO 639-1 | [optional] [default to 'id']
 **allow_registration** | **str** | If value equals true, provider may enable registration process during binding. Default true | [optional] [default to 'true']
+**mode** | **str** | Mode of the authorization. The possible values are API or DEEPLINK | [optional] 
 
 ## Example
 

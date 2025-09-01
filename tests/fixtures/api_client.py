@@ -31,6 +31,7 @@ def api_instance_payment_gateway():
         ORIGIN=os.getenv("ORIGIN"),
         X_PARTNER_ID=os.getenv("X_PARTNER_ID"),
         CHANNEL_ID=os.getenv("CHANNEL_ID"),
+        DANA_ENV=Env.SANDBOX,
         ENV=Env.SANDBOX
     )
     config = SnapConfiguration(api_key=auth_settings)
@@ -47,6 +48,7 @@ def api_instance_widget():
         PRIVATE_KEY=os.getenv("PRIVATE_KEY"),
         ORIGIN=os.getenv("ORIGIN"),
         X_PARTNER_ID=os.getenv("X_PARTNER_ID"),
+        DANA_ENV=Env.SANDBOX,
         ENV=Env.SANDBOX
     )
     config = SnapConfiguration(api_key=auth_settings)
@@ -65,6 +67,7 @@ def api_instance_disbursement():
         ORIGIN=os.getenv("ORIGIN"),
         X_PARTNER_ID=os.getenv("X_PARTNER_ID"),
         CHANNEL_ID=os.getenv("CHANNEL_ID"),
+        DANA_ENV=Env.SANDBOX,
         ENV=Env.SANDBOX
     )
     config = SnapConfiguration(api_key=auth_settings)
@@ -80,6 +83,7 @@ def api_instance_merchant_management():
     auth_settings = OpenApiAuthSettings(
         CLIENT_SECRET=os.getenv("CLIENT_SECRET"),
         CLIENT_ID=os.getenv("CLIENT_ID"),
+        DANA_ENV=Env.SANDBOX,
         ENV=Env.SANDBOX,
         PRIVATE_KEY=os.getenv("PRIVATE_KEY"),
         X_PARTNER_ID=os.getenv("X_PARTNER_ID")

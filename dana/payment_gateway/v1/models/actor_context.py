@@ -46,7 +46,7 @@ class ActorContext(BaseModel, BaseSdkModel):
     ActorContext
     """ # noqa: E501
     actor_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Actor identifier")
-    actor_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Actor type. The enums:<br> * USER - User<br> * MERCHANT - Merchant<br * MERCHANT_OPERATOR - Merchant operator<br> * BACK_OFFICE - Back office<br> * SYSTEM - System<br> ")
+    actor_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Actor type. The enums:<br> * USER - User<br> * MERCHANT - Merchant<br> * MERCHANT_OPERATOR - Merchant operator<br> * BACK_OFFICE - Back office<br> * SYSTEM - System<br> ")
     __properties: ClassVar[List[str]] = ["actorId", "actorType"]
 
     @field_validator('actor_type')

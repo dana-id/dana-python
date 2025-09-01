@@ -14,11 +14,13 @@
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives.serialization import load_pem_private_key, load_pem_public_key
 from cryptography.hazmat.backends import default_backend
+import re
 import base64
 from hashlib import sha256
 import uuid
+import os
 import json
 from typing import Any, List, Mapping
 from datetime import datetime, timedelta, timezone
@@ -56,6 +58,10 @@ class SnapHeader:
         X_PARTNER_ID, X_EXTERNALID, X_IP_ADDRESS, 
         X_DEVICE_ID, X_LATITUDE, X_LONGITUDE, CHANNEL_ID
     ]
+    SnapBalanceInquiryRuntimeHeaders: List[str] = [
+        AUTHORIZATION_CUSTOMER, X_TIMESTAMP, X_SIGNATURE, 
+        X_PARTNER_ID, X_EXTERNALID, X_DEVICE_ID, CHANNEL_ID
+    ]
 
     @staticmethod
     def merge_with_snap_runtime_headers(auth_from_users: List[str], scenario: str="") -> List[str]:
@@ -79,9 +85,132 @@ class SnapHeader:
         elif scenario == "apply_ott" or scenario == "unbinding_account":
             return list(set(filtered_auth).union(SnapHeader.SnapApplyOTTRuntimeHeaders))
         
+        elif scenario == "balance_inquiry":
+            return list(set(filtered_auth).union(SnapHeader.SnapBalanceInquiryRuntimeHeaders))
+        
         else:
             return list(set(filtered_auth).union(SnapHeader.SnapRuntimeHeaders))
 
+    @staticmethod
+    def convert_to_pem(key: str, key_type: str) -> str:
+        """
+        Convert a key to PEM format
+        
+        Args:
+            key: The key as a string
+            key_type: Type of key ("PRIVATE" or "PUBLIC")
+            
+        Returns:
+            The key in PEM format
+        """
+        # Determine if this is an RSA key or generic private key format
+        possible_headers = [
+            f"-----BEGIN {key_type} KEY-----",
+            f"-----BEGIN RSA {key_type} KEY-----"
+        ]
+        possible_footers = [
+            f"-----END {key_type} KEY-----",
+            f"-----END RSA {key_type} KEY-----"
+        ]
+        
+        delimiter = "\n"
+        header_found = None
+        footer_found = None
+        
+        # Clean up the key first
+        key = key.strip()
+        
+        # Replace escaped newlines with actual newlines
+        key = key.replace('\\n', "\n")
+        
+        # Check if key already has headers/footers
+        for index, header in enumerate(possible_headers):
+            if header in key and possible_footers[index] in key:
+                header_found = header
+                footer_found = possible_footers[index]
+                break
+        
+        # If headers/footers found, extract and clean the body
+        if header_found is not None and footer_found is not None:
+            # Extract body between header and footer
+            parts = key.split(header_found, 1)
+            parts = parts[1].split(footer_found, 1)
+            body = parts[0].strip()
+            
+            # Keep the original format but ensure proper line breaks
+            body = re.sub(r'\s+', '', body)  # Remove all whitespace
+            # Format with proper line breaks - chunk into 64-character lines
+            formatted_body = ''
+            for i in range(0, len(body), 64):
+                formatted_body += body[i:i+64] + delimiter
+            
+            return header_found + delimiter + formatted_body + footer_found
+        
+        # For keys without headers/footers - try both RSA and standard formats
+        # Remove all whitespace
+        clean_key = re.sub(r'\s+', '', key)
+        # Format with proper line breaks
+        formatted_body = ''
+        for i in range(0, len(clean_key), 64):
+            formatted_body += clean_key[i:i+64] + delimiter
+        
+        # First attempt standard key format
+        standard_header = f"-----BEGIN {key_type} KEY-----"
+        standard_footer = f"-----END {key_type} KEY-----"
+        formatted_key = standard_header + delimiter + formatted_body + standard_footer
+        
+        # Try to validate the key using cryptography library
+        try:
+            # For private keys
+            if key_type == "PRIVATE":
+                load_pem_private_key(formatted_key.encode(), password=None, backend=default_backend())
+                return formatted_key
+            # For public keys
+            elif key_type == "PUBLIC":
+                load_pem_public_key(formatted_key.encode(), backend=default_backend())
+                return formatted_key
+        except Exception:
+            # If standard format fails, try RSA format
+            pass
+            
+        # Try RSA format
+        rsa_header = f"-----BEGIN RSA {key_type} KEY-----"
+        rsa_footer = f"-----END RSA {key_type} KEY-----"
+        rsa_formatted_key = rsa_header + delimiter + formatted_body + rsa_footer
+        
+        return rsa_formatted_key
+
+    @staticmethod
+    def get_usable_private_key(private_key: str = None, private_key_path: str = None) -> str:
+        """
+        Get usable private key from either file path or string content
+        
+        Args:
+            private_key: Optional private key content as string
+            private_key_path: Optional path to private key file
+            
+        Returns:
+            str: Properly formatted private key as PEM
+            
+        Raises:
+            ValueError: If neither private_key nor private_key_path is provided or valid
+        """
+        # If private_key_path is provided and exists, it takes precedence over private_key
+        if private_key_path and os.path.exists(private_key_path):
+            with open(private_key_path, 'rb') as pem_in:
+                pemlines = pem_in.read()
+                key = pemlines.decode('utf-8')
+                return SnapHeader.convert_to_pem(key, "PRIVATE")
+        
+        # Handle direct private key string
+        if private_key:
+            # Replace escaped newlines with actual newlines
+            key = private_key.replace("\\n", "\n")
+            return SnapHeader.convert_to_pem(key, "PRIVATE")
+            
+        # Throw exception if neither key is provided
+        raise ValueError("Provide one of private_key or private_key_path")
+    
     @staticmethod
     def get_snap_generated_auth(
         method: str,
@@ -100,22 +229,11 @@ class SnapHeader:
                 'type': 'api_key',
                 'value': value
             }
-        
-        def get_usable_private_key(private_key: str, private_key_path: str) -> str:
 
-            if private_key_path:
-                with open(private_key_path, 'rb') as pem_in:
-                    pemlines = pem_in.read()
-                    private_key = load_pem_private_key(pemlines, None, default_backend())
-                    return private_key
-            elif private_key:
-                private_key = private_key.replace("\\n", "\n")
-                return private_key
-            else:
-                raise ValueError("Provide one of private_key or private_key_path")
 
-        private_key = get_usable_private_key(private_key=private_key,
-                                             private_key_path=private_key_path)
+        # Use the class method to get the usable private key
+        private_key = SnapHeader.get_usable_private_key(private_key=private_key,
+                                                      private_key_path=private_key_path)
 
         jakarta_time = datetime.now(timezone.utc) + timedelta(hours=7)
         timestamp = jakarta_time.strftime('%Y-%m-%dT%H:%M:%S+07:00')
@@ -162,6 +280,17 @@ class SnapHeader:
                 X_DEVICE_ID: generateApiKeyAuthSetting(key=X_DEVICE_ID, value=body_dict.get('additionalInfo', {}).get('deviceId', '')),
                 X_LATITUDE: generateApiKeyAuthSetting(key=X_LATITUDE, value=body_dict.get('additionalInfo', {}).get('latitude', '')),
                 X_LONGITUDE: generateApiKeyAuthSetting(key=X_LONGITUDE, value=body_dict.get('additionalInfo', {}).get('longitude', '')),
+                CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221')
+            }
+        elif scenario == "balance_inquiry":
+            external_id = str(uuid.uuid4())
+            body_dict: dict = json.loads(body)
+            return {
+                AUTHORIZATION_CUSTOMER: generateApiKeyAuthSetting(key=AUTHORIZATION_CUSTOMER, value=f"Bearer {body_dict.get('additionalInfo', {}).get('accessToken', '')}"),
+                X_TIMESTAMP: generateApiKeyAuthSetting(key=X_TIMESTAMP, value=timestamp),
+                X_SIGNATURE: generateApiKeyAuthSetting(key=X_SIGNATURE, value=encoded_signature),
+                X_EXTERNALID: generateApiKeyAuthSetting(key=X_EXTERNALID, value=external_id),
+                X_DEVICE_ID: generateApiKeyAuthSetting(key=X_DEVICE_ID, value=body_dict.get('additionalInfo', {}).get('deviceId', '')),
                 CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221')
             }
         else:

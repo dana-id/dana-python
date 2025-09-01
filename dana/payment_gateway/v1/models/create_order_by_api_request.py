@@ -56,7 +56,7 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
     sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
     amount: Money = Field(description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    valid_up_to: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    valid_up_to: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) and cannot be more than one week in the future.")
     disabled_pay_methods: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method(s) that cannot be used for this")
     url_params: List[UrlParam] = Field(description="Notify URL that DANA must send the payment notification to")
     __properties: ClassVar[List[str]] = ["partnerReferenceNo", "merchantId", "subMerchantId", "amount", "externalStoreId", "validUpTo", "disabledPayMethods", "urlParams"]

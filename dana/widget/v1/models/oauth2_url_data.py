@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.widget.v1.models.oauth2_url_data_seamless_data import Oauth2UrlDataSeamlessData
@@ -55,7 +55,18 @@ class Oauth2UrlData(BaseModel, BaseSdkModel):
     state: Optional[StrictStr] = Field(default=None, description="Random string for CSRF protection purposes")
     lang: Optional[StrictStr] = Field(default='id', description="Service language code. ISO 639-1")
     allow_registration: Optional[StrictStr] = Field(default='true', description="If value equals true, provider may enable registration process during binding. Default true")
-    __properties: ClassVar[List[str]] = ["externalId", "merchantId", "subMerchantId", "seamlessData", "scopes", "redirectUrl", "state", "lang", "allowRegistration"]
+    mode: Optional[StrictStr] = Field(default=None, description="Mode of the authorization. The possible values are API or DEEPLINK")
+    __properties: ClassVar[List[str]] = ["externalId", "merchantId", "subMerchantId", "seamlessData", "scopes", "redirectUrl", "state", "lang", "allowRegistration", "mode"]
+
+    @field_validator('mode')
+    def mode_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['API', 'DEEPLINK']):
+            raise ValueError("must be one of enum values ('API', 'DEEPLINK')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -120,7 +131,8 @@ class Oauth2UrlData(BaseModel, BaseSdkModel):
             "redirectUrl": obj.get("redirectUrl"),
             "state": obj.get("state"),
             "lang": obj.get("lang") if obj.get("lang") is not None else 'id',
-            "allowRegistration": obj.get("allowRegistration") if obj.get("allowRegistration") is not None else 'true'
+            "allowRegistration": obj.get("allowRegistration") if obj.get("allowRegistration") is not None else 'true',
+            "mode": obj.get("mode")
         })
         return _obj
 

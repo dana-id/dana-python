@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **sub_merchant_id** | **str** | Information of sub merchant identifier | [optional] 
 **amount** | [**Money**](Money.md) | Amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO<br />  | 
 **external_store_id** | **str** | Store identifier to indicate to which store this payment belongs to | [optional] 
-**valid_up_to** | **str** | The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) | [optional] 
+**valid_up_to** | **str** | The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) and cannot be more than one week in the future. | [optional] 
 **disabled_pay_methods** | **str** | Payment method(s) that cannot be used for this | [optional] 
 **url_params** | [**List[UrlParam]**](UrlParam.md) | Notify URL that DANA must send the payment notification to | 
 

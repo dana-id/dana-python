@@ -18,8 +18,7 @@ from urllib.parse import urlparse, parse_qs, unquote
 import json
 
 # Configuration
-PIN = '123321'  # Replace with your test PIN
-oauth_url = 'https://m.sandbox.dana.id/n/ipg/oauth?partnerId=2025021714245533502768&scopes=CASHIER,AGREEMENT_PAY,QUERY_BALANCE,DEFAULT_BASIC_PROFILE,MINI_DANA&externalId=b3b7e164-a295-4461-8475-8db546f0d509&state=02c92610-aa7c-42b0-bf26-23bb06e4d475&channelId=2025021714245533502768&redirectUrl=https://google.com&timestamp=2025-05-20T22:27:01+00:00&seamlessData=%7B%22mobile%22%3A%220811742234%22%7D&seamlessSign=IN8MCZZMge6C0SOQG4otmP9WE5yTll0%2F6OwgmUV0cfFi1e9Hj8PAWuD1ZanQ9MZcrKH1nwJEKnYTtqtQ3AdpLa24E%2B2W3%2BNJD8nh7FLicjPFQuDEIAdE%2ByEqTfpU5Z8%2B1tdB%2BW3HN4p6ko%2BiSXu28XHZOnxxXbfMZzQ0qwpwhTp76xSi2tH5eU7ksp37G9sjCB3eyFXBR8bWr7NCjDzFL5cxVlTuEZCmLieDLYh%2FiGClPfWj%2F7tnzzppyiPJsG7PjWkuM25%2B%2BwHBcb7DUA1yVllq30lxUpKeogZ3AuY%2Be9%2FeRHrhz6d%2BBFnzowI3Fk2ZA64BR9E8TSpNHyzWKCNc1A%3D%3D&isSnapBI=true'
+PIN = '131000'  # Replace with your test PIN
 
 def extract_mobile_from_url(url):
     try:
@@ -29,18 +28,19 @@ def extract_mobile_from_url(url):
         if seamless_data:
             decoded = unquote(seamless_data)
             json_data = json.loads(decoded)
-            return json_data.get('mobile', '0811742234')
+            return json_data.get('mobile', '087875849373')
     except Exception as e:
         print(f'Error extracting mobile number: {e}')
-    return '0811742234'
+    return '087875849373'
 
-async def automate_oauth(phone_number=None, pin=None, show_log=False):
+async def automate_oauth(oauth_url, phone_number=None, pin=None, show_log=False):
     """
     Automates the OAuth login flow using Playwright in a headless browser, simulating a mobile device.
     This function navigates to the OAuth URL, enters the provided or extracted phone number, submits it,
     waits for the PIN input screen, enters the provided or default PIN, and attempts to extract the
     authorization code from the redirect URL or page content.
     Args:
+        oauth_url (str): The OAuth URL to navigate to.
         phone_number (str, optional): The phone number to use for login. If not provided, attempts to extract from the OAuth URL.
         pin (str, optional): The PIN code to use for authentication. If not provided, uses the default PIN.
         show_log (bool, optional): If True, prints detailed log messages during the automation process.
@@ -90,98 +90,366 @@ async def automate_oauth(phone_number=None, pin=None, show_log=False):
         await page.wait_for_timeout(1000)
         log('Done waiting for initialization')
         log('Trying to find the phone input field...')
-        await page.evaluate("""
-        (mobile) => {
-            const inputs = document.querySelectorAll('input');
-            for (const input of inputs) {
-                if (input.type === 'tel' || 
-                    input.placeholder === '12312345678' || 
-                    input.maxLength === 13 ||
-                    input.className.includes('phone-number')) {
-                    input.value = mobile;
-                    input.dispatchEvent(new Event('input', { bubbles: true }));
-                    return true;
+        
+        # First try the specific selector used in PHP implementation
+        phone_entered = False
+        try:
+            log('Trying to find label.new-clearable-input.form-ipg-phonenumber...')
+            phone_label = await page.query_selector('label.new-clearable-input.form-ipg-phonenumber')
+            if phone_label:
+                log('Phone label found, clicking it...')
+                await phone_label.click()
+                await page.keyboard.type(mobile_number)
+                log(f'Phone number {mobile_number} entered via label.new-clearable-input.form-ipg-phonenumber click')
+                phone_entered = True
+            else:
+                log('Phone label not found, trying alternative methods')
+        except Exception as e:
+            log(f'Error during specific phone selector handling: {str(e)}')
+
+        # Fall back to the generic approach if the specific selector didn't work
+        if not phone_entered:
+            log('Using general input detection as fallback')
+            log('Looking for phone input field...')
+            result = await page.evaluate("""
+            (mobile) => {
+                // Try the generic approach matching PHP implementation exactly
+                const inputs = document.querySelectorAll('input');
+                for (const input of Array.from(inputs)) {
+                    if (input.type === 'tel' || 
+                        input.placeholder === '12312345678' || 
+                        input.maxLength === 13 ||
+                        input.className.includes('phone-number')) {
+                        input.value = mobile;
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                        return { filled: true, message: 'Found and filled mobile number input' };
+                    }
                 }
+                return { filled: false, message: 'No suitable mobile number input found' };
             }
-            return false;
-        }
-        """, mobile_number)
-        log('Looking for the submit button...')
-        await page.evaluate("""
+            """, mobile_number)
+            
+            # Process result with error handling like in PHP
+            if result and result.get('filled', False):
+                log(f"Phone input filled: {result.get('message')}")
+            else:
+                log(f"Warning: {result.get('message', 'Unknown error')}")
+                
+            # If JS approach failed, try clicking on input with type=tel as a fallback
+            if not result or not result.get('filled', False):
+                log('Trying alternative approach - clicking on tel input directly')
+                try:
+                    tel_input = await page.query_selector('input[type="tel"]')
+                    if tel_input:
+                        await tel_input.click()
+                        await page.keyboard.type(mobile_number)
+                        log('Mobile number entered via direct tel input click')
+                except Exception as e:
+                    log(f'Error with fallback approach: {str(e)}')
+            
+
+        # Wait a bit for the input to take effect
+        await page.wait_for_timeout(1000)
+        log('Looking for submit button...')
+        submit_button_result = await page.evaluate("""
         () => {
             const buttons = document.querySelectorAll('button');
-            for (const button of buttons) {
+            for (const button of Array.from(buttons)) {
                 if (button.type === 'submit' || 
                     button.innerText.includes('Next') || 
                     button.innerText.includes('Continue') ||
                     button.innerText.includes('Submit') ||
                     button.innerText.includes('Lanjutkan')) {
                     button.click();
-                    return true;
+                    return { clicked: true, message: 'Found and clicked button via JS evaluation' };
                 }
             }
-            return false;
+            return { clicked: false, message: 'No suitable submit button found' };
         }
         """)
+        
+        # Process result with error handling like in PHP
+        if submit_button_result and submit_button_result.get('clicked', False):
+            log(f"Submit button clicked: {submit_button_result.get('message')}")
+        else:
+            log(f"Warning: {submit_button_result.get('message', 'Unknown error')}")
+            # Try alternative approach for finding buttons
+            log('Trying alternative approach for finding submit button...')
+            try:
+                # Try to find any button that looks like a submit button
+                for selector in ['button[type="submit"]', 'button.btn-primary', 'button.next-button', '.btn-continue', '.btn-submit']:
+                    button = await page.query_selector(selector)
+                    if button:
+                        log(f'Found button with selector: {selector}')
+                        await button.click()
+                        log('Alternative button click successful')
+                        break
+            except Exception as e:
+                log(f'Error with alternative button approach: {str(e)}')
         log('Waiting for PIN input screen...')
-        # Use selector-based wait for PIN input instead of fixed timeout
+        # First wait for page to load completely
         try:
-            await page.wait_for_selector('.txt-input-pin-field, input[maxlength="6"], input[type="password"]', timeout=3000)
-        except Exception:
-            pass
-        need_to_continue = await page.evaluate("""
-        () => {
-            const continueBtn = document.querySelector('button.btn-continue.fs-unmask.btn.btn-primary');
-            if (continueBtn) {
-                continueBtn.click();
-                return true;
+            await page.wait_for_load_state('networkidle')
+            await page.wait_for_timeout(1000)  # Extra wait to ensure JS has executed
+        except Exception as e:
+            log(f"Error waiting for page to load: {e}")
+            
+        # Take a screenshot for debugging
+        try:
+            screenshot_path = Path('dana_oauth_before_pin_detection.png')
+            await page.screenshot(path=str(screenshot_path))
+            log(f"Before PIN detection screenshot saved to {screenshot_path}")
+        except Exception as e:
+            log(f"Failed to take screenshot: {str(e)}")
+            
+        # Attempt to log all inputs on the page for debugging
+        try:
+            input_details = await page.evaluate("""
+            () => {
+                const inputs = document.querySelectorAll('input');
+                return Array.from(inputs).map(input => ({
+                    id: input.id || 'no-id',
+                    type: input.type,
+                    maxLength: input.maxLength,
+                    className: input.className,
+                    placeholder: input.placeholder || 'no-placeholder'
+                }));
             }
-            return false;
-        }
-        """)
-        if need_to_continue:
-            log('Clicked another continue button - waiting for PIN input to appear')
-            await page.wait_for_timeout(500)
-        success = await page.evaluate("""
-        (pinCode) => {
-            const specificPinInput = document.querySelector('.txt-input-pin-field');
+            """)
+            log(f"DEBUG - Found {len(input_details)} input fields: {input_details}")
+        except Exception as e:
+            log(f"Error logging input fields: {e}")
+            
+        # If we need to click a continue button to get to PIN screen, do it now
+        try:
+            continue_clicked = await page.evaluate("""
+            () => {
+                const buttons = document.querySelectorAll('button');
+                for (const button of buttons) {
+                    const text = button.innerText.toLowerCase().trim();
+                    if ((text.includes('continue') || text.includes('lanjut')) && 
+                        (button.className.includes('btn-continue') || button.className.includes('btn-primary'))) {
+                        console.log('Found continue button to click:', button.innerText);
+                        button.click();
+                        return true;
+                    }
+                }
+                return false;
+            }
+            """)
+            if continue_clicked:
+                log('Clicked continue button to proceed to PIN screen')
+                await page.wait_for_timeout(1000)  # Wait for PIN screen to appear
+        except Exception as e:
+            log(f"Error clicking continue button: {e}")
+            
+        # Sleep a bit before PIN input attempt to make sure page is stable
+        await page.wait_for_timeout(2000)
+        
+        # Try to capture screenshot just before PIN input
+        try:
+            screenshot_path = Path('dana_oauth_pin_attempt.png')
+            await page.screenshot(path=str(screenshot_path))
+            log(f"PIN attempt screenshot saved to {screenshot_path}")
+        except Exception as e:
+            log(f"Failed to take screenshot: {str(e)}")
+        
+        # Log visible inputs in the console for debugging
+        log('DEBUG - All input fields found:')
+        try:
+            input_log = await page.evaluate("""
+            () => {
+                const inputs = document.querySelectorAll('input');
+                const details = [];
+                for (let i = 0; i < inputs.length; i++) {
+                    const input = inputs[i];
+                    details.push({type: input.type, maxLength: input.maxLength, id: input.id, className: input.className});
+                }
+                return JSON.stringify(details);
+            }
+            """)
+            log(f"Input fields: {input_log}")
+        except Exception as e:
+            log(f"Error getting input details: {e}")
+        
+        # Enter PIN using JavaScript exactly like PHP implementation - EXACT MATCH
+        log('Looking for PIN input fields...')
+        
+        # Use the EXACT same JavaScript as PHP, with minimal changes for Python syntax
+        # First try direct page.fill with a selector - can be more reliable than JS evaluation
+        try:
+            log("Trying direct Playwright fill first...")
+            fill_result = False
+            # Try specific PIN input selector
+            try:
+                await page.fill(".txt-input-pin-field", used_pin)
+                log("Filled PIN directly with Playwright .txt-input-pin-field selector")
+                fill_result = True
+            except Exception as e:
+                log(f"Could not fill .txt-input-pin-field: {e}")
+                # Try maxlength=6 selector
+                try:
+                    await page.fill("input[maxLength='6']", used_pin)
+                    log("Filled PIN directly with Playwright maxLength=6 selector")
+                    fill_result = True
+                except Exception as e:
+                    log(f"Could not fill input[maxLength='6']: {e}")
+        except Exception as e:
+            log(f"Direct fill attempts failed: {e}")
+            
+        # Now try more aggressive JavaScript approach exactly like PHP
+        pin_input_result = await page.evaluate("""
+        (pin) => {
+            // Helper function to trigger all possible events to ensure the value is registered
+            function triggerAllEvents(element) {
+                // Focus first
+                element.focus();
+                
+                // Try both assignment methods
+                element.value = pin;
+                if (element.hasAttribute('value')) {
+                    element.setAttribute('value', pin);
+                }
+                
+                // Create events with proper properties for maximum compatibility
+                const inputEvent = new Event('input', { bubbles: true, cancelable: true });
+                const changeEvent = new Event('change', { bubbles: true, cancelable: true });
+                const keyupEvent = new Event('keyup', { bubbles: true, cancelable: true });
+                
+                // Dispatch all events
+                element.dispatchEvent(inputEvent);
+                element.dispatchEvent(changeEvent);
+                element.dispatchEvent(keyupEvent);
+                
+                // Blur at the end
+                element.blur();
+            }
+            
+            // First check for the specific PIN input field
+            const specificPinInput = document.querySelector(".txt-input-pin-field");
             if (specificPinInput) {
-                specificPinInput.value = pinCode;
-                specificPinInput.dispatchEvent(new Event('input', { bubbles: true }));
-                specificPinInput.dispatchEvent(new Event('change', { bubbles: true }));
-                return true;
+                console.log("Found specific PIN input field: .txt-input-pin-field");
+                triggerAllEvents(specificPinInput);
+                
+                // Verify the value was set
+                console.log("PIN field value after set:", specificPinInput.value);
+                return { success: true, method: "specific", message: "Found specific PIN input field: .txt-input-pin-field" };
             }
-            const inputs = document.querySelectorAll('input');
+            
+            const inputs = document.querySelectorAll("input");
+            console.log("Total inputs found:", inputs.length);
+            
+            // Try for single PIN input with maxLength=6
             const singlePinInput = Array.from(inputs).find(input => 
                 input.maxLength === 6 && 
-                (input.type === 'text' || input.type === 'tel' || input.type === 'number' || input.inputMode === 'numeric')
+                (input.type === "text" || input.type === "tel" || input.type === "number" || input.inputMode === "numeric")
             );
+            
             if (singlePinInput) {
-                singlePinInput.value = pinCode;
-                singlePinInput.dispatchEvent(new Event('input', { bubbles: true }));
-                singlePinInput.dispatchEvent(new Event('change', { bubbles: true }));
-                return true;
+                console.log("Found single PIN input with maxLength=6:", singlePinInput.type);
+                triggerAllEvents(singlePinInput);
+                
+                // Verify the value was set
+                console.log("PIN field value after set:", singlePinInput.value);
+                return { success: true, method: "single", message: "Found single PIN input field with maxLength=6" };
             }
+            
+            // Try multi-character PIN inputs
             const pinInputs = Array.from(inputs).filter(input => 
                 input.maxLength === 1 || 
-                input.type === 'password' || 
-                input.className.includes('pin')
+                input.type === "password" || 
+                input.className.includes("pin")
             );
-            if (pinInputs.length >= pinCode.length) {
-                for (let i = 0; i < pinCode.length; i++) {
-                    pinInputs[i].value = pinCode.charAt(i);
-                    pinInputs[i].dispatchEvent(new Event('input', { bubbles: true }));
-                    pinInputs[i].dispatchEvent(new Event('change', { bubbles: true }));
+            
+            console.log("Pin inputs found with criteria (maxLength=1, type=password, or class contains 'pin'):", pinInputs.length);
+            
+            if (pinInputs.length >= pin.length) {
+                console.log("Using multiple PIN inputs");
+                for (let i = 0; i < pin.length; i++) {
+                    const input = pinInputs[i];
+                    // Set value directly
+                    input.value = pin.charAt(i);
+                    if (input.hasAttribute('value')) {
+                        input.setAttribute('value', pin.charAt(i));
+                    }
+                    
+                    // Dispatch events
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
                 }
-                return true;
+                return { success: true, method: "multi", message: `Found ${pinInputs.length} PIN inputs via JS` };
             }
-            return false;
+            
+            // Last resort - try ANY input
+            if (inputs.length > 0) {
+                console.log("Last resort: trying any input field");
+                const input = inputs[0];
+                triggerAllEvents(input);
+                return { success: true, method: "any", message: "Tried with first available input as last resort" };
+            }
+            
+            console.log("No suitable PIN input fields found");
+            return { success: false, method: "none", message: "Could not find any suitable PIN input field" };
         }
         """, used_pin)
-        if success:
-            log('Successfully entered PIN via JavaScript')
+        
+        # Process result with error handling exactly like in PHP
+        if pin_input_result and pin_input_result.get('success', False):
+            log(f"PIN input successful: {pin_input_result.get('message')} (method: {pin_input_result.get('method')})")
         else:
-            log('Failed to enter PIN, no suitable input field found')
+            log(f"Warning: {pin_input_result.get('message', 'Unknown error')}")
+            
+            # Try fallback direct keyboard entry if all else fails
+            log("Attempting fallback PIN entry method with keyboard...")
+            try:
+                await page.keyboard.type(used_pin, {'delay': 200})
+                await page.keyboard.press('Enter')
+                log("Typed PIN using direct keyboard input as fallback")
+            except Exception as ke:
+                log(f"Keyboard fallback also failed: {ke}")
+                
+        # Try to find and click a confirm button after PIN entry - exactly matching PHP
+        log('Looking for confirm button after PIN entry...')
+        button_clicked = await page.evaluate("""
+        () => {
+            const allButtons = document.querySelectorAll("button");
+            let continueButton, backButton;
+            allButtons.forEach((button) => {
+              const buttonText = button.innerText.trim().toLowerCase();
+              if (buttonText.includes("lanjut") || 
+                  buttonText.includes("continue") || 
+                  buttonText.includes("submit") || 
+                  buttonText.includes("confirm") || 
+                  buttonText.includes("next") || 
+                  button.className.includes("btn-continue") || 
+                  button.className.includes("btn-submit") || 
+                  button.className.includes("btn-confirm")) {
+                continueButton = button;
+              }
+            });
+            if (continueButton) {
+              continueButton.click();
+              return { clicked: true, message: "Found continue button, clicked it: " + continueButton.innerText };
+            }
+            return { clicked: false, message: "No confirm/continue button found" };
+        }
+        """)
+        
+        if button_clicked and button_clicked.get('clicked', False):
+            log(f"Confirm button clicked: {button_clicked.get('message')}")
+        # Notice no else case here to match PHP exactly
+        
+        # Wait a moment after clicking confirm button
+        await page.wait_for_timeout(1500)  # 1.5 seconds like in PHP implementation
+        
+        # Take a screenshot after button click to help with debugging
+        try:
+            screenshot_path = Path('dana_oauth_after_confirm.png')
+            await page.screenshot(path=str(screenshot_path))
+            log(f"After-confirm screenshot saved to {screenshot_path}")
+        except Exception as e:
+            log(f"Failed to take screenshot: {str(e)}")
+            
         async def try_to_find_and_click_confirm_button():
             try:
                 button_clicked = await page.evaluate("""
@@ -273,7 +541,7 @@ async def automate_oauth(phone_number=None, pin=None, show_log=False):
         log('Browser closed')
     return auth_code
 
-def get_auth_code(phone_number=None, pin=None):
+def get_auth_code(oauth_url, phone_number=None, pin=None):
     """
     Wrapper function to get an authorization code synchronously.
     This is the main entry point for other test files to use.
@@ -287,7 +555,7 @@ def get_auth_code(phone_number=None, pin=None):
     """    
     # If no override, use the automation
     try:
-        return asyncio.run(automate_oauth(phone_number=phone_number, pin=pin, show_log=True))
+        return asyncio.run(automate_oauth(oauth_url=oauth_url, phone_number=phone_number, pin=pin, show_log=True))
     except Exception as e:
         print(f"Error during OAuth automation: {e}")
         return None

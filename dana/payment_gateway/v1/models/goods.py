@@ -46,6 +46,7 @@ class Goods(BaseModel, BaseSdkModel):
     """
     Goods
     """ # noqa: E501
+    name: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Goods name")
     merchant_goods_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Goods identifier provided by merchant")
     description: Annotated[str, Field(strict=True, max_length=1024)] = Field(description="Goods description")
     category: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Goods category")
@@ -55,7 +56,7 @@ class Goods(BaseModel, BaseSdkModel):
     merchant_shipping_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Shipment identifier provided by merchant")
     snapshot_url: Optional[Annotated[str, Field(strict=True, max_length=512)]] = Field(default=None, description="The URL of good's snapshot web page")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information")
-    __properties: ClassVar[List[str]] = ["merchantGoodsId", "description", "category", "price", "unit", "quantity", "merchantShippingId", "snapshotUrl", "extendInfo"]
+    __properties: ClassVar[List[str]] = ["name", "merchantGoodsId", "description", "category", "price", "unit", "quantity", "merchantShippingId", "snapshotUrl", "extendInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -112,6 +113,7 @@ class Goods(BaseModel, BaseSdkModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "name": obj.get("name"),
             "merchantGoodsId": obj.get("merchantGoodsId"),
             "description": obj.get("description"),
             "category": obj.get("category"),

@@ -52,9 +52,10 @@ class TransferToDanaResponse(BaseModel, BaseSdkModel):
     partner_reference_no: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Unique transaction identifier on partner system which assigned to each transaction<br> Notes:<br> If the partner receives a timeout or an unexpected response from DANA and partner expects to perform retry request to DANA, please use the partnerReferenceNo that is the same as the one used in the transaction request process before ")
     session_id: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Session identifier")
     customer_number: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Customer account number, in format 628xxx")
+    customer_name: Optional[Annotated[str, Field(strict=True, max_length=255)]] = Field(default=None, description="Customer account name")
     amount: Money = Field(description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO ")
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
-    __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "referenceNo", "partnerReferenceNo", "sessionId", "customerNumber", "amount", "additionalInfo"]
+    __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "referenceNo", "partnerReferenceNo", "sessionId", "customerNumber", "customerName", "amount", "additionalInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -117,6 +118,7 @@ class TransferToDanaResponse(BaseModel, BaseSdkModel):
             "partnerReferenceNo": obj.get("partnerReferenceNo"),
             "sessionId": obj.get("sessionId"),
             "customerNumber": obj.get("customerNumber"),
+            "customerName": obj.get("customerName"),
             "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
             "additionalInfo": obj.get("additionalInfo")
         })

@@ -27,7 +27,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -42,7 +42,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -89,7 +90,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -104,7 +105,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -151,7 +153,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 from dana.widget.v1.models.apply_token_authorization_code_request import ApplyTokenAuthorizationCodeRequest
 import os
@@ -167,7 +169,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -214,7 +217,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -229,7 +232,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -276,7 +280,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -291,7 +295,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -338,7 +343,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -353,7 +358,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -400,7 +406,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -415,7 +421,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -462,7 +469,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -477,7 +484,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -524,7 +532,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -539,7 +547,8 @@ configuration = SnapConfiguration(
         PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 

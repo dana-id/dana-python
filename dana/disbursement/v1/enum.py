@@ -62,6 +62,7 @@ class PayMethod(str, Enum):
     ONLINE_CREDIT = "ONLINE_CREDIT"
     LOAN_CREDIT = "LOAN_CREDIT"
     NETWORK_PAY = "NETWORK_PAY"
+    CARD = "CARD"
 
 class PayMethod(str, Enum):
     BALANCE = "BALANCE"

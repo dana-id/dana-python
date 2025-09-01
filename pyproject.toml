@@ -15,14 +15,14 @@ keywords = ["DANA", "DANA ID Docs", "DANA SDK", "DANA Python", "DANA API Client"
 dependencies = [
   "annotated-types==0.7.0",
   "cffi==1.17.1",
-  "cryptography==44.0.2",
+  "cryptography>=44.0.2,<46.0.0",
   "pycparser==2.22",
-  "pydantic==2.10.6",
-  "pydantic-core==2.27.2",
+  "pydantic>=2.10.6,<3.0.0",
+  "pydantic-core>=2.27.2,<3.0.0",
   "python-dateutil==2.9.0.post0",
   "six==1.17.0",
-  "typing-extensions==4.12.2",
-  "urllib3==2.3.0"
+  "typing-extensions>=4.12.2,<5.0.0",
+  "urllib3>=2.3.0,<3.0.0"
 ]
 
 [project.urls]

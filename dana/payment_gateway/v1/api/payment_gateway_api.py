@@ -539,12 +539,12 @@ class PaymentGatewayApi:
                 _header_params['Content-Type'] = _default_content_type
         # authentication setting
         _auth_settings: List[str] = [
+            'DANA_ENV', 
             'ORIGIN', 
             'X_PARTNER_ID', 
             'CHANNEL_ID', 
             'PRIVATE_KEY', 
-            'PRIVATE_KEY_PATH', 
-            'ENV'
+            'PRIVATE_KEY_PATH'
         ]
         # merge list of auth settings 
         # with list of auth generated at runtime for headers
@@ -798,12 +798,12 @@ class PaymentGatewayApi:
                 _header_params['Content-Type'] = _default_content_type
         # authentication setting
         _auth_settings: List[str] = [
+            'DANA_ENV', 
             'ORIGIN', 
             'X_PARTNER_ID', 
             'CHANNEL_ID', 
             'PRIVATE_KEY', 
-            'PRIVATE_KEY_PATH', 
-            'ENV'
+            'PRIVATE_KEY_PATH'
         ]
         # merge list of auth settings 
         # with list of auth generated at runtime for headers

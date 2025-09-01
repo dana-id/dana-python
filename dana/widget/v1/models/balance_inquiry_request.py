@@ -48,7 +48,7 @@ class BalanceInquiryRequest(BaseModel, BaseSdkModel):
     """ # noqa: E501
     partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Unique transaction identifier on partner system which assigned to each transaction<br> Notes:<br> If the partner receives a timeout or an unexpected response from DANA and partner expects to perform retry request to DANA, please use the partnerReferenceNo that is the same as the one used in the transaction request process before ")
     balance_types: Optional[List[StrictStr]] = Field(default=None, description="Information of balance types to specify which balance type expected to be returned. Will return all available balance type if this parameter empty")
-    additional_info: Optional[BalanceInquiryRequestAdditionalInfo] = Field(default=None)
+    additional_info: BalanceInquiryRequestAdditionalInfo = Field(description="Additional information")
     __properties: ClassVar[List[str]] = ["partnerReferenceNo", "balanceTypes", "additionalInfo"]
 
     model_config = ConfigDict(

@@ -43,6 +43,10 @@ class AcquirementStatus(str, Enum):
     MERCHANT_ACCEPT = "MERCHANT_ACCEPT"
     CANCELLED = "CANCELLED"
 
+class Mode(str, Enum):
+    API = "API"
+    DEEPLINK = "DEEPLINK"
+
 class ResourceType(str, Enum):
     BALANCE = "BALANCE"
     TRANSACTION_URL = "TRANSACTION_URL"
@@ -84,6 +88,7 @@ class PayMethod(str, Enum):
     ONLINE_CREDIT = "ONLINE_CREDIT"
     LOAN_CREDIT = "LOAN_CREDIT"
     NETWORK_PAY = "NETWORK_PAY"
+    CARD = "CARD"
 
 class PayMethod(str, Enum):
     BALANCE = "BALANCE"

@@ -26,7 +26,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -40,7 +40,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -51,7 +52,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -101,7 +103,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -115,7 +117,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -126,7 +129,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -176,7 +180,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -190,7 +194,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -201,7 +206,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -251,7 +257,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -265,7 +271,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -276,7 +283,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -326,7 +334,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -340,7 +348,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -351,7 +360,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -401,7 +411,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -415,7 +425,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -426,7 +437,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -476,7 +488,7 @@ You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you ha
 * PRIVATE_KEY or PRIVATE_KEY_PATH
 * ORIGIN
 * X_PARTNER_ID
-* ENV
+* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -490,7 +502,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 
@@ -501,7 +514,8 @@ configuration = OpenApiConfiguration(
     api_key=OpenApiAuthSettings(
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
         CLIENT_ID=os.environ.get("CLIENT_ID"),
-        ENV=Env.SANDBOX
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
     )
 )
 

@@ -50,7 +50,7 @@ class TransferToBankResponse(BaseModel, BaseSdkModel):
     reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Transaction identifier on DANA system")
     partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Unique transaction identifier on partner system which assigned to each transaction<br> Notes:<br> If the partner receives a timeout or an unexpected response from DANA and partner expects to perform retry request to DANA, please use the partnerReferenceNo that is the same as the one used in the transaction request process before ")
     transaction_date: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Transaction date, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
-    reference_number: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Reference number")
+    reference_number: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Reference number")
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "referenceNo", "partnerReferenceNo", "transactionDate", "referenceNumber", "additionalInfo"]
 

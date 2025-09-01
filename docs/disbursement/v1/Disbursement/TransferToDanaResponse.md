@@ -11,6 +11,7 @@ Name | Type | Description | Notes
 **partner_reference_no** | **str** | Unique transaction identifier on partner system which assigned to each transaction<br /> Notes:<br /> If the partner receives a timeout or an unexpected response from DANA and partner expects to perform retry request to DANA, please use the partnerReferenceNo that is the same as the one used in the transaction request process before  | 
 **session_id** | **str** | Session identifier | [optional] 
 **customer_number** | **str** | Customer account number, in format 628xxx | [optional] 
+**customer_name** | **str** | Customer account name | [optional] 
 **amount** | [**Money**](Money.md) | Amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO  | 
 **additional_info** | **object** | Additional information | [optional] 
 

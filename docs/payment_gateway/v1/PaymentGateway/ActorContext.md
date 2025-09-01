@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **actor_id** | **str** | Actor identifier | [optional] 
-**actor_type** | **str** | Actor type. The enums:<br /> * USER - User<br /> * MERCHANT - Merchant&lt;br * MERCHANT_OPERATOR - Merchant operator<br /> * BACK_OFFICE - Back office<br /> * SYSTEM - System<br />  | [optional] 
+**actor_type** | **str** | Actor type. The enums:<br /> * USER - User<br /> * MERCHANT - Merchant<br /> * MERCHANT_OPERATOR - Merchant operator<br /> * BACK_OFFICE - Back office<br /> * SYSTEM - System<br />  | [optional] 
 
 ## Example
 

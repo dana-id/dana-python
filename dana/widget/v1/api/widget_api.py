@@ -287,10 +287,10 @@ class WidgetApi:
                 _header_params['Content-Type'] = _default_content_type
         # authentication setting
         _auth_settings: List[str] = [
+            'DANA_ENV', 
             'X_PARTNER_ID', 
             'PRIVATE_KEY', 
-            'PRIVATE_KEY_PATH', 
-            'ENV'
+            'PRIVATE_KEY_PATH'
         ]
         # merge list of auth settings 
         # with list of auth generated at runtime for headers
@@ -546,12 +546,12 @@ class WidgetApi:
                 _header_params['Content-Type'] = _default_content_type
         # authentication setting
         _auth_settings: List[str] = [
+            'DANA_ENV', 
             'ORIGIN', 
             'X_PARTNER_ID', 
             'CHANNEL_ID', 
             'PRIVATE_KEY', 
-            'PRIVATE_KEY_PATH', 
-            'ENV'
+            'PRIVATE_KEY_PATH'
         ]
         # merge list of auth settings 
         # with list of auth generated at runtime for headers
@@ -807,10 +807,10 @@ class WidgetApi:
                 _header_params['Content-Type'] = _default_content_type
         # authentication setting
         _auth_settings: List[str] = [
+            'DANA_ENV', 
             'X_PARTNER_ID', 
             'PRIVATE_KEY', 
-            'PRIVATE_KEY_PATH', 
-            'ENV'
+            'PRIVATE_KEY_PATH'
         ]
         # merge list of auth settings 
         # with list of auth generated at runtime for headers
@@ -1074,13 +1074,15 @@ class WidgetApi:
         ]
         # merge list of auth settings 
         # with list of auth generated at runtime for headers
-        _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
+        _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings, scenario="balance_inquiry")
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
             resource_path='/v1.0/balance-inquiry.htm',
             body=balance_inquiry_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
-            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
+            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH'),
+            scenario="balance_inquiry",
+            client_key=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID')
         )
         return self.api_client.param_serialize(
             method='POST',
@@ -2326,12 +2328,12 @@ class WidgetApi:
                 _header_params['Content-Type'] = _default_content_type
         # authentication setting
         _auth_settings: List[str] = [
+            'DANA_ENV', 
             'ORIGIN', 
             'X_PARTNER_ID', 
             'CHANNEL_ID', 
             'PRIVATE_KEY', 
-            'PRIVATE_KEY_PATH', 
-            'ENV'
+            'PRIVATE_KEY_PATH'
         ]
         # merge list of auth settings 
         # with list of auth generated at runtime for headers

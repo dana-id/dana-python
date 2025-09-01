@@ -34,7 +34,7 @@ import json
 from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.disbursement.v1.models.money import Money
 from typing import Optional, Set
@@ -53,14 +53,14 @@ class DanaAccountInquiryResponse(BaseModel, BaseSdkModel):
     session_id: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Session identifier")
     customer_number: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Customer account number, in format 628xxx")
     customer_name: Annotated[str, Field(strict=True, max_length=255)] = Field(description="Customer account name")
-    customer_monthly_limit: Optional[Union[Annotated[float, Field(le=100000000000000000, strict=True)], Annotated[int, Field(le=2147483647, strict=True)]]] = Field(default=None, description="Limitation of transfer to DANA balance for customer per month")
+    customer_monthly_in_limit: Optional[Annotated[str, Field(strict=True, max_length=17)]] = Field(default=None, description="Limitation of transfer to DANA balance for customer per month")
     min_amount: Money = Field(description="Minimal amount. Contains two sub-fields:<br> 1. Value: Amount, including the cents<br> 2. Currency: Currency code based on ISO ")
     max_amount: Money = Field(description="Maximal amount. Contains two sub-fields:<br> 1. Value: Amount, including the cents<br> 2. Currency: Currency code based on ISO ")
     amount: Money = Field(description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO ")
     fee_amount: Money = Field(description="Fee amount. Contains two sub-fields:<br> 1. Value: Amount, including the cents<br> 2. Currency: Currency code based on ISO ")
     fee_type: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Type of fee for each transfer to DANA transaction. Such as admin fee")
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
-    __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "referenceNo", "partnerReferenceNo", "sessionId", "customerNumber", "customerName", "customerMonthlyLimit", "minAmount", "maxAmount", "amount", "feeAmount", "feeType", "additionalInfo"]
+    __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "referenceNo", "partnerReferenceNo", "sessionId", "customerNumber", "customerName", "customerMonthlyInLimit", "minAmount", "maxAmount", "amount", "feeAmount", "feeType", "additionalInfo"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -133,7 +133,7 @@ class DanaAccountInquiryResponse(BaseModel, BaseSdkModel):
             "sessionId": obj.get("sessionId"),
             "customerNumber": obj.get("customerNumber"),
             "customerName": obj.get("customerName"),
-            "customerMonthlyLimit": obj.get("customerMonthlyLimit"),
+            "customerMonthlyInLimit": obj.get("customerMonthlyInLimit"),
             "minAmount": Money.from_dict(obj["minAmount"]) if obj.get("minAmount") is not None else None,
             "maxAmount": Money.from_dict(obj["maxAmount"]) if obj.get("maxAmount") is not None else None,
             "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,

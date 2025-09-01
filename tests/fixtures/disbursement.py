@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-import pytest
 import datetime
 
 from dana.disbursement.v1.models.dana_account_inquiry_request import DanaAccountInquiryRequest
@@ -28,9 +27,8 @@ from dana.disbursement.v1.models.transfer_to_bank_request_additional_info import
 from dana.disbursement.v1.models.transfer_to_bank_inquiry_status_request import TransferToBankInquiryStatusRequest
 from dana.disbursement.v1.models.money import Money
 
-@pytest.fixture(scope="class")
-def account_inquiry_request():
-    """Fixture for DANA account inquiry request."""
+def get_dynamic_dana_account_inquiry_request():
+    """Get a dynamic DANA account inquiry request with unique reference number."""
     
     additional_info = DanaAccountInquiryRequestAdditionalInfo(
         fund_type="AGENT_TOPUP_FOR_USER_SETTLE"
@@ -47,9 +45,8 @@ def account_inquiry_request():
     return request
 
 
-@pytest.fixture(scope="class")
-def account_inquiry_request_with_access_token():
-    """Fixture for DANA account inquiry request with access token."""
+def get_dana_account_inquiry_request_with_access_token():
+    """Get a DANA account inquiry request with access token."""
     
     additional_info = DanaAccountInquiryRequestAdditionalInfo(
         fund_type="AGENT_TOPUP_FOR_USER_SETTLE",
@@ -67,9 +64,8 @@ def account_inquiry_request_with_access_token():
     return request
 
 
-@pytest.fixture(scope="class")
-def account_inquiry_request_with_customer_id():
-    """Fixture for DANA account inquiry request with customer ID."""
+def get_dana_account_inquiry_request_with_customer_id():
+    """Get a DANA account inquiry request with customer ID."""
     
     additional_info = DanaAccountInquiryRequestAdditionalInfo(
         fund_type="AGENT_TOPUP_FOR_USER_SETTLE",
@@ -87,9 +83,8 @@ def account_inquiry_request_with_customer_id():
     return request
 
 
-@pytest.fixture(scope="class")
-def bank_account_inquiry_request():
-    """Fixture for bank account inquiry request."""
+def get_bank_account_inquiry_request():
+    """Get a bank account inquiry request."""
     
     additional_info = BankAccountInquiryRequestAdditionalInfo(
         fund_type="MERCHANT_WITHDRAW_FOR_CORPORATE",
@@ -107,9 +102,8 @@ def bank_account_inquiry_request():
     return request
 
 
-@pytest.fixture(scope="class")
-def bank_account_inquiry_request_with_account_name():
-    """Fixture for bank account inquiry request with beneficiary account name."""
+def get_bank_account_inquiry_request_with_account_name():
+    """Get a bank account inquiry request with beneficiary account name."""
     
     additional_info = BankAccountInquiryRequestAdditionalInfo(
         fund_type="MERCHANT_WITHDRAW_FOR_CORPORATE",
@@ -128,9 +122,8 @@ def bank_account_inquiry_request_with_account_name():
     return request
 
 
-@pytest.fixture(scope="class")
-def transfer_to_bank_request():
-    """Fixture for transfer to bank request."""
+def get_transfer_to_bank_request():
+    """Get a transfer to bank request."""
     
     additional_info = TransferToBankRequestAdditionalInfo(
         fund_type="MERCHANT_WITHDRAW_FOR_CORPORATE"
@@ -148,9 +141,8 @@ def transfer_to_bank_request():
     return request
 
 
-@pytest.fixture(scope="class")
-def transfer_to_bank_request_with_notification():
-    """Fixture for transfer to bank request with notification enabled."""
+def get_transfer_to_bank_request_with_notification():
+    """Get a transfer to bank request with notification enabled."""
     
     additional_info = TransferToBankRequestAdditionalInfo(
         fund_type="MERCHANT_WITHDRAW_FOR_CORPORATE",
@@ -170,35 +162,34 @@ def transfer_to_bank_request_with_notification():
     return request
 
 
-@pytest.fixture(scope="class")
-def transfer_to_bank_inquiry_status_request():
-    """Fixture for transfer to bank inquiry status request."""
+def get_transfer_to_bank_inquiry_status_request(original_reference_no=None):
+    """Get a transfer to bank inquiry status request with reference to original transaction."""
     
     request = TransferToBankInquiryStatusRequest(
-        original_partner_reference_no=f"TRANSFER-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
-        service_code="00"  # Service code for transfer to bank inquiry status
+        partner_reference_no=f"BANKST-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
+        original_partner_reference_no=original_reference_no or "BANKTRX-20230101000001",
+        service_code="00"
     )
     
     return request
 
 
-@pytest.fixture(scope="class")
-def transfer_to_bank_inquiry_status_request_with_references():
-    """Fixture for transfer to bank inquiry status request with all reference numbers."""
+def get_transfer_to_bank_inquiry_status_request_with_references(original_reference_no=None):
+    """Get a transfer to bank inquiry status request with all reference numbers."""
     
     request = TransferToBankInquiryStatusRequest(
-        original_partner_reference_no=f"TRANSFER-REF-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
+        partner_reference_no=f"BANKST-REF-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
+        original_partner_reference_no=original_reference_no or "BANKTRX-20230101000001",
         original_reference_no="DANA123456789",
         original_external_id="EXT123456789",
-        service_code="00"  # Service code for transfer to bank inquiry status
+        service_code="52"
     )
     
     return request
 
 
-@pytest.fixture(scope="class")
-def customer_top_up_request():
-    """Fixture for transfer to DANA request."""
+def get_customer_top_up_request():
+    """Get a transfer to DANA request."""
     
     additional_info = TransferToDanaRequestAdditionalInfo(
         fund_type="AGENT_TOPUP_FOR_USER_SETTLE",
@@ -216,9 +207,8 @@ def customer_top_up_request():
     return request
 
 
-@pytest.fixture(scope="class")
-def customer_top_up_request_with_division():
-    """Fixture for transfer to DANA request with division charge target."""
+def get_customer_top_up_request_with_division():
+    """Get a transfer to DANA request with division charge target."""
     
     additional_info = TransferToDanaRequestAdditionalInfo(
         fund_type="AGENT_TOPUP_FOR_USER_SETTLE",
@@ -240,57 +230,61 @@ def customer_top_up_request_with_division():
     return request
 
 
-@pytest.fixture(scope="class")
-def customer_top_up_inquiry_status_request():
-    """Fixture for transfer to DANA inquiry status request."""
+def get_transfer_to_dana_inquiry_status_request(original_reference_no=None):
+    """Get a transfer to DANA inquiry status request with reference to original transaction."""
     
     request = TransferToDanaInquiryStatusRequest(
-        original_partner_reference_no=f"TOPUP-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
-        service_code="38"  # Service code for transfer to DANA
+        partner_reference_no=f"TOPUPST-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
+        original_partner_reference_no=original_reference_no or "TOPUP-20230101000001",
+        service_code="38"
     )
     
     return request
 
 
-@pytest.fixture(scope="class")
-def customer_top_up_inquiry_status_request_with_reference():
-    """Fixture for transfer to DANA inquiry status request with DANA reference."""
+# Keeping this function for backward compatibility
+def get_customer_top_up_inquiry_status_request(original_reference_no=None):
+    """Get a transfer to DANA inquiry status request (alias for get_transfer_to_dana_inquiry_status_request)."""
+    return get_transfer_to_dana_inquiry_status_request(original_reference_no)
+
+
+def get_customer_top_up_inquiry_status_request_with_reference(original_reference_no=None):
+    """Get a transfer to DANA inquiry status request with DANA reference."""
     
     request = TransferToDanaInquiryStatusRequest(
-        original_partner_reference_no=f"TOPUP-REF-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
+        partner_reference_no=f"TOPUPST-REF-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
+        original_partner_reference_no=original_reference_no or "TOPUP-20230101000001",
         original_reference_no="DANA123456789",
-        service_code="38"  # Service code for transfer to DANA
+        service_code="53"
     )
     
     return request
 
 
-@pytest.fixture(scope="function")
-def dynamic_account_inquiry_request():
-    """Fixture for generating unique DANA account inquiry request for each test function."""
+def get_dynamic_transfer_to_bank_request():
+    """Get a dynamic transfer to bank request with unique reference number."""
     
-    additional_info = DanaAccountInquiryRequestAdditionalInfo(
-        fund_type="AGENT_TOPUP_FOR_USER_SETTLE"
+    additional_info = TransferToBankRequestAdditionalInfo(
+        fund_type="MERCHANT_WITHDRAW_FOR_CORPORATE"
     )
     
-    request = DanaAccountInquiryRequest(
-        partner_reference_no=f"ACCINQ-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
-        customer_number="62811742234",
-        amount=Money(value="1.00", currency="IDR"),
-        transaction_date=datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S+07:00'),
+    request = TransferToBankRequest(
+        partner_reference_no=f"TRANSFER-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
+        customer_number="6287875849373",
+        beneficiary_account_number="2460888509",
+        beneficiary_bank_code="014",
+        amount=Money(value="50000.00", currency="IDR"),
         additional_info=additional_info
     )
     
     return request
+    
 
-
-@pytest.fixture(scope="function")
-def dynamic_customer_top_up_request():
-    """Fixture for generating unique transfer to DANA request for each test function."""
+def get_dynamic_transfer_to_dana_request():
+    """Get a dynamic transfer to DANA request with unique reference number."""
     
     additional_info = TransferToDanaRequestAdditionalInfo(
         fund_type="AGENT_TOPUP_FOR_USER_SETTLE",
-        account_type="DANA_WALLET"
     )
     
     request = TransferToDanaRequest(
@@ -299,16 +293,20 @@ def dynamic_customer_top_up_request():
         amount=Money(value="1.00", currency="IDR"),
         fee_amount=Money(value="1.00", currency="IDR"),
         transaction_date=datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S+07:00'),
-        notes="Test transfer to DANA",
         additional_info=additional_info
     )
     
     return request
 
 
-@pytest.fixture(scope="function")
-def dynamic_bank_account_inquiry_request():
-    """Fixture for generating unique bank account inquiry request for each test function."""
+# Keeping this function for backward compatibility
+def get_dynamic_customer_top_up_request():
+    """Get a dynamic transfer to DANA request with unique reference number (alias for get_dynamic_transfer_to_dana_request)."""
+    return get_dynamic_transfer_to_dana_request()
+
+
+def get_dynamic_bank_account_inquiry_request():
+    """Get a dynamic bank account inquiry request with unique reference number."""
     
     additional_info = BankAccountInquiryRequestAdditionalInfo(
         fund_type="MERCHANT_WITHDRAW_FOR_CORPORATE",
@@ -319,28 +317,8 @@ def dynamic_bank_account_inquiry_request():
         partner_reference_no=f"BANKINQ-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
         customer_number="62811742234",
         beneficiary_account_number="2460888509",
-        amount=Money(value="1.00", currency="IDR"),
+        amount=Money(value="50000.00", currency="IDR"),
         additional_info=additional_info
     )
     
     return request
-
-
-@pytest.fixture(scope="function")
-def dynamic_transfer_to_bank_request():
-    """Fixture for generating unique transfer to bank request for each test function."""
-    
-    additional_info = TransferToBankRequestAdditionalInfo(
-        fund_type="MERCHANT_WITHDRAW_FOR_CORPORATE"
-    )
-    
-    request = TransferToBankRequest(
-        partner_reference_no=f"TRANSFER-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}",
-        customer_number="62811742234",
-        beneficiary_account_number="2460888509",
-        beneficiary_bank_code="014",
-        amount=Money(value="1.00", currency="IDR"),
-        additional_info=additional_info
-    )
-    
-    return request 
