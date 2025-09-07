@@ -12,6 +12,10 @@ Method | HTTP request | Description
 [**transfer_to_dana_inquiry_status**](DisbursementApi.md#transfer_to_dana_inquiry_status) | **POST** /v1.0/emoney/topup-status.htm | Transfer to DANA Inquiry Status
 
 
+## Additional Documentation
+* [Enum Types](#enum-types) - List of available enum constants 
+* [WebhookParser](#webhookparser) - Webhook handling and notification parsing
+
 # **bank_account_inquiry**
 > bank_account_inquiry(bank_account_inquiry_request) -> BankAccountInquiryResponse 
 
@@ -20,12 +24,7 @@ Transfer to Bank Account Inquiry
 This API is used for merchant to do inquiry Bank account info via DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -35,13 +34,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
     )
 )
 
@@ -87,12 +88,7 @@ DANA Account Inquiry
 This API is used for merchant to do account inquiry to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -102,13 +98,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
     )
 )
 
@@ -154,12 +152,7 @@ Transfer to Bank
 This API is used for merchant to do transfer to Bank request via DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -169,13 +162,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
     )
 )
 
@@ -222,12 +217,7 @@ Transfer to Bank Inquiry Status
 This API is used for merchant to do inquiry status transfer to Bank transaction to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -237,13 +227,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
     )
 )
 
@@ -289,12 +281,7 @@ Transfer to DANA
 This API is used for merchant to do top up request to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -304,13 +291,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
     )
 )
 
@@ -356,12 +345,7 @@ Transfer to DANA Inquiry Status
 This API is used for merchant to do inquiry status top up transaction to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -371,13 +355,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
     )
 )
 
@@ -414,4 +400,109 @@ Name | Type | Description  | Notes
 **200** | Transfer to DANA inquiry status response |  * Content-Type - Content type, value always application/json <br>  * X-TIMESTAMP - Transaction date time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) <br>  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+# Enum Types
+
+```python
+from dana.disbursement.v1.enum import *
+
+# Example of using enum
+enum_value = ChargeTarget.DIVISION
+```
+
+
+## ChargeTarget
+| Value | Description |
+|-------|-------------|
+| `DIVISION` |  |
+| `MERCHANT` |  |
+
+
+
+## LatestTransactionStatus
+| Value | Description |
+|-------|-------------|
+| `00` |  |
+| `01` |  |
+| `02` |  |
+| `03` |  |
+| `04` |  |
+| `05` |  |
+| `06` |  |
+| `07` |  |
+
+
+
+
+# WebhookParser
+
+This section demonstrates how to securely verify and parse DANA webhook notifications using the `WebhookParser` utility from the Python SDK.
+
+## Example
+```python
+import os
+from dana.webhook import WebhookParser
+
+# You can provide the DANA_PUBLIC_KEY or DANA_PUBLIC_KEY_PATH
+# The parser will prioritize DANA_PUBLIC_KEY_PATH if both are provided.
+
+http_method = "POST"
+relative_path_url = "/v1.0/debit/notify"
+headers = {
+    "X-SIGNATURE": "<signature-from-header>",
+    "X-TIMESTAMP": "<timestamp-from-header>"
+}
+body = '{"original_partner_reference_no": "123...", ...}'  # Raw JSON string from request body
+
+parser = WebhookParser(public_key_path=os.getenv("DANA_PUBLIC_KEY_PATH"))
+
+try:
+    finish_notify = parser.parse_webhook(
+        http_method=http_method,
+        relative_path_url=relative_path_url,
+        headers=headers,
+        body=body
+    )
+    print(finish_notify.original_partner_reference_no)
+except ValueError as e:
+    print(f"Webhook verification failed: {e}")
+```
+
+## API Reference
+
+### `WebhookParser`
+
+**Constructor:**
+```python
+WebhookParser(public_key: str = None, public_key_path: str = None)
+```
+- `public_key` (str, optional): The DANA gateway's public key as a PEM formatted string. This is used if `public_key_path` is not provided or is empty. Defaults to `None`.
+- `public_key_path` (str, optional): The file path to the DANA gateway's public key PEM file. If provided, this will be prioritized over the `public_key` string. Defaults to `None`.
+
+One of `public_key` or `public_key_path` must be provided.
+
+**Method:**
+```python
+parse_webhook(http_method: str, relative_path_url: str, headers: dict, body: str) -> FinishNotify
+```
+- `http_method`: HTTP method of the webhook request (e.g., `POST`).
+- `relative_path_url`: The relative URL path (e.g., `/v1.0/debit/notify`).
+- `headers`: Dictionary containing at least `X-SIGNATURE` and `X-TIMESTAMP`.
+- `body`: Raw JSON string of the webhook payload.
+- **Returns:** `FinishNotifyRequest` model with parsed data.
+- **Raises:** `ValueError` if signature verification fails or the payload is invalid.
+
+## Security Notes
+- Always use the official public key provided by DANA for webhook verification.
+- Reject any webhook requests that fail signature verification or have malformed payloads.
+- Never trust webhook data unless it passes verification.
+
+## Webhook Notification Models
+
+The following webhook notification models may be received:
+
+Model | Description
+------------- | -------------
+[**FinishNotifyRequest**](../../webhook/v1/FinishNotifyRequest.md) | Represents the standard notification payload for payment events.
 

@@ -53,7 +53,7 @@ class TransferToBankInquiryStatusResponse(BaseModel, BaseSdkModel):
     original_external_id: Optional[Annotated[str, Field(strict=True, max_length=36)]] = Field(default=None, description="Original external identifier on header message")
     service_code: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Transaction type indicator is based on the service code of the original transaction request, value always 00")
     amount: Optional[Money] = Field(default=None, description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO ")
-    latest_transaction_status: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Status of latest transaction:<br> 00 - Success<br> 01 - Initiated<br> 02 - Paying<br> 03 - Pending<br> 04 - Refunded<br> 05 - Canceled<br> 06 - Failed<br> 07 - Not found ")
+    latest_transaction_status: Annotated[str, Field(strict=True, max_length=2)] = Field(description="Status of latest transaction:<br> 00 - Success<br> 01 - Initiated<br> 02 - Paying<br> 03 - Pending<br> 04 - Refunded<br> 05 - Cancelled<br> 06 - Failed<br> 07 - Not found ")
     transaction_status_desc: Optional[Annotated[str, Field(strict=True, max_length=50)]] = Field(default=None, description="Description of transaction status")
     additional_info: Optional[Dict[str, Any]] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["responseCode", "responseMessage", "originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "serviceCode", "amount", "latestTransactionStatus", "transactionStatusDesc", "additionalInfo"]

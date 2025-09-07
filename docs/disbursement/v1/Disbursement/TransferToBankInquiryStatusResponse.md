@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **original_external_id** | **str** | Original external identifier on header message | [optional] 
 **service_code** | **str** | Transaction type indicator is based on the service code of the original transaction request, value always 00 | [default to '00']
 **amount** | [**Money**](Money.md) | Amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO  | [optional] 
-**latest_transaction_status** | **str** | Status of latest transaction:<br /> 00 - Success<br /> 01 - Initiated<br /> 02 - Paying<br /> 03 - Pending<br /> 04 - Refunded<br /> 05 - Canceled<br /> 06 - Failed<br /> 07 - Not found  | 
+**latest_transaction_status** | **str** | Status of latest transaction:<br /> 00 - Success<br /> 01 - Initiated<br /> 02 - Paying<br /> 03 - Pending<br /> 04 - Refunded<br /> 05 - Cancelled<br /> 06 - Failed<br /> 07 - Not found  | 
 **transaction_status_desc** | **str** | Description of transaction status | [optional] 
 **additional_info** | **object** | Additional information | [optional] 
 

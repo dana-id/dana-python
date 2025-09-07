@@ -14,6 +14,12 @@ Method | HTTP request | Description
 [**refund_order**](WidgetApi.md#refund_order) | **POST** /v1.0/debit/refund.htm | Refund Order - Widget
 [**widget_payment**](WidgetApi.md#widget_payment) | **POST** /rest/redirection/v1.0/debit/payment-host-to-host | Widget Payment - Widget
 
+## Additional Documentation
+* [Enum Types](#enum-types) - List of available enum constants 
+* [WebhookParser](#webhookparser) - Webhook handling and notification parsing
+* [OAuth URL Generation](#oauth-url-generation) - Generate OAuth URLs for authorization
+* [Complete Payment URL Generation](#complete-payment-url-generation) - Generate URL to complete the payment by combining webRedirectUrl with OTT token
+
 # **account_unbinding**
 > account_unbinding(account_unbinding_request) -> AccountUnbindingResponse 
 
@@ -22,12 +28,7 @@ Account unbinding - Binding
 This API is used to reverses the account binding process by revoking the accessToken and refreshToken
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -37,13 +38,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -85,12 +87,7 @@ Apply OTT - Widget
 This API is used to get one time token that will be used as authorization parameter upon redirecting to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -100,13 +97,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -148,12 +146,7 @@ Apply Token, required by Apply OTT - Binding
 This API is used to finalized account binding process by exchanging the authCode into accessToken that can be used as user authorization
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 from dana.widget.v1.models.apply_token_authorization_code_request import ApplyTokenAuthorizationCodeRequest
 import os
@@ -164,13 +157,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -212,12 +206,7 @@ Balance Inquiry
 This API is used to query user's DANA account balance via merchant
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -227,13 +216,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -275,12 +265,7 @@ Cancel Order - Widget
 This API is used to cancel the order from merchant's platform to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -290,13 +275,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -338,12 +324,7 @@ Query Payment - Widget
 This API is used to inquiry payment status and information from merchant's platform to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -353,13 +334,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -401,12 +383,7 @@ Query User Profile
 The API is used to query user profile such as DANA balance (unit in IDR), masked DANA phone number, KYC or OTT (one time token) between merchant server and DANA's server
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -416,13 +393,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -464,12 +442,7 @@ Refund Order - Widget
 This API is used to refund the order from merchant's platform to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -479,13 +452,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -527,12 +501,7 @@ Widget Payment - Widget
 This API is used to initiate payment from merchant's platform to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -542,13 +511,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -582,3 +552,184 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# Enum Types
+
+```python
+from dana.widget.v1.enum import *
+
+# Example of using enum
+enum_value = ServiceType.PARKING
+```
+
+## ServiceType
+| Value | Description |
+|-------|-------------|
+| `PARKING` |  |
+| `INVESTMENT` |  |
+
+## ServiceScenario
+| Value | Description |
+|-------|-------------|
+| `SCAN_AND_PAY` |  |
+| `EXIT_AND_PAY` |  |
+| `EMAS_PURCHASE` |  |
+
+## PromoType
+| Value | Description |
+|-------|-------------|
+| `CASH_BACK` |  |
+| `DISCOUNT` |  |
+| `VOUCHER` |  |
+| `POINT` |  |
+
+## AcquirementStatus
+| Value | Description |
+|-------|-------------|
+| `INIT` |  |
+| `SUCCESS` |  |
+| `CLOSED` |  |
+| `PAYING` |  |
+| `MERCHANT_ACCEPT` |  |
+| `CANCELLED` |  |
+
+## Mode
+| Value | Description |
+|-------|-------------|
+| `API` |  |
+| `DEEPLINK` |  |
+
+## ResourceType
+| Value | Description |
+|-------|-------------|
+| `BALANCE` |  |
+| `TRANSACTION_URL` |  |
+| `MASK_DANA_ID` |  |
+| `TOPUP_URL` |  |
+| `OTT` |  |
+| `USER_KYC` |  |
+
+## ResultStatus
+| Value | Description |
+|-------|-------------|
+| `S` |  |
+| `F` |  |
+| `U` |  |
+
+# WebhookParser
+
+This section demonstrates how to securely verify and parse DANA webhook notifications using the `WebhookParser` utility from the Python SDK.
+
+## Example
+```python
+import os
+from dana.webhook import WebhookParser
+
+# You can provide the DANA_PUBLIC_KEY or DANA_PUBLIC_KEY_PATH
+# The parser will prioritize DANA_PUBLIC_KEY_PATH if both are provided.
+
+http_method = "POST"
+relative_path_url = "/v1.0/debit/notify"
+headers = {
+    "X-SIGNATURE": "<signature-from-header>",
+    "X-TIMESTAMP": "<timestamp-from-header>"
+}
+body = '{"original_partner_reference_no": "123...", ...}'  # Raw JSON string from request body
+
+parser = WebhookParser(public_key_path=os.getenv("DANA_PUBLIC_KEY_PATH"))
+
+try:
+    finish_notify = parser.parse_webhook(
+        http_method=http_method,
+        relative_path_url=relative_path_url,
+        headers=headers,
+        body=body
+    )
+    print(finish_notify.original_partner_reference_no)
+except ValueError as e:
+    print(f"Webhook verification failed: {e}")
+```
+
+## API Reference
+
+### `WebhookParser`
+
+**Constructor:**
+```python
+WebhookParser(public_key: str = None, public_key_path: str = None)
+```
+- `public_key` (str, optional): The DANA gateway's public key as a PEM formatted string. This is used if `public_key_path` is not provided or is empty. Defaults to `None`.
+- `public_key_path` (str, optional): The file path to the DANA gateway's public key PEM file. If provided, this will be prioritized over the `public_key` string. Defaults to `None`.
+
+One of `public_key` or `public_key_path` must be provided.
+
+**Method:**
+```python
+parse_webhook(http_method: str, relative_path_url: str, headers: dict, body: str) -> FinishNotify
+```
+- `http_method`: HTTP method of the webhook request (e.g., `POST`).
+- `relative_path_url`: The relative URL path (e.g., `/v1.0/debit/notify`).
+- `headers`: Dictionary containing at least `X-SIGNATURE` and `X-TIMESTAMP`.
+- `body`: Raw JSON string of the webhook payload.
+- **Returns:** `FinishNotifyRequest` model with parsed data.
+- **Raises:** `ValueError` if signature verification fails or the payload is invalid.
+
+## Security Notes
+- Always use the official public key provided by DANA for webhook verification.
+- Reject any webhook requests that fail signature verification or have malformed payloads.
+- Never trust webhook data unless it passes verification.
+
+## Webhook Notification Models
+
+The following webhook notification models may be received:
+
+Model | Description
+------------- | -------------
+[**FinishNotifyRequest**](../../webhook/v1/FinishNotifyRequest.md) | Represents the standard notification payload for payment events.
+
+
+## OAuth URL Generation
+
+Use the `Oauth2UrlData` class and `Util.generate_oauth_url()` to generate OAuth authorization URLs:
+
+```python
+from dana.widget.v1.models.oauth2_url_data import Oauth2UrlData
+from dana.widget.v1.util import Util
+from dana.widget.v1.enum import Mode
+
+private_key = os.environ.get(PRIVATE_KEY)
+
+# Set up OAuth2 URL data
+oauth2_url_data = Oauth2UrlData(
+    external_id=external_id,
+    merchant_id=os.environ.get(MERCHANT_ID),  # from env variable
+    redirect_url=https://google.com,
+    mode=Mode.DEEPLINK # the default mode is API if not set
+)
+
+# You can set additional fields as needed
+oauth2_url_data.seamless_data = {
+    mobileNumber: 08787584xxxx  # Optional data for seamless login
+}
+
+# Generate the OAuth URL
+oauth_url = Util.generate_oauth_url(oauth2_url_data, private_key)
+
+# You can redirect the user to this URL to start the OAuth flow
+print(f"Generated OAuth URL: {oauth_url}")
+```
+
+## Complete Payment URL Generation
+
+```python
+from dana.widget.v1.util import Util
+from dana.widget.v1.models.widget_payment_response import WidgetPaymentResponse
+from dana.widget.v1.models.apply_ott_response import ApplyOTTResponse
+
+# Build the complete payment URL
+widget_payment_response = WidgetPaymentResponse()
+apply_ott_response = ApplyOTTResponse()
+payment_url = Util.generate_complete_payment_url(widget_payment_response, apply_ott_response)
+
+# Redirect the user to this URL to complete the payment
+print(f"Redirect user to: {payment_url}")
+```

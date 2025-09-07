@@ -1,7 +1,5 @@
 # PaymentGatewayApi
 
-All URIs are relative to http://api.sandbox.dana.id for sandbox environment and https://api.saas.dana.id for production environment
-
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**cancel_order**](PaymentGatewayApi.md#cancel_order) | **POST** /payment-gateway/v1.0/debit/cancel.htm | Cancel Order - Payment Gateway
@@ -9,6 +7,10 @@ Method | HTTP request | Description
 [**create_order**](PaymentGatewayApi.md#create_order) | **POST** /payment-gateway/v1.0/debit/payment-host-to-host.htm | Create Order - Payment Gateway
 [**query_payment**](PaymentGatewayApi.md#query_payment) | **POST** /payment-gateway/v1.0/debit/status.htm | Query Payment - Payment Gateway
 [**refund_order**](PaymentGatewayApi.md#refund_order) | **POST** /payment-gateway/v1.0/debit/refund.htm | Refund Order - Payment Gateway
+
+## Additional Documentation
+* [Enum Types](#enum-types) - List of available enum constants 
+* [WebhookParser](#webhookparser) - Webhook handling and notification parsing
 
 # **cancel_order**
 > cancel_order(cancel_order_request) -> CancelOrderResponse 
@@ -18,12 +20,7 @@ Cancel Order - Payment Gateway
 This API is used to cancel the order from merchant's platform to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -33,13 +30,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -82,12 +80,7 @@ Consult Pay - Payment Gateway
 This API is used to consult the list of payment methods or payment channels that user has and used in certain transactions or orders
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -97,13 +90,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -145,12 +139,7 @@ Create Order - Payment Gateway
 This API is used for merchant to create order in DANA side
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 from dana.payment_gateway.v1.models.create_order_by_redirect_request import CreateOrderByRedirectRequest
 import os
@@ -161,13 +150,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -209,12 +199,7 @@ Query Payment - Payment Gateway
 This API is used to inquiry payment status and information from merchant's platform to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -224,13 +209,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -272,12 +258,7 @@ Refund Order - Payment Gateway
 This API is used to refund the order from merchant's platform to DANA
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -287,13 +268,14 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
 configuration = SnapConfiguration(
     api_key=AuthSettings(
-        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"),
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
     )
 )
 
@@ -329,83 +311,65 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # Enum Types
-## acquirementStatus
-| Value | Description |
-|-------|-------------|
-| `INIT` | Order is created but not paid yet |
-| `SUCCESS` | Order is succeeded |
-| `CLOSED` | Order is closed |
-| `PAYING` | Order is paid but not finish |
-| `MERCHANT_ACCEPT` | Order is accepted by merchant after order is paid for PAY-CONFIRM |
-| `CANCELLED` | Order is cancelled |
 
-## actorType
-| Value | Description |
-|-------|-------------|
-| `USER` | User |
-| `MERCHANT` | Merchant |
-| `MERCHANT_OPERATOR` | Merchant operator |
-| `BACK_OFFICE` | Back office |
-| `SYSTEM` | System |
+```python
+from dana.payment_gateway.v1.enum import *
 
-## orderTerminalType
-| Value | Description |
-|-------|-------------|
-| `APP` | Mobile Application |
-| `WEB` | Browser Web |
-| `WAP` | Mobile Wap |
-| `SYSTEM` | System Call |
+# Example of using enum
+enum_value = PayMethod.BALANCE
+```
 
-## payMethod
+## PayMethod
 | Value | Description |
 |-------|-------------|
-| `BALANCE` | Payment method with balance |
-| `COUPON` | Payment method with coupon |
-| `NET_BANKING` | Payment method with internet banking |
-| `CREDIT_CARD` | Payment method with credit card |
-| `DEBIT_CARD` | Payment method with debit card |
-| `VIRTUAL_ACCOUNT` | Payment method with virtual account |
-| `OTC` | Payment method with OTC |
-| `DIRECT_DEBIT_CREDIT_CARD` | Payment method with direct debit of credit card |
-| `DIRECT_DEBIT_DEBIT_CARD` | Payment method with direct debit of debit card |
-| `ONLINE_CREDIT` | Payment method with online Credit |
-| `LOAN_CREDIT` | Payment method with DANA Cicil |
-| `NETWORK_PAY` | Payment method with e-wallet |
+| `BALANCE` |  |
+| `COUPON` |  |
+| `NET_BANKING` |  |
+| `CREDIT_CARD` |  |
+| `DEBIT_CARD` |  |
+| `VIRTUAL_ACCOUNT` |  |
+| `OTC` |  |
+| `DIRECT_DEBIT_CREDIT_CARD` |  |
+| `DIRECT_DEBIT_DEBIT_CARD` |  |
+| `ONLINE_CREDIT` |  |
+| `LOAN_CREDIT` |  |
+| `NETWORK_PAY` |  |
+| `CARD` |  |
 
-## payOption
+## PayOption
 | Value | Description |
 |-------|-------------|
-| `NETWORK_PAY_PG_SPAY` | Payment method with ShopeePay e-wallet |
-| `NETWORK_PAY_PG_OVO` | Payment method with OVO e-wallet |
-| `NETWORK_PAY_PG_GOPAY` | Payment method with GoPay e-wallet |
-| `NETWORK_PAY_PG_LINKAJA` | Payment method with LinkAja e-wallet |
-| `NETWORK_PAY_PG_CARD` | Payment method with Card |
-| `VIRTUAL_ACCOUNT_BCA` | Payment method with BCA virtual account |
-| `VIRTUAL_ACCOUNT_BNI` | Payment method with BNI virtual account |
-| `VIRTUAL_ACCOUNT_MANDIRI` | Payment method with Mandiri virtual account |
-| `VIRTUAL_ACCOUNT_BRI` | Payment method with BRI virtual account |
-| `VIRTUAL_ACCOUNT_BTPN` | Payment method with BTPN virtual account |
-| `VIRTUAL_ACCOUNT_CIMB` | Payment method with CIMB virtual account |
-| `VIRTUAL_ACCOUNT_PERMATA` | Payment method with Permata virtual account |
+| `NETWORK_PAY_PG_SPAY` |  |
+| `NETWORK_PAY_PG_OVO` |  |
+| `NETWORK_PAY_PG_GOPAY` |  |
+| `NETWORK_PAY_PG_LINKAJA` |  |
+| `NETWORK_PAY_PG_CARD` |  |
+| `VIRTUAL_ACCOUNT_BCA` |  |
+| `VIRTUAL_ACCOUNT_BNI` |  |
+| `VIRTUAL_ACCOUNT_MANDIRI` |  |
+| `VIRTUAL_ACCOUNT_BRI` |  |
+| `VIRTUAL_ACCOUNT_BTPN` |  |
+| `VIRTUAL_ACCOUNT_CIMB` |  |
+| `VIRTUAL_ACCOUNT_PERMATA` |  |
 
-## sourcePlatform
+## AcquirementStatus
 | Value | Description |
 |-------|-------------|
-| `IPG` |  |
+| `INIT` |  |
+| `SUCCESS` |  |
+| `CLOSED` |  |
+| `PAYING` |  |
+| `MERCHANT_ACCEPT` |  |
+| `CANCELLED` |  |
 
-## terminalType
+## ActorType
 | Value | Description |
 |-------|-------------|
-| `APP` | Mobile Application |
-| `WEB` | Browser Web |
-| `WAP` | Mobile Wap |
-| `SYSTEM` | System Call |
-
-## type
-| Value | Description |
-|-------|-------------|
-| `PAY_RETURN` | When finish payment, DANA will notify to the URL that has been defined by |
-| `NOTIFICATION` | After the payment, the user will be redirected to merchant page, this is mandatory |
+| `USER` |  |
+| `MERCHANT` |  |
+| `MERCHANT_OPERATOR` |  |
+| `BACK_OFFICE` |  |
+| `SYSTEM` |  |
 
 # WebhookParser
 
@@ -416,16 +380,9 @@ This section demonstrates how to securely verify and parse DANA webhook notifica
 import os
 from dana.webhook import WebhookParser
 
-# You can provide the public key directly as a string or via a file path.
-# The parser will prioritize public_key_path if both are provided.
+# You can provide the DANA_PUBLIC_KEY or DANA_PUBLIC_KEY_PATH
+# The parser will prioritize DANA_PUBLIC_KEY_PATH if both are provided.
 
-# Option 1: Provide public key as a string
-# DANA_PUBLIC_KEY_STRING = os.getenv("DANA_PUBLIC_KEY_STRING") 
-
-# Option 2: Provide path to public key file (recommended for production)
-DANA_PUBLIC_KEY_PATH = os.getenv("DANA_PUBLIC_KEY_PATH") # e.g., "/path/to/your/dana_public_key.pem"
-
-# Example HTTP request data from your webhook handler
 http_method = "POST"
 relative_path_url = "/v1.0/debit/notify"
 headers = {
@@ -434,11 +391,7 @@ headers = {
 }
 body = '{"original_partner_reference_no": "123...", ...}'  # Raw JSON string from request body
 
-# Initialize WebhookParser, prioritizing path if provided
-# parser = WebhookParser(public_key=DANA_PUBLIC_KEY_STRING) # If using string
-parser = WebhookParser(public_key_path=DANA_PUBLIC_KEY_PATH) # If using path
-# Or, if you want to provide both and let the SDK prioritize:
-# parser = WebhookParser(public_key=DANA_PUBLIC_KEY_STRING, public_key_path=DANA_PUBLIC_KEY_PATH)
+parser = WebhookParser(public_key_path=os.getenv("DANA_PUBLIC_KEY_PATH"))
 
 try:
     finish_notify = parser.parse_webhook(
@@ -487,5 +440,5 @@ The following webhook notification models may be received:
 
 Model | Description
 ------------- | -------------
-[**FinishNotifyRequest**](PaymentGateway/FinishNotifyRequest.md) | Represents the standard notification payload for payment events.
+[**FinishNotifyRequest**](../../webhook/v1/FinishNotifyRequest.md) | Represents the standard notification payload for payment events.
 

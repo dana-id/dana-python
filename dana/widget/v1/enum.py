@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from enum import Enum
-
 class ServiceType(str, Enum):
     PARKING = "PARKING"
     INVESTMENT = "INVESTMENT"
@@ -22,12 +20,6 @@ class ServiceScenario(str, Enum):
     SCAN_AND_PAY = "SCAN_AND_PAY"
     EXIT_AND_PAY = "EXIT_AND_PAY"
     EMAS_PURCHASE = "EMAS_PURCHASE"
-
-class PromoType(str, Enum):
-    CASH_BACK = "CASH_BACK"
-    DISCOUNT = "DISCOUNT"
-    VOUCHER = "VOUCHER"
-    POINT = "POINT"
 
 class PromoType(str, Enum):
     CASH_BACK = "CASH_BACK"
@@ -90,19 +82,6 @@ class PayMethod(str, Enum):
     NETWORK_PAY = "NETWORK_PAY"
     CARD = "CARD"
 
-class PayMethod(str, Enum):
-    BALANCE = "BALANCE"
-    COUPON = "COUPON"
-    NET_BANKING = "NET_BANKING"
-    CREDIT_CARD = "CREDIT_CARD"
-    DEBIT_CARD = "DEBIT_CARD"
-    VIRTUAL_ACCOUNT = "VIRTUAL_ACCOUNT"
-    OTC = "OTC"
-    DIRECT_DEBIT_CREDIT_CARD = "DIRECT_DEBIT_CREDIT_CARD"
-    DIRECT_DEBIT_DEBIT_CARD = "DIRECT_DEBIT_DEBIT_CARD"
-    ONLINE_CREDIT = "ONLINE_CREDIT"
-    LOAN_CREDIT = "LOAN_CREDIT"
-
 class PayOption(str, Enum):
     NETWORK_PAY_PG_SPAY = "NETWORK_PAY_PG_SPAY"
     NETWORK_PAY_PG_OVO = "NETWORK_PAY_PG_OVO"
@@ -121,9 +100,3 @@ class Type(str, Enum):
     PAY_RETURN = "PAY_RETURN"
     NOTIFICATION = "NOTIFICATION"
 
-class ActorType(str, Enum):
-    USER = "USER"
-    MERCHANT = "MERCHANT"
-    MERCHANT_OPERATOR = "MERCHANT_OPERATOR"
-    BACK_OFFICE = "BACK_OFFICE"
-    SYSTEM = "SYSTEM"

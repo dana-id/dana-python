@@ -149,6 +149,63 @@ class PaymentGatewayFixtures:
         )
     
     @staticmethod
+    def get_create_order_by_redirect_request() -> CreateOrderByRedirectRequest:
+        """Get a CreateOrderByRedirectRequest fixture with configuration
+        Matches the PHP implementation of getCreateOrderByApiRequest but for redirect flow
+        
+        Returns:
+            CreateOrderByRedirectRequest: A configured request object for testing
+        """
+        merchant_id = PaymentGatewayFixtures.get_merchant_id()
+        partner_reference_no = PaymentGatewayFixtures.generate_partner_reference_no()
+        valid_up_to = (datetime.now(timezone(timedelta(hours=7))) + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%S+07:00")
+ 
+        return CreateOrderByRedirectRequest(
+            partner_reference_no=partner_reference_no,
+            merchant_id=merchant_id,
+            amount=Money(
+                value="50001.00",
+                currency="IDR"
+            ),
+            valid_up_to=valid_up_to,
+            url_params=[
+                UrlParam(
+                    url="https://example.com/return",
+                    type=Type.PAY_RETURN,
+                    is_deeplink="N"
+                ),
+                UrlParam(
+                    url="https://example.com/notify",
+                    type=Type.NOTIFICATION,
+                    is_deeplink="N"
+                )
+            ],
+            additional_info=CreateOrderByRedirectAdditionalInfo(
+                order=OrderRedirectObject(
+                    order_title="Test Product",
+                    scenario="REDIRECT",
+                    merchant_trans_type="SPECIAL_MOVIE"
+                ),
+                mcc="5732",
+                env_info=EnvInfo(
+                    source_platform=SourcePlatform.IPG,
+                    terminal_type=TerminalType.SYSTEM,
+                    session_id="8EU6mLl5mUpUBgyRFT4v7DjfQ3fcauthcenter",
+                    token_id="a8d359d6-ca3d-4048-9295-bbea5f6715a6",
+                    website_language="en_US",
+                    client_ip="10.15.8.189",
+                    os_type="Windows.PC",
+                    app_version="1.0",
+                    sdk_version="1.0",
+                    client_key="e5806b64-598d-414f-b7f7-83f9576eb6fb",
+                    order_terminal_type="WEB",
+                    order_os_type="IOS",
+                    merchant_app_version="1.0"
+                )
+            )
+        )
+        
+    @staticmethod
     def get_create_order_by_api_paid_request() -> CreateOrderByApiRequest:
         """Get a CreateOrderByApiRequest fixture with paid configuration
         Matches the PHP implementation of getCreateOrderByApiPaidRequest
@@ -287,6 +344,10 @@ def consult_pay_request() -> ConsultPayRequest:
 @pytest.fixture
 def create_order_by_api_request() -> CreateOrderByApiRequest:
     return PaymentGatewayFixtures.get_create_order_by_api_request()
+
+@pytest.fixture
+def create_order_by_redirect_request() -> CreateOrderByRedirectRequest:
+    return PaymentGatewayFixtures.get_create_order_by_redirect_request()
 
 @pytest.fixture
 def create_order_by_api_paid_request() -> CreateOrderByApiRequest:

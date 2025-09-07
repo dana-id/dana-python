@@ -22,6 +22,7 @@ from dana.payment_gateway.v1.api import PaymentGatewayApi
 from dana.payment_gateway.v1.models import (
     ConsultPayRequest,
     CreateOrderByApiRequest,
+    CreateOrderByRedirectRequest,
     QueryPaymentRequest,
     CancelOrderRequest,
     RefundOrderRequest,
@@ -33,6 +34,7 @@ from tests.fixtures.payment_gateway import (
     consult_pay_request,
     create_order_by_api_request,
     create_order_by_api_paid_request,
+    create_order_by_redirect_request,
     query_payment_request,
     cancel_order_request,
     refund_order_request
@@ -43,7 +45,7 @@ from tests.web_automation import automate_payment_payment_gateway
 class TestPaymentGatewayWithAutomation:
     """Test class for Payment Gateway API endpoints with browser automation"""
 
-    def test_refund_order_with_automation(self, api_instance_payment_gateway: PaymentGatewayApi):
+    def test_complete_scenario(self, api_instance_payment_gateway: PaymentGatewayApi, create_order_by_redirect_request: CreateOrderByRedirectRequest):
         """Test RefundOrder operation with web automation
         
         This test does the following:
@@ -57,26 +59,14 @@ class TestPaymentGatewayWithAutomation:
         if not merchant_id:
             pytest.skip("Skipping test: No API client credentials")
         
-        # Generate a unique partner reference number with timestamp and random
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        random_suffix = str(uuid.uuid4())[:8]
-        partner_ref_no = f"PY-AUTO-{timestamp}-{random_suffix}"
-        
-        # Get create order request from fixtures and update with unique reference number
-        create_order_request = create_order_by_api_paid_request()
-        create_order_request.partner_reference_no = partner_ref_no
-        create_order_request.merchant_id = merchant_id
-        
-        print(f"Creating order for payment and refund test with partner ref: {partner_ref_no}")
-        
         try:
             # Execute the create order API call
-            resp_create_order = api_instance_payment_gateway.create_order(create_order_request)
+            resp_create_order = api_instance_payment_gateway.create_order(create_order_by_redirect_request)
             
             # Assertions for create order response
             assert resp_create_order is not None
             assert resp_create_order.web_redirect_url is not None
-            assert resp_create_order.partner_reference_no == partner_ref_no
+            assert resp_create_order.partner_reference_no == create_order_by_redirect_request.partner_reference_no
             assert resp_create_order.reference_no is not None
             
             # Store the reference number for refund
@@ -107,8 +97,8 @@ class TestPaymentGatewayWithAutomation:
                 
                 # Get query payment request from fixtures
                 query_request = QueryPaymentRequest(
-                    original_partner_reference_no=partner_ref_no,
-                    service_code="00",
+                    original_partner_reference_no=create_order_by_redirect_request.partner_reference_no,
+                    service_code="54",
                     merchant_id=merchant_id
                 )
                 
@@ -156,13 +146,12 @@ class TestPaymentGatewayWithAutomation:
                 
                 # Create refund order request
                 refund_request = RefundOrderRequest(
-                    original_partner_reference_no=partner_ref_no,
-                    original_reference_no=ref_no,
+                    original_partner_reference_no=create_order_by_redirect_request.partner_reference_no,
                     merchant_id=merchant_id,
-                    partner_refund_no=f"REFUND-{timestamp}-{random_suffix}",
+                    partner_refund_no=str(uuid.uuid4()),
                     refund_amount=Money(
-                        value=create_order_request.order_amount.value,
-                        currency=create_order_request.order_amount.currency
+                        value=create_order_by_redirect_request.amount.value,
+                        currency=create_order_by_redirect_request.amount.currency
                     ),
                     reason="Python SDK Automation Test Refund"
                 )
@@ -173,9 +162,6 @@ class TestPaymentGatewayWithAutomation:
                     
                     # Add assertions for successful refund response
                     assert resp_refund_order is not None
-                    
-                    if hasattr(resp_refund_order, 'original_partner_reference_no'):
-                        assert resp_refund_order.original_partner_reference_no == partner_ref_no
                     
                     assert resp_refund_order.response_code is not None
                     
@@ -193,6 +179,6 @@ class TestPaymentGatewayWithAutomation:
                     else:
                         pytest.fail(f"Refund request failed with unexpected error: {e}")
             else:
-                pytest.skip("Payment automation was not successful, skipping refund test")
+                pytest.fail("Payment automation was not successful")
         except Exception as e:
             pytest.fail(f"Test failed: {e}")

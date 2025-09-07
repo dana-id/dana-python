@@ -46,7 +46,7 @@ class RefundOptionBill(BaseModel, BaseSdkModel):
     """
     RefundOptionBill
     """ # noqa: E501
-    pay_method: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method name. The enums:<br>   * BALANCE - Payment method with balance<br>   * COUPON - Payment method with coupon<br>   * NET_BANKING - Payment method with internet banking<br>   * CREDIT_CARD - Payment method with credit card<br>   * DEBIT_CARD - Payment method with debit card<br>   * VIRTUAL_ACCOUNT - Payment method with virtual account<br>   * OTC - Payment method with OTC<br>   * DIRECT_DEBIT_CREDIT_CARD - Payment method with direct debit of credit card<br>   * DIRECT_DEBIT_DEBIT_CARD - Payment method with direct debit of debit card<br>   * ONLINE_CREDIT - Payment method with online Credit<br>   * LOAN_CREDIT - Payment method with DANA Cicil<br> ")
+    pay_method: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method name. The enums:<br>   * BALANCE - Payment method with balance<br>   * COUPON - Payment method with coupon<br>   * NET_BANKING - Payment method with internet banking<br>   * CREDIT_CARD - Payment method with credit card<br>   * DEBIT_CARD - Payment method with debit card<br>   * VIRTUAL_ACCOUNT - Payment method with virtual account<br>   * OTC - Payment method with OTC<br>   * DIRECT_DEBIT_CREDIT_CARD - Payment method with direct debit of credit card<br>   * DIRECT_DEBIT_DEBIT_CARD - Payment method with direct debit of debit card<br>   * ONLINE_CREDIT - Payment method with online Credit<br>   * LOAN_CREDIT - Payment method with DANA Cicil<br>   * NETWORK_PAY - Payment method with e-wallet<br>   * CARD - Payment method with card<br> ")
     trans_amount: Optional[Money] = Field(default=None, description="Trans amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     __properties: ClassVar[List[str]] = ["payMethod", "transAmount"]
 
@@ -56,8 +56,8 @@ class RefundOptionBill(BaseModel, BaseSdkModel):
         if not value:
             return value
 
-        if value not in set(['BALANCE', 'COUPON', 'NET_BANKING', 'CREDIT_CARD', 'DEBIT_CARD', 'VIRTUAL_ACCOUNT', 'OTC', 'DIRECT_DEBIT_CREDIT_CARD', 'DIRECT_DEBIT_DEBIT_CARD', 'ONLINE_CREDIT', 'LOAN_CREDIT']):
-            raise ValueError("must be one of enum values ('BALANCE', 'COUPON', 'NET_BANKING', 'CREDIT_CARD', 'DEBIT_CARD', 'VIRTUAL_ACCOUNT', 'OTC', 'DIRECT_DEBIT_CREDIT_CARD', 'DIRECT_DEBIT_DEBIT_CARD', 'ONLINE_CREDIT', 'LOAN_CREDIT')")
+        if value not in set(['BALANCE', 'COUPON', 'NET_BANKING', 'CREDIT_CARD', 'DEBIT_CARD', 'VIRTUAL_ACCOUNT', 'OTC', 'DIRECT_DEBIT_CREDIT_CARD', 'DIRECT_DEBIT_DEBIT_CARD', 'ONLINE_CREDIT', 'LOAN_CREDIT', 'NETWORK_PAY', 'CARD']):
+            raise ValueError("must be one of enum values ('BALANCE', 'COUPON', 'NET_BANKING', 'CREDIT_CARD', 'DEBIT_CARD', 'VIRTUAL_ACCOUNT', 'OTC', 'DIRECT_DEBIT_CREDIT_CARD', 'DIRECT_DEBIT_DEBIT_CARD', 'ONLINE_CREDIT', 'LOAN_CREDIT', 'NETWORK_PAY', 'CARD')")
         return value
 
     model_config = ConfigDict(

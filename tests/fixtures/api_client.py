@@ -25,7 +25,7 @@ from dana.merchant_management.v1 import MerchantManagementApi
 
 @pytest.fixture(scope="class")
 def api_instance_payment_gateway():
-    """Fixture to provide an API instance for the tests."""
+    """Fixture to provide an API instance for the tests using PRIVATE_KEY."""
     auth_settings = AuthSettings(
         PRIVATE_KEY=os.getenv("PRIVATE_KEY"),
         ORIGIN=os.getenv("ORIGIN"),
@@ -40,6 +40,38 @@ def api_instance_payment_gateway():
     api_instance = PaymentGatewayApi(client)
     
     yield api_instance
+
+@pytest.fixture(scope="class")
+def api_instance_payment_gateway_with_key_path():
+    """Fixture to provide an API instance for the tests using PRIVATE_KEY_PATH."""
+    # For CI/CD, we assume the private key is saved to a temporary file
+    # Create a temporary file with the private key content
+    import tempfile
+    private_key = os.getenv("PRIVATE_KEY")
+    if not private_key:
+        pytest.skip("PRIVATE_KEY environment variable not set")
+        
+    temp_file = tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".pem")
+    try:
+        temp_file.write(private_key)
+        temp_file.close()
+        
+        auth_settings = AuthSettings(
+            PRIVATE_KEY_PATH=temp_file.name,  # Use the path instead of the key content
+            ORIGIN=os.getenv("ORIGIN"),
+            X_PARTNER_ID=os.getenv("X_PARTNER_ID"),
+            CHANNEL_ID=os.getenv("CHANNEL_ID"),
+            DANA_ENV=Env.SANDBOX,
+        )
+        config = SnapConfiguration(api_key=auth_settings)
+        client = ApiClient(config)
+
+        api_instance = PaymentGatewayApi(client)
+        
+        yield api_instance
+    finally:
+        # Clean up the temporary file
+        os.unlink(temp_file.name)
 
 @pytest.fixture(scope="class")
 def api_instance_widget():

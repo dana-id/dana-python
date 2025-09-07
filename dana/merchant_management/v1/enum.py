@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from enum import Enum
-
 class ShopParentType(str, Enum):
     MERCHANT = "MERCHANT"
     DIVISION = "DIVISION"
@@ -25,30 +23,6 @@ class SizeType(str, Enum):
     UME = "UME"
     UBE = "UBE"
 
-class SizeType(str, Enum):
-    UMI = "UMI"
-    UKE = "UKE"
-    UME = "UME"
-    UBE = "UBE"
-    URE = "URE"
-
-class SizeType(str, Enum):
-    UMI = "UMI"
-    UKE = "UKE"
-    UME = "UME"
-    UBE = "UBE"
-    URE = "URE"
-
-class SizeType(str, Enum):
-    UMI = "UMI"
-    UKE = "UKE"
-    UME = "UME"
-    UBE = "UBE"
-
-class Loyalty(str, Enum):
-    TRUE = "true"
-    FALSE = "false"
-
 class Loyalty(str, Enum):
     TRUE = "true"
     FALSE = "false"
@@ -61,51 +35,6 @@ class BusinessEntity(str, Enum):
     YAYASAN = "yayasan"
     KOPERASI = "koperasi"
 
-class BusinessEntity(str, Enum):
-    PT = "pt"
-    CV = "cv"
-    INDIVIDU = "individu"
-    USAHA_DAGANG = "usaha_dagang"
-    YAYASAN = "yayasan"
-    KOPERASI = "koperasi"
-
-class BusinessEntity(str, Enum):
-    PT = "pt"
-    CV = "cv"
-    INDIVIDU = "individu"
-    USAHA_DAGANG = "usaha_dagang"
-    YAYASAN = "yayasan"
-    KOPERASI = "koperasi"
-
-class BusinessEntity(str, Enum):
-    PT = "pt"
-    CV = "cv"
-    INDIVIDU = "individu"
-    USAHA_DAGANG = "usaha_dagang"
-    YAYASAN = "yayasan"
-    KOPERASI = "koperasi"
-
-class OwnerIdType(str, Enum):
-    KTP = "KTP"
-    SIM = "SIM"
-    PASSPORT = "PASSPORT"
-    SIUP = "SIUP"
-    NIB = "NIB"
-
-class OwnerIdType(str, Enum):
-    KTP = "KTP"
-    SIM = "SIM"
-    PASSPORT = "PASSPORT"
-    SIUP = "SIUP"
-    NIB = "NIB"
-
-class OwnerIdType(str, Enum):
-    KTP = "KTP"
-    SIM = "SIM"
-    PASSPORT = "PASSPORT"
-    SIUP = "SIUP"
-    NIB = "NIB"
-
 class OwnerIdType(str, Enum):
     KTP = "KTP"
     SIM = "SIM"
@@ -117,22 +46,9 @@ class ShopOwning(str, Enum):
     DIRECT_OWNED = "DIRECT_OWNED"
     FRANCHISED = "FRANCHISED"
 
-class ShopOwning(str, Enum):
-    DIRECT_OWNED = "DIRECT_OWNED"
-    FRANCHISED = "FRANCHISED"
-
 class ShopIdType(str, Enum):
     INNER_ID = "INNER_ID"
     EXTERNAL_ID = "EXTERNAL_ID"
-
-class ShopIdType(str, Enum):
-    INNER_ID = "INNER_ID"
-    EXTERNAL_ID = "EXTERNAL_ID"
-
-class ParentRoleType(str, Enum):
-    MERCHANT = "MERCHANT"
-    DIVISION = "DIVISION"
-    EXTERNAL_DIVISION = "EXTERNAL_DIVISION"
 
 class ParentRoleType(str, Enum):
     MERCHANT = "MERCHANT"
@@ -152,47 +68,17 @@ class DivisionType(str, Enum):
     POINT_OF_SALE = "POINT_OF_SALE"
     VENDING_MACHINE = "VENDING_MACHINE"
 
-class DivisionType(str, Enum):
-    REGION = "REGION"
-    AREA = "AREA"
-    BRANCH = "BRANCH"
-    OUTLET = "OUTLET"
-    STORE = "STORE"
-    KIOSK = "KIOSK"
-    STALL = "STALL"
-    COUNTER = "COUNTER"
-    BOOTH = "BOOTH"
-    POINT_OF_SALE = "POINT_OF_SALE"
-    VENDING_MACHINE = "VENDING_MACHINE"
+class GOODSSOLDTYPE(str, Enum):
+    DIGITAL = "DIGITAL"
+    PHYSICAL = "PHYSICAL"
 
-class DivisionType(str, Enum):
-    REGION = "REGION"
-    AREA = "AREA"
-    BRANCH = "BRANCH"
-    OUTLET = "OUTLET"
-    STORE = "STORE"
-    KIOSK = "KIOSK"
-    STALL = "STALL"
-    COUNTER = "COUNTER"
-    BOOTH = "BOOTH"
-    POINT_OF_SALE = "POINT_OF_SALE"
-    VENDING_MACHINE = "VENDING_MACHINE"
+class USERPROFILING(str, Enum):
+    B2B = "B2B"
+    B2C = "B2C"
 
 class PgDivisionFlag(str, Enum):
     TRUE = "true"
     FALSE = "false"
-
-class PgDivisionFlag(str, Enum):
-    TRUE = "true"
-    FALSE = "false"
-
-class PgDivisionFlag(str, Enum):
-    TRUE = "true"
-    FALSE = "false"
-
-class DivisionIdType(str, Enum):
-    INNER_ID = "INNER_ID"
-    EXTERNAL_ID = "EXTERNAL_ID"
 
 class DivisionIdType(str, Enum):
     INNER_ID = "INNER_ID"
@@ -222,70 +108,3 @@ class ShopBizType(str, Enum):
     ONLINE = "ONLINE"
     OFFLINE = "OFFLINE"
 
-class SourcePlatform(str, Enum):
-    IPG = "IPG"
-
-class TerminalType(str, Enum):
-    APP = "APP"
-    WEB = "WEB"
-    WAP = "WAP"
-    SYSTEM = "SYSTEM"
-
-class OrderTerminalType(str, Enum):
-    APP = "APP"
-    WEB = "WEB"
-    WAP = "WAP"
-    SYSTEM = "SYSTEM"
-
-class PayMethod(str, Enum):
-    BALANCE = "BALANCE"
-    COUPON = "COUPON"
-    NET_BANKING = "NET_BANKING"
-    CREDIT_CARD = "CREDIT_CARD"
-    DEBIT_CARD = "DEBIT_CARD"
-    VIRTUAL_ACCOUNT = "VIRTUAL_ACCOUNT"
-    OTC = "OTC"
-    DIRECT_DEBIT_CREDIT_CARD = "DIRECT_DEBIT_CREDIT_CARD"
-    DIRECT_DEBIT_DEBIT_CARD = "DIRECT_DEBIT_DEBIT_CARD"
-    ONLINE_CREDIT = "ONLINE_CREDIT"
-    LOAN_CREDIT = "LOAN_CREDIT"
-    NETWORK_PAY = "NETWORK_PAY"
-    CARD = "CARD"
-
-class PayMethod(str, Enum):
-    BALANCE = "BALANCE"
-    COUPON = "COUPON"
-    NET_BANKING = "NET_BANKING"
-    CREDIT_CARD = "CREDIT_CARD"
-    DEBIT_CARD = "DEBIT_CARD"
-    VIRTUAL_ACCOUNT = "VIRTUAL_ACCOUNT"
-    OTC = "OTC"
-    DIRECT_DEBIT_CREDIT_CARD = "DIRECT_DEBIT_CREDIT_CARD"
-    DIRECT_DEBIT_DEBIT_CARD = "DIRECT_DEBIT_DEBIT_CARD"
-    ONLINE_CREDIT = "ONLINE_CREDIT"
-    LOAN_CREDIT = "LOAN_CREDIT"
-
-class PayOption(str, Enum):
-    NETWORK_PAY_PG_SPAY = "NETWORK_PAY_PG_SPAY"
-    NETWORK_PAY_PG_OVO = "NETWORK_PAY_PG_OVO"
-    NETWORK_PAY_PG_GOPAY = "NETWORK_PAY_PG_GOPAY"
-    NETWORK_PAY_PG_LINKAJA = "NETWORK_PAY_PG_LINKAJA"
-    NETWORK_PAY_PG_CARD = "NETWORK_PAY_PG_CARD"
-    VIRTUAL_ACCOUNT_BCA = "VIRTUAL_ACCOUNT_BCA"
-    VIRTUAL_ACCOUNT_BNI = "VIRTUAL_ACCOUNT_BNI"
-    VIRTUAL_ACCOUNT_MANDIRI = "VIRTUAL_ACCOUNT_MANDIRI"
-    VIRTUAL_ACCOUNT_BRI = "VIRTUAL_ACCOUNT_BRI"
-    VIRTUAL_ACCOUNT_BTPN = "VIRTUAL_ACCOUNT_BTPN"
-    VIRTUAL_ACCOUNT_CIMB = "VIRTUAL_ACCOUNT_CIMB"
-    VIRTUAL_ACCOUNT_PERMATA = "VIRTUAL_ACCOUNT_PERMATA"
-
-class Type(str, Enum):
-    PAY_RETURN = "PAY_RETURN"
-    NOTIFICATION = "NOTIFICATION"
-
-class ActorType(str, Enum):
-    USER = "USER"
-    MERCHANT = "MERCHANT"
-    MERCHANT_OPERATOR = "MERCHANT_OPERATOR"
-    BACK_OFFICE = "BACK_OFFICE"
-    SYSTEM = "SYSTEM"

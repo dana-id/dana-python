@@ -69,6 +69,34 @@ class CreateOrderByRedirectRequest(BaseModel, BaseSdkModel):
             raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
         return value
 
+    @field_validator('valid_up_to')
+    def valid_up_to_validate_date_range(cls, value):
+        """Validates that date is not more than one week in the future"""
+        import datetime
+        
+        if value is None:
+            return value
+
+        try:
+            jakarta_tz = datetime.timezone(datetime.timedelta(hours=7))
+            
+            current_date = datetime.datetime.now(jakarta_tz)
+            
+            max_date = current_date + datetime.timedelta(days=7)
+            
+            date_part = value[:-6]  
+            input_date = datetime.datetime.fromisoformat(date_part).replace(tzinfo=jakarta_tz)
+            
+            if input_date > max_date:
+                raise ValueError('Date cannot be more than one week in the future')
+                
+            return value
+            
+        except ValueError as e:
+            if 'week' in str(e):
+                raise
+            raise ValueError('Invalid date format. Expected format: YYYY-MM-DDTHH:mm:ss+07:00')
+
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,

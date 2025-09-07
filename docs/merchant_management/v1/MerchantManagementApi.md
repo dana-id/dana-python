@@ -13,6 +13,10 @@ Method | HTTP request | Description
 [**update_shop**](MerchantManagementApi.md#update_shop) | **POST** /dana/merchant/shop/updateShop.htm | Update Shop
 
 
+## Additional Documentation
+* [Enum Types](#enum-types) - List of available enum constants 
+* [WebhookParser](#webhookparser) - Webhook handling and notification parsing
+
 # **create_division**
 > create_division(create_division_request) -> CreateDivisionResponse 
 
@@ -21,12 +25,7 @@ Create Division
 This API is used to create a new division
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -36,12 +35,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
-configuration = OpenApiConfiguration(
-    api_key=OpenApiAuthSettings(
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
-        CLIENT_ID=os.environ.get("CLIENT_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
     )
 )
 
@@ -98,12 +100,7 @@ Member – Create Shop
 Create shop under merchant or division
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -113,12 +110,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
-configuration = OpenApiConfiguration(
-    api_key=OpenApiAuthSettings(
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
-        CLIENT_ID=os.environ.get("CLIENT_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
     )
 )
 
@@ -175,12 +175,7 @@ Query Division
 This API is used to obtain information of division
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -190,12 +185,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
-configuration = OpenApiConfiguration(
-    api_key=OpenApiAuthSettings(
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
-        CLIENT_ID=os.environ.get("CLIENT_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
     )
 )
 
@@ -252,12 +250,7 @@ Member – Merchant Open API Check Disbursement Account
 The interface is check merchant resource info (account balance merchant)
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -267,12 +260,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
-configuration = OpenApiConfiguration(
-    api_key=OpenApiAuthSettings(
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
-        CLIENT_ID=os.environ.get("CLIENT_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
     )
 )
 
@@ -329,12 +325,7 @@ Member – Query Shop
 This API is used to obtain information of shop information
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -344,12 +335,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
-configuration = OpenApiConfiguration(
-    api_key=OpenApiAuthSettings(
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
-        CLIENT_ID=os.environ.get("CLIENT_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
     )
 )
 
@@ -406,12 +400,7 @@ Update Division
 This API is used to update the division information
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -421,12 +410,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
-configuration = OpenApiConfiguration(
-    api_key=OpenApiAuthSettings(
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
-        CLIENT_ID=os.environ.get("CLIENT_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
     )
 )
 
@@ -483,12 +475,7 @@ Update Shop
 This API is used to update the shop information
 
 ### Example
-You have to set env variables below (for PRIVATE_KEY and PRIVATE_KEY_PATH you have to choose one)
 
-* PRIVATE_KEY or PRIVATE_KEY_PATH
-* ORIGIN
-* X_PARTNER_ID
-* DANA_ENV
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
@@ -498,12 +485,15 @@ from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
 
-configuration = OpenApiConfiguration(
-    api_key=OpenApiAuthSettings(
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
         CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
-        CLIENT_ID=os.environ.get("CLIENT_ID"),
-        DANA_ENV=os.environ.get("DANA_ENV"),
-        ENV=os.environ.get("ENV")
     )
 )
 
@@ -551,4 +541,255 @@ Name | Type | Description  | Notes
 **200** | Update shop response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+# Enum Types
+
+```python
+from dana.merchant_management.v1.enum import *
+
+# Example of using enum
+enum_value = ShopParentType.MERCHANT
+```
+
+
+## ShopParentType
+| Value | Description |
+|-------|-------------|
+| `MERCHANT` |  |
+| `DIVISION` |  |
+| `EXTERNAL_DIVISION` |  |
+
+
+
+## SizeType
+| Value | Description |
+|-------|-------------|
+| `UMI` |  |
+| `UKE` |  |
+| `UME` |  |
+| `UBE` |  |
+
+
+
+## Loyalty
+| Value | Description |
+|-------|-------------|
+| `true` |  |
+| `false` |  |
+
+
+
+## BusinessEntity
+| Value | Description |
+|-------|-------------|
+| `pt` |  |
+| `cv` |  |
+| `individu` |  |
+| `usaha_dagang` |  |
+| `yayasan` |  |
+| `koperasi` |  |
+
+
+
+## OwnerIdType
+| Value | Description |
+|-------|-------------|
+| `KTP` |  |
+| `SIM` |  |
+| `PASSPORT` |  |
+| `SIUP` |  |
+| `NIB` |  |
+
+
+
+## ShopOwning
+| Value | Description |
+|-------|-------------|
+| `DIRECT_OWNED` |  |
+| `FRANCHISED` |  |
+
+
+
+## ShopIdType
+| Value | Description |
+|-------|-------------|
+| `INNER_ID` |  |
+| `EXTERNAL_ID` |  |
+
+
+
+## ParentRoleType
+| Value | Description |
+|-------|-------------|
+| `MERCHANT` |  |
+| `DIVISION` |  |
+| `EXTERNAL_DIVISION` |  |
+
+
+
+## DivisionType
+| Value | Description |
+|-------|-------------|
+| `REGION` |  |
+| `AREA` |  |
+| `BRANCH` |  |
+| `OUTLET` |  |
+| `STORE` |  |
+| `KIOSK` |  |
+| `STALL` |  |
+| `COUNTER` |  |
+| `BOOTH` |  |
+| `POINT_OF_SALE` |  |
+| `VENDING_MACHINE` |  |
+
+
+
+## GOODSSOLDTYPE
+| Value | Description |
+|-------|-------------|
+| `DIGITAL` |  |
+| `PHYSICAL` |  |
+
+
+
+## USERPROFILING
+| Value | Description |
+|-------|-------------|
+| `B2B` |  |
+| `B2C` |  |
+
+
+
+## PgDivisionFlag
+| Value | Description |
+|-------|-------------|
+| `true` |  |
+| `false` |  |
+
+
+
+## DivisionIdType
+| Value | Description |
+|-------|-------------|
+| `INNER_ID` |  |
+| `EXTERNAL_ID` |  |
+
+
+
+## ResourceType
+| Value | Description |
+|-------|-------------|
+| `MERCHANT_DEPOSIT_BALANCE` |  |
+| `MERCHANT_AVAILABLE_BALANCE` |  |
+| `MERCHANT_TOTAL_BALANCE` |  |
+
+
+
+## Verified
+| Value | Description |
+|-------|-------------|
+| `true` |  |
+| `false` |  |
+
+
+
+## DocType
+| Value | Description |
+|-------|-------------|
+| `KTP` |  |
+| `SIM` |  |
+| `SIUP` |  |
+| `NIB` |  |
+
+
+
+## ResultStatus
+| Value | Description |
+|-------|-------------|
+| `S` |  |
+| `F` |  |
+| `U` |  |
+
+
+
+## ShopBizType
+| Value | Description |
+|-------|-------------|
+| `ONLINE` |  |
+| `OFFLINE` |  |
+
+
+
+
+# WebhookParser
+
+This section demonstrates how to securely verify and parse DANA webhook notifications using the `WebhookParser` utility from the Python SDK.
+
+## Example
+```python
+import os
+from dana.webhook import WebhookParser
+
+# You can provide the DANA_PUBLIC_KEY or DANA_PUBLIC_KEY_PATH
+# The parser will prioritize DANA_PUBLIC_KEY_PATH if both are provided.
+
+http_method = "POST"
+relative_path_url = "/v1.0/debit/notify"
+headers = {
+    "X-SIGNATURE": "<signature-from-header>",
+    "X-TIMESTAMP": "<timestamp-from-header>"
+}
+body = '{"original_partner_reference_no": "123...", ...}'  # Raw JSON string from request body
+
+parser = WebhookParser(public_key_path=os.getenv("DANA_PUBLIC_KEY_PATH"))
+
+try:
+    finish_notify = parser.parse_webhook(
+        http_method=http_method,
+        relative_path_url=relative_path_url,
+        headers=headers,
+        body=body
+    )
+    print(finish_notify.original_partner_reference_no)
+except ValueError as e:
+    print(f"Webhook verification failed: {e}")
+```
+
+## API Reference
+
+### `WebhookParser`
+
+**Constructor:**
+```python
+WebhookParser(public_key: str = None, public_key_path: str = None)
+```
+- `public_key` (str, optional): The DANA gateway's public key as a PEM formatted string. This is used if `public_key_path` is not provided or is empty. Defaults to `None`.
+- `public_key_path` (str, optional): The file path to the DANA gateway's public key PEM file. If provided, this will be prioritized over the `public_key` string. Defaults to `None`.
+
+One of `public_key` or `public_key_path` must be provided.
+
+**Method:**
+```python
+parse_webhook(http_method: str, relative_path_url: str, headers: dict, body: str) -> FinishNotify
+```
+- `http_method`: HTTP method of the webhook request (e.g., `POST`).
+- `relative_path_url`: The relative URL path (e.g., `/v1.0/debit/notify`).
+- `headers`: Dictionary containing at least `X-SIGNATURE` and `X-TIMESTAMP`.
+- `body`: Raw JSON string of the webhook payload.
+- **Returns:** `FinishNotifyRequest` model with parsed data.
+- **Raises:** `ValueError` if signature verification fails or the payload is invalid.
+
+## Security Notes
+- Always use the official public key provided by DANA for webhook verification.
+- Reject any webhook requests that fail signature verification or have malformed payloads.
+- Never trust webhook data unless it passes verification.
+
+## Webhook Notification Models
+
+The following webhook notification models may be received:
+
+Model | Description
+------------- | -------------
+[**FinishNotifyRequest**](../../webhook/v1/FinishNotifyRequest.md) | Represents the standard notification payload for payment events.
 
