@@ -371,6 +371,33 @@ enum_value = PayMethod.BALANCE
 | `BACK_OFFICE` |  |
 | `SYSTEM` |  |
 
+## SourcePlatform
+| Value | Description |
+|-------|-------------|
+| `IPG` |  |
+
+## TerminalType
+| Value | Description |
+|-------|-------------|
+| `APP` |  |
+| `WEB` |  |
+| `WAP` |  |
+| `SYSTEM` |  |
+
+## OrderTerminalType
+| Value | Description |
+|-------|-------------|
+| `APP` |  |
+| `WEB` |  |
+| `WAP` |  |
+| `SYSTEM` |  |
+
+## Type
+| Value | Description |
+|-------|-------------|
+| `PAY_RETURN` |  |
+| `NOTIFICATION` |  |
+
 # WebhookParser
 
 This section demonstrates how to securely verify and parse DANA webhook notifications using the `WebhookParser` utility from the Python SDK.

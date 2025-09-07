@@ -615,6 +615,66 @@ enum_value = ServiceType.PARKING
 | `F` |  |
 | `U` |  |
 
+## SourcePlatform
+| Value | Description |
+|-------|-------------|
+| `IPG` |  |
+
+## TerminalType
+| Value | Description |
+|-------|-------------|
+| `APP` |  |
+| `WEB` |  |
+| `WAP` |  |
+| `SYSTEM` |  |
+
+## OrderTerminalType
+| Value | Description |
+|-------|-------------|
+| `APP` |  |
+| `WEB` |  |
+| `WAP` |  |
+| `SYSTEM` |  |
+
+## PayMethod
+| Value | Description |
+|-------|-------------|
+| `BALANCE` |  |
+| `COUPON` |  |
+| `NET_BANKING` |  |
+| `CREDIT_CARD` |  |
+| `DEBIT_CARD` |  |
+| `VIRTUAL_ACCOUNT` |  |
+| `OTC` |  |
+| `DIRECT_DEBIT_CREDIT_CARD` |  |
+| `DIRECT_DEBIT_DEBIT_CARD` |  |
+| `ONLINE_CREDIT` |  |
+| `LOAN_CREDIT` |  |
+| `NETWORK_PAY` |  |
+| `CARD` |  |
+
+## PayOption
+| Value | Description |
+|-------|-------------|
+| `NETWORK_PAY_PG_SPAY` |  |
+| `NETWORK_PAY_PG_OVO` |  |
+| `NETWORK_PAY_PG_GOPAY` |  |
+| `NETWORK_PAY_PG_LINKAJA` |  |
+| `NETWORK_PAY_PG_CARD` |  |
+| `VIRTUAL_ACCOUNT_BCA` |  |
+| `VIRTUAL_ACCOUNT_BNI` |  |
+| `VIRTUAL_ACCOUNT_MANDIRI` |  |
+| `VIRTUAL_ACCOUNT_BRI` |  |
+| `VIRTUAL_ACCOUNT_BTPN` |  |
+| `VIRTUAL_ACCOUNT_CIMB` |  |
+| `VIRTUAL_ACCOUNT_PERMATA` |  |
+
+## Type
+| Value | Description |
+|-------|-------------|
+| `PAY_RETURN` |  |
+| `NOTIFICATION` |  |
+
 # WebhookParser
 
 This section demonstrates how to securely verify and parse DANA webhook notifications using the `WebhookParser` utility from the Python SDK.
