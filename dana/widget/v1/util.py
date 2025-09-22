@@ -90,7 +90,7 @@ class Util:
         
         # Get scopes based on environment
         if hasattr(data, 'scopes') and data.scopes:
-            scopes = data.scopes
+            scopes = ','.join(data.scopes) 
         else:
             if env.lower() != 'production':
                 scopes = 'CASHIER,AGREEMENT_PAY,QUERY_BALANCE,DEFAULT_BASIC_PROFILE,MINI_DANA'

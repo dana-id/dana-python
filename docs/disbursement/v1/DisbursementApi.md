@@ -28,8 +28,8 @@ This API is used for merchant to do inquiry Bank account info via DANA
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import DisbursementApi
-from dana.widget.v1.models.BankAccountInquiryRequest import BankAccountInquiryRequest
+from dana.disbursement.v1 import DisbursementApi
+from dana.disbursement.v1.models.BankAccountInquiryRequest import BankAccountInquiryRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -92,8 +92,8 @@ This API is used for merchant to do account inquiry to DANA
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import DisbursementApi
-from dana.widget.v1.models.DanaAccountInquiryRequest import DanaAccountInquiryRequest
+from dana.disbursement.v1 import DisbursementApi
+from dana.disbursement.v1.models.DanaAccountInquiryRequest import DanaAccountInquiryRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -156,8 +156,8 @@ This API is used for merchant to do transfer to Bank request via DANA
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import DisbursementApi
-from dana.widget.v1.models.TransferToBankRequest import TransferToBankRequest
+from dana.disbursement.v1 import DisbursementApi
+from dana.disbursement.v1.models.TransferToBankRequest import TransferToBankRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -221,8 +221,8 @@ This API is used for merchant to do inquiry status transfer to Bank transaction 
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import DisbursementApi
-from dana.widget.v1.models.TransferToBankInquiryStatusRequest import TransferToBankInquiryStatusRequest
+from dana.disbursement.v1 import DisbursementApi
+from dana.disbursement.v1.models.TransferToBankInquiryStatusRequest import TransferToBankInquiryStatusRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -285,8 +285,8 @@ This API is used for merchant to do top up request to DANA
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import DisbursementApi
-from dana.widget.v1.models.TransferToDanaRequest import TransferToDanaRequest
+from dana.disbursement.v1 import DisbursementApi
+from dana.disbursement.v1.models.TransferToDanaRequest import TransferToDanaRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -349,8 +349,8 @@ This API is used for merchant to do inquiry status top up transaction to DANA
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import DisbursementApi
-from dana.widget.v1.models.TransferToDanaInquiryStatusRequest import TransferToDanaInquiryStatusRequest
+from dana.disbursement.v1 import DisbursementApi
+from dana.disbursement.v1.models.TransferToDanaInquiryStatusRequest import TransferToDanaInquiryStatusRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint

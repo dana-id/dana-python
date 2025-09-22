@@ -23,38 +23,44 @@ from tests.fixtures.payment_gateway import webhook_key_pair
 
 class TestWebhookParser:
     def test_webhook_signature_and_parsing_success(self):
-        public_key, private_key = os.getenv("WEBHOOK_PUBLIC_KEY"), os.getenv("WEBHOOK_PRIVATE_KEY")
-        parser = WebhookParser(public_key=public_key)
+        # Load keys from environment variables
+        public_key = os.getenv("WEBHOOK_PUBLIC_KEY")
+        
         webhook_http_method = "POST"
-        webhook_relative_url = "/v1.0/debit/notify"
-        webhook_body_dict = {
-            "originalPartnerReferenceNo": "TESTPN20240101001",
-            "originalReferenceNo": "TESTREF20240101001",
-            "merchantId": "TESTMERCH001",
-            "subMerchantId": "TESTSUBMERCH001",
-            "amount": {"value": "15000.00", "currency": "IDR"},
-            "latestTransactionStatus": "00",
-            "transactionStatusDesc": "Success",
-            "createdTime": "2024-01-01T10:00:00+07:00",
-            "finishedTime": "2024-01-01T10:00:05+07:00"
-        }
-        webhook_body_str = json.dumps(webhook_body_dict, separators=(",", ":"))
-        # Generate signature headers with SnapHeader
-        generated_headers = SnapHeader.get_snap_generated_auth(
-            method=webhook_http_method,
-            resource_path=webhook_relative_url,
-            body=webhook_body_str,
-            private_key=private_key
-        )
+        webhook_relative_url = "/api/v2/test-notif/dana"
+        
+        webhook_body_str = '{"amount":{"currency":"IDR","value":"100000.00"},"originalReferenceNo":"20250916111230999500166191900293793","merchantId":"216620080007039826152","latestTransactionStatus":"00","additionalInfo":{"paidTime":"1757998714761","paymentInfo":{"payOptionInfos":[{"transAmount":{"currency":"IDR","value":"100000.00"},"payAmount":{"currency":"IDR","value":"100000.00"},"payMethod":"NETWORK_PAY","payOption":"NETWORK_PAY_PG_LINKAJA"}],"extendInfo":"{\\"externalPromoInfos\\":[]}"}},"originalPartnerReferenceNo":"LINKIT25091757998646","createdTime":"1757998647000","finishedTime":"1757998714761","transactionStatusDesc":"SUCCESS"}'
+        
+        x_timestamp = "2025-09-16T12:11:30+07:00"
+        signature = "d/7mle7A+FCl4zvBZ2dMr3s7TVbbaK+toMtZwoev4OmLhn6Ctz/ynMaL3m3vHjAmV3UL3Fq5xp9thZFsO8BY74Vehqr1N9LQblV6i3TfMwT6lMvvhzWr0Fjbasyj23c5nFu1MOxpBiZFMMDNh8GQNLBAehHbjOmNldXSL6OQYRrK/TN9tdDyYFK6ltnKf4BN6bZa2ViAlI/np/U3QBW2LnDL82+8ZK7tYVF5bZyLLUSLXeWXBGQFTSDWqN+JdUHSnxGdQr3hZ7Y9Vqm/7G6rj6NrCxLPiEJYq1DQO3DjokMsORA2lOxzuo53bwqmhmD1mFhJKWF1JmyJuFdo2HB9JA=="
+        
         headers = {
-            "X-TIMESTAMP": generated_headers["X-TIMESTAMP"]["value"],
-            "X-SIGNATURE": generated_headers["X-SIGNATURE"]["value"]
+            "Channel-Id": "DANA",
+            "Charset": "UTF-8",
+            "Content-Type": "application/json",
+            "User-Agent": "Jakarta Commons-HttpClient/3.1",
+            "X-External-Id": "cFQ0PK5yS9wkMTMOVem4fIoUuyuA28jg",
+            "X-Partner-Id": "2025090110410957288340",
+            "X-Signature": signature,
+            "X-Timestamp": x_timestamp
         }
+        
+        # Create the parser with the public key
+        parser = WebhookParser(public_key=public_key)
+        
+        # Verify and parse
         result = parser.parse_webhook(
             http_method=webhook_http_method,
             relative_path_url=webhook_relative_url,
             headers=headers,
             body=webhook_body_str
         )
-        assert isinstance(result, FinishNotifyRequest)
-        assert result.to_dict() == webhook_body_dict
+        
+        # Verify specific fields like in the Go test
+        assert result is not None
+        assert result.original_partner_reference_no == "LINKIT25091757998646"
+        assert result.original_reference_no == "20250916111230999500166191900293793"
+        assert result.merchant_id == "216620080007039826152"
+        assert result.amount.value == "100000.00"
+        assert result.amount.currency == "IDR"
+        assert result.latest_transaction_status == "00"

@@ -61,20 +61,6 @@ class FinishNotifyRequest(BaseModel, BaseSdkModel):
     additional_info: Optional[FinishNotifyRequestAdditionalInfo] = Field(default=None, description="Additional information")
     __properties: ClassVar[List[str]] = ["originalPartnerReferenceNo", "originalReferenceNo", "originalExternalId", "merchantId", "subMerchantId", "amount", "latestTransactionStatus", "transactionStatusDesc", "createdTime", "finishedTime", "externalStoreId", "additionalInfo"]
 
-    @field_validator('created_time')
-    def created_time_validate_regular_expression(cls, value):
-        """Validates the regular expression"""
-        if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
-            raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
-        return value
-
-    @field_validator('finished_time')
-    def finished_time_validate_regular_expression(cls, value):
-        """Validates the regular expression"""
-        if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
-            raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
-        return value
-
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,

@@ -29,8 +29,8 @@ This API is used to create a new division
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import MerchantManagementApi
-from dana.widget.v1.models.CreateDivisionRequest import CreateDivisionRequest
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.CreateDivisionRequest import CreateDivisionRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -104,8 +104,8 @@ Create shop under merchant or division
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import MerchantManagementApi
-from dana.widget.v1.models.CreateShopRequest import CreateShopRequest
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.CreateShopRequest import CreateShopRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -179,8 +179,8 @@ This API is used to obtain information of division
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import MerchantManagementApi
-from dana.widget.v1.models.QueryDivisionRequest import QueryDivisionRequest
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.QueryDivisionRequest import QueryDivisionRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -254,8 +254,8 @@ The interface is check merchant resource info (account balance merchant)
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import MerchantManagementApi
-from dana.widget.v1.models.QueryMerchantResourceRequest import QueryMerchantResourceRequest
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.QueryMerchantResourceRequest import QueryMerchantResourceRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -329,8 +329,8 @@ This API is used to obtain information of shop information
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import MerchantManagementApi
-from dana.widget.v1.models.QueryShopRequest import QueryShopRequest
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.QueryShopRequest import QueryShopRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -404,8 +404,8 @@ This API is used to update the division information
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import MerchantManagementApi
-from dana.widget.v1.models.UpdateDivisionRequest import UpdateDivisionRequest
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.UpdateDivisionRequest import UpdateDivisionRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint
@@ -479,8 +479,8 @@ This API is used to update the shop information
 ```python
 import os
 from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
-from dana.widget.v1 import MerchantManagementApi
-from dana.widget.v1.models.UpdateShopRequest import UpdateShopRequest
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.UpdateShopRequest import UpdateShopRequest
 from dana.api_client import ApiClient
 from dana.rest import ApiException
 from pprint import pprint

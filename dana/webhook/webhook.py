@@ -98,9 +98,19 @@ class WebhookParser:
             )
 
     @staticmethod
-    def _minify_json(json_str: str) -> str:
-        obj = json.loads(json_str)
-        return json.dumps(obj, separators=(",", ":"))
+    def _ensure_minified_json(json_str: str) -> tuple[str, Exception]:
+        """
+        Ensures JSON string is minified
+        Returns tuple of (minified_json, error)
+        """
+        try:
+            obj = json.loads(json_str)
+            minified = json.dumps(obj, separators=(",", ":"))
+            return minified, None
+        except json.JSONDecodeError as e:
+            return "", e
+        except Exception as e:
+            return "", e
 
     @staticmethod
     def _sha256_lower_hex(data: str) -> str:
@@ -112,10 +122,13 @@ class WebhookParser:
         relative_path_url: str,
         body: str,
         x_timestamp: str
-    ) -> str:
-        minified_body = self._minify_json(body)
+    ) -> tuple[str, Exception]:
+        minified_body, err = self._ensure_minified_json(body)
+        if err:
+            return "", Exception(f"_construct_string_to_verify: failed to ensure JSON is minified: {err}")
+        
         body_hash = self._sha256_lower_hex(minified_body)
-        return f"{http_method}:{relative_path_url}:{body_hash}:{x_timestamp}"
+        return f"{http_method}:{relative_path_url}:{body_hash}:{x_timestamp}", None
 
     def parse_webhook(
         self,
@@ -124,18 +137,20 @@ class WebhookParser:
         headers: dict,
         body: str
     ) -> FinishNotifyRequest:
-        x_signature = headers.get("X-SIGNATURE")
-        x_timestamp = headers.get("X-TIMESTAMP")
+        x_signature = headers.get("X-SIGNATURE") or headers.get("X-Signature") or headers.get("X-signature") or headers.get("x-signature")
+        x_timestamp = headers.get("X-TIMESTAMP") or headers.get("X-Timestamp") or headers.get("X-timestamp") or headers.get("x-timestamp")
         
         if not x_signature or not x_timestamp:
             raise ValueError("Missing X-SIGNATURE or X-TIMESTAMP header.")
 
-        string_to_verify = self._construct_string_to_verify(
+        string_to_verify, err = self._construct_string_to_verify(
             http_method=http_method,
             relative_path_url=relative_path_url,
             body=body,
             x_timestamp=x_timestamp
         )
+        if err:
+            raise ValueError(str(err))
         signature_bytes = base64.b64decode(x_signature)
        
         try:

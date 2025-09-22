@@ -52,6 +52,7 @@ class FinishNotifyRequestAdditionalInfo(BaseModel, BaseSdkModel):
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Additional information of extend (As a JSON string)")
     extend_info_closed_reason: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of closed reason. Required if order is closed")
     __properties: ClassVar[List[str]] = ["paymentInfo", "shopInfo", "extendInfo", "extendInfo.closedReason"]
+    paid_time: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Information of paid time, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -99,6 +100,9 @@ class FinishNotifyRequestAdditionalInfo(BaseModel, BaseSdkModel):
         # override the default output from pydantic by calling `to_dict()` of shop_info
         if self.shop_info:
             _dict['shopInfo'] = self.shop_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of paid_time
+        if self.paid_time:
+            _dict['paidTime'] = self.paid_time
         return _dict
 
     @classmethod
@@ -113,8 +117,9 @@ class FinishNotifyRequestAdditionalInfo(BaseModel, BaseSdkModel):
         _obj = cls.model_validate({
             "paymentInfo": FinishNotifyPaymentInfo.from_dict(obj["paymentInfo"]) if obj.get("paymentInfo") is not None else None,
             "shopInfo": ShopInfo.from_dict(obj["shopInfo"]) if obj.get("shopInfo") is not None else None,
-            "extendInfo": obj.get("extendInfo"),
-            "extendInfo.closedReason": obj.get("extendInfo.closedReason")
+            "paidTime": obj.get("paidTime") if obj.get("paidTime") is not None else None,
+            "extendInfo": obj.get("extendInfo") if obj.get("extendInfo") is not None else None,
+            "extendInfo.closedReason": obj.get("extendInfo.closedReason") if obj.get("extendInfo.closedReason") is not None else None,
         })
         return _obj
 
