@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.payment_gateway.v1.models.promo_info import PromoInfo
@@ -47,7 +47,7 @@ class PayOptionAdditionalInfo(BaseModel, BaseSdkModel):
     PayOptionAdditionalInfo
     """ # noqa: E501
     phone_number: Optional[Annotated[str, Field(strict=True, max_length=15)]] = Field(default=None, description="User's phone number")
-    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment code that used for payment with virtual account")
+    payment_code: Optional[StrictStr] = Field(default=None, description="Payment code that used for payment with virtual account")
     promo_infos: Optional[List[PromoInfo]] = Field(default=None)
     __properties: ClassVar[List[str]] = ["phoneNumber", "paymentCode", "promoInfos"]
 

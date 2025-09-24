@@ -153,7 +153,7 @@ class OpenApiHeader:
         timestamp = jakarta_time.strftime('%Y-%m-%dT%H:%M:%S+07:00')
         
         # Generate unique request message ID
-        req_msg_id = str(uuid.uuid4())
+        req_msg_id = "sdk" + str(uuid.uuid4())[3:]
         
         # Return auth settings following snap_header pattern
         return {

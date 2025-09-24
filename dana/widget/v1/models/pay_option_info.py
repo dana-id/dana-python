@@ -33,7 +33,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.widget.v1.models.money import Money
@@ -47,13 +47,13 @@ class PayOptionInfo(BaseModel, BaseSdkModel):
     PayOptionInfo
     """ # noqa: E501
     pay_method: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Payment method name. The enums:<br>   * BALANCE - Payment method with balance<br>   * COUPON - Payment method with coupon<br>   * NET_BANKING - Payment method with internet banking<br>   * CREDIT_CARD - Payment method with credit card<br>   * DEBIT_CARD - Payment method with debit card<br>   * VIRTUAL_ACCOUNT - Payment method with virtual account<br>   * OTC - Payment method with OTC<br>   * DIRECT_DEBIT_CREDIT_CARD - Payment method with direct debit of credit card<br>   * DIRECT_DEBIT_DEBIT_CARD - Payment method with direct debit of debit card<br>   * ONLINE_CREDIT - Payment method with online Credit<br>   * LOAN_CREDIT - Payment method with DANA Cicil<br>   * NETWORK_PAY - Payment method with e-wallet   * CARD - Payment method with Card ")
-    pay_option: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment option which shows the provider of this payment. The enums:<br>   * NETWORK_PAY_PG_SPAY - Payment method with ShopeePay e-wallet<br>   * NETWORK_PAY_PG_OVO - Payment method with OVO e-wallet<br>   * NETWORK_PAY_PG_GOPAY - Payment method with GoPay e-wallet<br>   * NETWORK_PAY_PG_LINKAJA - Payment method with LinkAja e-wallet<br>   * NETWORK_PAY_PG_CARD - Payment method with Card<br>   * NETWORK_PAY_PC_INDOMARET - Payment method with Indomaret<br>   * VIRTUAL_ACCOUNT_BCA - Payment method with BCA virtual account<br>   * VIRTUAL_ACCOUNT_BNI - Payment method with BNI virtual account<br>   * VIRTUAL_ACCOUNT_MANDIRI - Payment method with Mandiri virtual account<br>   * VIRTUAL_ACCOUNT_BRI - Payment method with BRI virtual account<br>   * VIRTUAL_ACCOUNT_BTPN - Payment method with BTPN virtual account<br>   * VIRTUAL_ACCOUNT_CIMB - Payment method with CIMB virtual account<br>   * VIRTUAL_ACCOUNT_PERMATA - Payment method with Permata virtual account<br> ")
+    pay_option: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment option which shows the provider of this payment. The enums:<br>   * NETWORK_PAY_PG_SPAY - Payment method with ShopeePay e-wallet<br>   * NETWORK_PAY_PG_OVO - Payment method with OVO e-wallet<br>   * NETWORK_PAY_PG_GOPAY - Payment method with GoPay e-wallet<br>   * NETWORK_PAY_PG_LINKAJA - Payment method with LinkAja e-wallet<br>   * NETWORK_PAY_PG_CARD - Payment method with Card<br>   * NETWORK_PAY_PC_INDOMARET - Payment method with Indomaret<br>   * NETWORK_PAY_PG_QRIS - Payment method with QRIS<br>   * VIRTUAL_ACCOUNT_BCA - Payment method with BCA virtual account<br>   * VIRTUAL_ACCOUNT_BNI - Payment method with BNI virtual account<br>   * VIRTUAL_ACCOUNT_MANDIRI - Payment method with Mandiri virtual account<br>   * VIRTUAL_ACCOUNT_BRI - Payment method with BRI virtual account<br>   * VIRTUAL_ACCOUNT_BTPN - Payment method with BTPN virtual account<br>   * VIRTUAL_ACCOUNT_CIMB - Payment method with CIMB virtual account<br>   * VIRTUAL_ACCOUNT_PERMATA - Payment method with Permata virtual account<br>   * VIRTUAL_ACCOUNT_PANIN - Payment method with Panin virtual account<br> ")
     pay_amount: Optional[Money] = Field(default=None, description="Pay amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     trans_amount: Optional[Money] = Field(default=None, description="Trans amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     charge_amount: Optional[Money] = Field(default=None, description="Charge amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     pay_option_bill_extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information of pay option bill")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information")
-    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment code")
+    payment_code: Optional[StrictStr] = Field(default=None, description="Payment code")
     __properties: ClassVar[List[str]] = ["payMethod", "payOption", "payAmount", "transAmount", "chargeAmount", "payOptionBillExtendInfo", "extendInfo", "paymentCode"]
 
     @field_validator('pay_method')
@@ -69,8 +69,8 @@ class PayOptionInfo(BaseModel, BaseSdkModel):
         if value is None:
             return value
 
-        if value not in set(['NETWORK_PAY_PG_SPAY', 'NETWORK_PAY_PG_OVO', 'NETWORK_PAY_PG_GOPAY', 'NETWORK_PAY_PG_LINKAJA', 'NETWORK_PAY_PG_CARD', 'NETWORK_PAY_PC_INDOMARET', 'VIRTUAL_ACCOUNT_BCA', 'VIRTUAL_ACCOUNT_BNI', 'VIRTUAL_ACCOUNT_MANDIRI', 'VIRTUAL_ACCOUNT_BRI', 'VIRTUAL_ACCOUNT_BTPN', 'VIRTUAL_ACCOUNT_CIMB', 'VIRTUAL_ACCOUNT_PERMATA']):
-            raise ValueError("must be one of enum values ('NETWORK_PAY_PG_SPAY', 'NETWORK_PAY_PG_OVO', 'NETWORK_PAY_PG_GOPAY', 'NETWORK_PAY_PG_LINKAJA', 'NETWORK_PAY_PG_CARD', 'NETWORK_PAY_PC_INDOMARET', 'VIRTUAL_ACCOUNT_BCA', 'VIRTUAL_ACCOUNT_BNI', 'VIRTUAL_ACCOUNT_MANDIRI', 'VIRTUAL_ACCOUNT_BRI', 'VIRTUAL_ACCOUNT_BTPN', 'VIRTUAL_ACCOUNT_CIMB', 'VIRTUAL_ACCOUNT_PERMATA')")
+        if value not in set(['NETWORK_PAY_PG_SPAY', 'NETWORK_PAY_PG_OVO', 'NETWORK_PAY_PG_GOPAY', 'NETWORK_PAY_PG_LINKAJA', 'NETWORK_PAY_PG_CARD', 'NETWORK_PAY_PC_INDOMARET', 'NETWORK_PAY_PG_QRIS', 'VIRTUAL_ACCOUNT_BCA', 'VIRTUAL_ACCOUNT_BNI', 'VIRTUAL_ACCOUNT_MANDIRI', 'VIRTUAL_ACCOUNT_BRI', 'VIRTUAL_ACCOUNT_BTPN', 'VIRTUAL_ACCOUNT_CIMB', 'VIRTUAL_ACCOUNT_PERMATA', 'VIRTUAL_ACCOUNT_PANIN']):
+            raise ValueError("must be one of enum values ('NETWORK_PAY_PG_SPAY', 'NETWORK_PAY_PG_OVO', 'NETWORK_PAY_PG_GOPAY', 'NETWORK_PAY_PG_LINKAJA', 'NETWORK_PAY_PG_CARD', 'NETWORK_PAY_PC_INDOMARET', 'NETWORK_PAY_PG_QRIS', 'VIRTUAL_ACCOUNT_BCA', 'VIRTUAL_ACCOUNT_BNI', 'VIRTUAL_ACCOUNT_MANDIRI', 'VIRTUAL_ACCOUNT_BRI', 'VIRTUAL_ACCOUNT_BTPN', 'VIRTUAL_ACCOUNT_CIMB', 'VIRTUAL_ACCOUNT_PERMATA', 'VIRTUAL_ACCOUNT_PANIN')")
         return value
 
     model_config = ConfigDict(

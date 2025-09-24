@@ -259,6 +259,7 @@ class SnapHeader:
         )
 
         encoded_signature = base64.b64encode(signature).decode()
+        external_id = "sdk" + str(uuid.uuid4())[3:]
 
         if scenario == "apply_token":
             return {
@@ -268,7 +269,6 @@ class SnapHeader:
                 CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221')
             }
         elif scenario == "apply_ott" or scenario == "unbinding_account":
-            external_id = str(uuid.uuid4())
             body_dict: dict = json.loads(body)
 
             return {
@@ -283,7 +283,6 @@ class SnapHeader:
                 CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221')
             }
         elif scenario == "balance_inquiry":
-            external_id = str(uuid.uuid4())
             body_dict: dict = json.loads(body)
             return {
                 AUTHORIZATION_CUSTOMER: generateApiKeyAuthSetting(key=AUTHORIZATION_CUSTOMER, value=f"Bearer {body_dict.get('additionalInfo', {}).get('accessToken', '')}"),
@@ -294,7 +293,6 @@ class SnapHeader:
                 CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221')
             }
         else:
-            external_id = str(uuid.uuid4())
             return {
                 X_TIMESTAMP: generateApiKeyAuthSetting(key=X_TIMESTAMP, value=timestamp),
                 X_SIGNATURE: generateApiKeyAuthSetting(key=X_SIGNATURE, value=encoded_signature),

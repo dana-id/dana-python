@@ -345,6 +345,7 @@ enum_value = PayMethod.BALANCE
 | `NETWORK_PAY_PG_LINKAJA` |  |
 | `NETWORK_PAY_PG_CARD` |  |
 | `NETWORK_PAY_PC_INDOMARET` |  |
+| `NETWORK_PAY_PG_QRIS` |  |
 | `VIRTUAL_ACCOUNT_BCA` |  |
 | `VIRTUAL_ACCOUNT_BNI` |  |
 | `VIRTUAL_ACCOUNT_MANDIRI` |  |
@@ -352,6 +353,7 @@ enum_value = PayMethod.BALANCE
 | `VIRTUAL_ACCOUNT_BTPN` |  |
 | `VIRTUAL_ACCOUNT_CIMB` |  |
 | `VIRTUAL_ACCOUNT_PERMATA` |  |
+| `VIRTUAL_ACCOUNT_PANIN` |  |
 
 ## AcquirementStatus
 | Value | Description |

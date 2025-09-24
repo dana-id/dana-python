@@ -41,7 +41,7 @@ class PayOptionInfo(BaseModel, BaseSdkModel):
     charge_amount: Optional[Money] = Field(default=None, description="Charge amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     pay_option_bill_extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information of pay option bill")
     extend_info: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(default=None, description="Extend information")
-    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment code")
+    payment_code: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="Payment code")
     __properties: ClassVar[List[str]] = ["payMethod", "payOption", "payAmount", "transAmount", "chargeAmount", "payOptionBillExtendInfo", "extendInfo", "paymentCode"]
 
     @field_validator('pay_method')

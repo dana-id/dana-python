@@ -33,9 +33,8 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 from pydantic import AliasGenerator
@@ -45,7 +44,7 @@ class CreateOrderResponseAdditionalInfo(BaseModel, BaseSdkModel):
     """
     CreateOrderResponseAdditionalInfo
     """ # noqa: E501
-    payment_code: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of payment code. Only use for Payment Gateway service. Present if payment using Virtual Account/QRIS")
+    payment_code: Optional[StrictStr] = Field(default=None, description="Additional information of payment code. Only use for Payment Gateway service. Present if payment using Virtual Account/QRIS")
     __properties: ClassVar[List[str]] = ["paymentCode"]
 
     model_config = ConfigDict(

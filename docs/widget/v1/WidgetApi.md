@@ -662,6 +662,7 @@ enum_value = ServiceType.PARKING
 | `NETWORK_PAY_PG_LINKAJA` |  |
 | `NETWORK_PAY_PG_CARD` |  |
 | `NETWORK_PAY_PC_INDOMARET` |  |
+| `NETWORK_PAY_PG_QRIS` |  |
 | `VIRTUAL_ACCOUNT_BCA` |  |
 | `VIRTUAL_ACCOUNT_BNI` |  |
 | `VIRTUAL_ACCOUNT_MANDIRI` |  |
@@ -669,6 +670,7 @@ enum_value = ServiceType.PARKING
 | `VIRTUAL_ACCOUNT_BTPN` |  |
 | `VIRTUAL_ACCOUNT_CIMB` |  |
 | `VIRTUAL_ACCOUNT_PERMATA` |  |
+| `VIRTUAL_ACCOUNT_PANIN` |  |
 
 ## Type
 | Value | Description |
