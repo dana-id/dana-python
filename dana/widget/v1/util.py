@@ -71,9 +71,9 @@ class Util:
         
         # Set base URL based on environment and mode
         if mode == Mode.DEEPLINK:
-            base_url = 'https://m.sandbox.dana.id/n/link/binding' if env == 'sandbox' else 'https://link.dana.id/bindSnap'
+            base_url = 'https://link.dana.id/bindSnap' if env.lower() == 'production' else 'https://m.sandbox.dana.id/n/link/binding'
         elif mode == Mode.API:
-            base_url = 'https://m.sandbox.dana.id/n/ipg/oauth' if env == 'sandbox' else 'https://m.dana.id/n/ipg/oauth'
+            base_url = 'https://m.dana.id/n/ipg/oauth' if env.lower() == 'production' else 'https://m.sandbox.dana.id/n/ipg/oauth'
         
         # Get partner ID from environment
         partner_id = os.environ.get('X_PARTNER_ID')

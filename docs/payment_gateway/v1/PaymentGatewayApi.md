@@ -353,7 +353,7 @@ enum_value = PayMethod.BALANCE
 | `VIRTUAL_ACCOUNT_BTPN` |  |
 | `VIRTUAL_ACCOUNT_CIMB` |  |
 | `VIRTUAL_ACCOUNT_PERMATA` |  |
-| `VIRTUAL_ACCOUNT_PANIN` |  |
+| `VIRTUAL_ACCOUNT_PANI` |  |
 
 ## AcquirementStatus
 | Value | Description |
