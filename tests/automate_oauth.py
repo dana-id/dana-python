@@ -500,7 +500,7 @@ async def automate_oauth(oauth_url, phone_number=None, pin=None, show_log=False)
         def extract_auth_code_from_url(url):
             parsed = urlparse(url)
             params = parse_qs(parsed.query)
-            return params.get('auth_code', [None])[0]
+            return params.get('authCode', [None])[0]
 
         async def check_url_for_auth_code():
             nonlocal auth_code
