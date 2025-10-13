@@ -16,6 +16,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 
 from pathlib import Path
 from cryptography.exceptions import InvalidSignature
@@ -98,19 +99,60 @@ class WebhookParser:
             )
 
     @staticmethod
-    def _ensure_minified_json(json_str: str) -> tuple[str, Exception]:
+    def _is_json_minified(json_str: str) -> bool:
         """
-        Ensures JSON string is minified
-        Returns tuple of (minified_json, error)
+        Performs a quick heuristic check to see if JSON is already minified
+        """
+        indicators = [": ", ", ", "{ ", "[ ", "\n", "\t", "\r"]
+        
+        for indicator in indicators:
+            if indicator in json_str:
+                return False
+        
+        return True
+
+
+    @staticmethod
+    def _minify_json(json_str: str) -> tuple[str, Exception]:
+        """
+        Compacts a JSON string by removing unnecessary whitespace
         """
         try:
             obj = json.loads(json_str)
             minified = json.dumps(obj, separators=(",", ":"))
             return minified, None
         except json.JSONDecodeError as e:
-            return "", e
+            return "", Exception(f"MinifyJSON: failed to unmarshal JSON: {e}")
         except Exception as e:
-            return "", e
+            return "", Exception(f"MinifyJSON: failed to marshal JSON for minification: {e}")
+
+    @staticmethod
+    def _ensure_minified_json(json_str: str) -> tuple[str, Exception]:
+        """
+        Ensures JSON string is minified
+        Returns tuple of (minified_json, error)
+        """
+        try:
+            normalized_str = json_str.replace('\\"', '"')
+            
+            pattern = r'"(\w+)":"(\{.*?\})"'
+            def replace_func(match):
+                field_name = match.group(1)
+                json_value = match.group(2)
+                escaped_value = json_value.replace('"', '\\"')
+                return f'"{field_name}":"{escaped_value}"'
+            
+            processed_str = re.sub(pattern, replace_func, normalized_str)
+            
+            if WebhookParser._is_json_minified(processed_str):
+                return processed_str, None
+            
+            return WebhookParser._minify_json(processed_str)
+            
+        except json.JSONDecodeError as e:
+            return "", Exception(f"EnsureMinifiedJSON: failed to unmarshal JSON: {e}")
+        except Exception as e:
+            return "", Exception(f"EnsureMinifiedJSON: failed to marshal JSON for minification: {e}")
 
     @staticmethod
     def _sha256_lower_hex(data: str) -> str:
@@ -123,11 +165,11 @@ class WebhookParser:
         body: str,
         x_timestamp: str
     ) -> tuple[str, Exception]:
-        minified_body, err = self._ensure_minified_json(body)
+        processed_body, err = self._ensure_minified_json(body)
         if err:
             return "", Exception(f"_construct_string_to_verify: failed to ensure JSON is minified: {err}")
         
-        body_hash = self._sha256_lower_hex(minified_body)
+        body_hash = self._sha256_lower_hex(processed_body)
         return f"{http_method}:{relative_path_url}:{body_hash}:{x_timestamp}", None
 
     def parse_webhook(
@@ -152,7 +194,6 @@ class WebhookParser:
         if err:
             raise ValueError(str(err))
         signature_bytes = base64.b64decode(x_signature)
-       
         try:
             self.public_key.verify(
                 signature_bytes,
@@ -163,8 +204,12 @@ class WebhookParser:
         except InvalidSignature:
             raise ValueError("Signature verification failed.")
 
+        processed_body, err = self._ensure_minified_json(body)
+        if err:
+            raise ValueError(f"Failed to process JSON body: {err}")
+            
         try:
-            payload_dict = json.loads(body)
+            payload_dict = json.loads(processed_body)
             return FinishNotifyRequest.from_dict(payload_dict)
         except json.JSONDecodeError:
             raise ValueError("Invalid JSON in request body.")
