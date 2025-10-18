@@ -38,11 +38,12 @@ X_LATITUDE = "X-LATITUDE"
 X_LONGITUDE = "X-LONGITUDE"
 CHANNEL_ID = "CHANNEL-ID"
 AUTHORIZATION_CUSTOMER = "Authorization-Customer"
+X_DEBUG = "X-Debug-Mode"
 
 class SnapHeader:
     SnapRuntimeHeaders: List[str] = [
         X_TIMESTAMP, X_SIGNATURE, 
-        X_EXTERNALID, CHANNEL_ID
+        X_EXTERNALID, CHANNEL_ID, X_DEBUG
     ]
     SnapApplyTokenRuntimeHeaders: List[str] = [
         X_TIMESTAMP, X_SIGNATURE, 
@@ -220,6 +221,7 @@ class SnapHeader:
         private_key_path: str = None,
         scenario: str = "",
         client_key: str = None,
+        support_debug_mode: bool = False,
     ) -> Mapping[str, APIKeyAuthSetting]:
         
         def generateApiKeyAuthSetting(key: str, value: Any) -> APIKeyAuthSetting:
@@ -261,6 +263,11 @@ class SnapHeader:
         encoded_signature = base64.b64encode(signature).decode()
         external_id = "sdk" + str(uuid.uuid4())[3:]
 
+        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
+        debug_mode = os.getenv("X_DEBUG", "false").lower() == "true" and env == "sandbox" and support_debug_mode
+        if debug_mode:
+            debug_mode = 1
+
         if scenario == "apply_token":
             return {
                 X_TIMESTAMP: generateApiKeyAuthSetting(key=X_TIMESTAMP, value=timestamp),
@@ -297,5 +304,6 @@ class SnapHeader:
                 X_TIMESTAMP: generateApiKeyAuthSetting(key=X_TIMESTAMP, value=timestamp),
                 X_SIGNATURE: generateApiKeyAuthSetting(key=X_SIGNATURE, value=encoded_signature),
                 X_EXTERNALID: generateApiKeyAuthSetting(key=X_EXTERNALID, value=external_id),
-                CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221')
+                CHANNEL_ID: generateApiKeyAuthSetting(key=CHANNEL_ID, value='95221'),
+                X_DEBUG: generateApiKeyAuthSetting(key=X_DEBUG, value=debug_mode)
             }

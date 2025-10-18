@@ -98,3 +98,21 @@ class TestPaymentGatewayApi:
         error_msg = str(excinfo.value)
         assert "week" in error_msg.lower() or "future" in error_msg.lower()
 
+    def test_create_order_with_debug_mode(self, api_instance_payment_gateway: PaymentGatewayApi):
+        """Should test debug mode functionality"""
+        from dana.exceptions import ApiException
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        import pytest
+        
+        # Get base request from fixtures
+        base_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        base_request.external_store_id = 'test_debug_mode'
+        
+        # This should fail and return debug information
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(base_request)
+        
+        # Check if debug message is present in the error
+        error_msg = str(excinfo.value)
+        assert 'debugMessage' in error_msg
+

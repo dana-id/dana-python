@@ -295,7 +295,8 @@ class PaymentGatewayApi:
             resource_path='/payment-gateway/v1.0/debit/cancel.htm',
             body=cancel_order_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
-            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
+            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH'),
+            support_debug_mode=True
         )
         return self.api_client.param_serialize(
             method='POST',
@@ -554,7 +555,8 @@ class PaymentGatewayApi:
             resource_path='/v1.0/payment-gateway/consult-pay.htm',
             body=consult_pay_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
-            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
+            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH'),
+            support_debug_mode=True
         )
         return self.api_client.param_serialize(
             method='POST',
@@ -813,7 +815,8 @@ class PaymentGatewayApi:
             resource_path='/payment-gateway/v1.0/debit/payment-host-to-host.htm',
             body=create_order_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
-            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
+            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH'),
+            support_debug_mode=True
         )
         return self.api_client.param_serialize(
             method='POST',
@@ -1071,7 +1074,8 @@ class PaymentGatewayApi:
             resource_path='/payment-gateway/v1.0/debit/status.htm',
             body=query_payment_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
-            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
+            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH'),
+            support_debug_mode=True
         )
         return self.api_client.param_serialize(
             method='POST',
@@ -1332,7 +1336,8 @@ class PaymentGatewayApi:
             resource_path='/payment-gateway/v1.0/debit/refund.htm',
             body=refund_order_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
-            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
+            private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH'),
+            support_debug_mode=True
         )
         return self.api_client.param_serialize(
             method='POST',

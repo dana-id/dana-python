@@ -38,6 +38,7 @@ configuration = SnapConfiguration(
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
         DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        X_DEBUG=os.environ.get("X_DEBUG"), # enable debug mode (showing reason of failed request in additionalInfo.debugMessage in response)
     )
 )
 
@@ -98,6 +99,7 @@ configuration = SnapConfiguration(
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
         DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        X_DEBUG=os.environ.get("X_DEBUG"), # enable debug mode (showing reason of failed request in additionalInfo.debugMessage in response)
     )
 )
 
@@ -158,6 +160,7 @@ configuration = SnapConfiguration(
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
         DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        X_DEBUG=os.environ.get("X_DEBUG"), # enable debug mode (showing reason of failed request in additionalInfo.debugMessage in response)
     )
 )
 
@@ -217,6 +220,7 @@ configuration = SnapConfiguration(
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
         DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        X_DEBUG=os.environ.get("X_DEBUG"), # enable debug mode (showing reason of failed request in additionalInfo.debugMessage in response)
     )
 )
 
@@ -276,6 +280,7 @@ configuration = SnapConfiguration(
         ORIGIN=os.environ.get("ORIGIN"),
         X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
         DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        X_DEBUG=os.environ.get("X_DEBUG"), # enable debug mode (showing reason of failed request in additionalInfo.debugMessage in response)
     )
 )
 

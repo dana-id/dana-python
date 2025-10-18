@@ -131,6 +131,7 @@ AuthSettings = TypedDict(
         "CHANNEL_ID": APIKeyAuthSetting,
         "ENV": APIKeyAuthSetting,
         "DANA_ENV": APIKeyAuthSetting,
+        "X_DEBUG": APIKeyAuthSetting,
     },
     total=False,
 )
@@ -560,6 +561,15 @@ class SnapConfiguration(BaseConfiguration):
                 'key': 'CHANNEL-ID',
                 'value': self.get_api_key_with_prefix(
                     'CHANNEL_ID',
+                ),
+            }
+        if 'X_DEBUG' in self.api_key:
+            auth['X_DEBUG'] = {
+                'type': 'api_key',
+                'in': 'header',
+                'key': 'X-Debug-Mode',
+                'value': self.get_api_key_with_prefix(
+                    'X_DEBUG',
                 ),
             }
 

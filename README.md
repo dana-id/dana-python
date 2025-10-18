@@ -69,6 +69,7 @@ Before using the SDK, please make sure to set the following environment variable
 | `DANA_PUBLIC_KEY_PATH` | Path to DANA public key file for parsing webhook. If both set, `DANA_PUBLIC_KEY_PATH is used. | /path/to/dana_public_key.pem                                                    |
 | `ORIGIN`               | Origin domain.                                                                                | https://yourdomain.com                                                          |
 | `CLIENT_SECRET`        | Assigned client secret during registration. Must be set for DisbursementApi                   | your_client_secret                                                              |
+| `X_DEBUG`              | Set to 'true' to activate debug mode (showing reason of failed request in additionalInfo.debugMessage in response)                                                                                   | true                                                                            |
 
 You can see these variables in .env.example, fill it, and change the file name to .env (remove the .example extension)
 
