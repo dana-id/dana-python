@@ -1,4 +1,6 @@
-# Copyright 2025 PT Espay Debit Indonesia Koe
+# coding: utf-8
+
+# Copyright 2026 PT Espay Debit Indonesia Koe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# coding: utf-8
 
 """
     Payment Gateway API
@@ -32,6 +33,7 @@ import re  # noqa: F401
 import json
 
 from dana.base.model import BaseSdkModel
+from dana.utils.date_validation import validate_valid_up_to_date
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
@@ -56,7 +58,7 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
     sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of sub merchant identifier")
     amount: Money = Field(description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    valid_up_to: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) and cannot be more than one week in the future.")
+    valid_up_to: Annotated[str, Field(strict=True, max_length=25)] = Field(description="The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time) and cannot be more than one week in the future.")
     disabled_pay_methods: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method(s) that cannot be used for this")
     url_params: List[UrlParam] = Field(description="Notify URL that DANA must send the payment notification to")
     __properties: ClassVar[List[str]] = ["partnerReferenceNo", "merchantId", "subMerchantId", "amount", "externalStoreId", "validUpTo", "disabledPayMethods", "urlParams"]
@@ -64,40 +66,18 @@ class CreateOrderByApiRequest(BaseModel, BaseSdkModel):
     @field_validator('valid_up_to')
     def valid_up_to_validate_regular_expression(cls, value):
         """Validates the regular expression"""
-        if value is None:
-            return value
-
         if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
             raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
         return value
 
     @field_validator('valid_up_to')
     def valid_up_to_validate_date_range(cls, value):
-        """Validates that date is not more than one week in the future"""
-        import datetime
-        
-        if value is None:
-            return value
-
+        """Validates that date is not more than 30 minutes in the future (sandbox only)"""
         try:
-            jakarta_tz = datetime.timezone(datetime.timedelta(hours=7))
-            
-            current_date = datetime.datetime.now(jakarta_tz)
-            
-            max_date = current_date + datetime.timedelta(days=7)
-            
-            date_part = value[:-6]  
-            input_date = datetime.datetime.fromisoformat(date_part).replace(tzinfo=jakarta_tz)
-            
-            if input_date > max_date:
-                raise ValueError('Date cannot be more than one week in the future')
-                
-            return value
-            
+            validate_valid_up_to_date(value)
         except ValueError as e:
-            if 'week' in str(e):
-                raise
-            raise ValueError('Invalid date format. Expected format: YYYY-MM-DDTHH:mm:ss+07:00')
+            raise ValueError(str(e)) from e
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

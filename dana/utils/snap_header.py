@@ -123,6 +123,8 @@ class SnapHeader:
         
         # Replace escaped newlines with actual newlines
         key = key.replace('\\n', "\n")
+        # Normalize Windows CRLF and CR to LF
+        key = key.replace("\r\n", "\n").replace("\r", "\n")
         
         # Check if key already has headers/footers
         for index, header in enumerate(possible_headers):
@@ -221,7 +223,7 @@ class SnapHeader:
         private_key_path: str = None,
         scenario: str = "",
         client_key: str = None,
-        support_debug_mode: bool = False,
+        support_debug_mode: bool = True,
     ) -> Mapping[str, APIKeyAuthSetting]:
         
         def generateApiKeyAuthSetting(key: str, value: Any) -> APIKeyAuthSetting:
@@ -264,7 +266,9 @@ class SnapHeader:
         external_id = "sdk" + str(uuid.uuid4())[3:]
 
         env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
-        debug_mode = os.getenv("X_DEBUG", "false").lower() == "true" and env == "sandbox" and support_debug_mode
+        # In sandbox, default debug mode to true unless X_DEBUG is explicitly "false"
+        x_debug_default = "true" if env == "sandbox" else "false"
+        debug_mode = os.getenv("X_DEBUG", x_debug_default).lower() == "true" and env == "sandbox" and support_debug_mode
         if debug_mode:
             debug_mode = 1
 

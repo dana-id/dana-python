@@ -1,4 +1,6 @@
-# Copyright 2025 PT Espay Debit Indonesia Koe
+# coding: utf-8
+
+# Copyright 2026 PT Espay Debit Indonesia Koe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# coding: utf-8
 
 """
     Widget API
@@ -32,6 +33,7 @@ import re  # noqa: F401
 import json
 
 from dana.base.model import BaseSdkModel
+from dana.utils.date_validation import validate_valid_up_to_date
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
@@ -54,7 +56,7 @@ class WidgetPaymentRequest(BaseModel, BaseSdkModel):
     sub_merchant_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None)
     amount: Money
     external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to")
-    valid_up_to: Optional[Annotated[str, Field(strict=True)]] = Field(default=None, description="The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
+    valid_up_to: Annotated[str, Field(strict=True)] = Field(description="The time when the payment will be automatically expired, in format YYYY-MM-DDTHH:mm:ss+07:00. Time must be in GMT+7 (Jakarta time)")
     point_of_initiation: Optional[Annotated[str, Field(strict=True, max_length=20)]] = Field(default=None, description="Used for getting more info regarding source of request of the user")
     disabled_pay_methods: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Payment method(s) that cannot be used for this payment")
     pay_option_details: Optional[List[PayOptionDetail]] = Field(default=None, description="Payment option that will be used for this payment")
@@ -65,11 +67,17 @@ class WidgetPaymentRequest(BaseModel, BaseSdkModel):
     @field_validator('valid_up_to')
     def valid_up_to_validate_regular_expression(cls, value):
         """Validates the regular expression"""
-        if value is None:
-            return value
-
         if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$", value):
             raise ValueError(r"must validate the regular expression /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+07:00$/")
+        return value
+
+    @field_validator('valid_up_to')
+    def valid_up_to_validate_date_range(cls, value):
+        """Validates that date is not more than 30 minutes in the future (sandbox only)"""
+        try:
+            validate_valid_up_to_date(value)
+        except ValueError as e:
+            raise ValueError(str(e)) from e
         return value
 
     model_config = ConfigDict(

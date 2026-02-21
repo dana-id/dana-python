@@ -1,4 +1,6 @@
-# Copyright 2025 PT Espay Debit Indonesia Koe
+# coding: utf-8
+
+# Copyright 2026 PT Espay Debit Indonesia Koe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# coding: utf-8
 """
     Widget API
     API for enabling the user to make payment from merchant's platform with redirecting to DANA's platform.
@@ -47,6 +48,7 @@ from dana.rest import RESTResponseType
 from dana.base.types import RequestSerialized
 from dana.base.model import BaseSdkModel
 from dana.utils.snap_header import SnapHeader
+from dana.widget.v1.custom_validation import custom_validation
 from typing import Union
 from dana.widget.v1.models.apply_token_authorization_code_request import ApplyTokenAuthorizationCodeRequest
 from dana.widget.v1.models.apply_token_refresh_token_request import ApplyTokenRefreshTokenRequest
@@ -264,6 +266,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if account_unbinding_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(account_unbinding_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = account_unbinding_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -523,6 +533,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if apply_ott_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(apply_ott_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = apply_ott_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -784,6 +802,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if apply_token_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(apply_token_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = apply_token_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -1043,6 +1069,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if balance_inquiry_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(balance_inquiry_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = balance_inquiry_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -1303,6 +1337,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if cancel_order_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(cancel_order_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = cancel_order_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -1561,6 +1603,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if query_payment_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(query_payment_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = query_payment_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -1819,6 +1869,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if query_user_profile_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(query_user_profile_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = query_user_profile_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -2047,6 +2105,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if refund_order_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(refund_order_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = refund_order_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -2305,6 +2371,14 @@ class WidgetApi:
         # process the form parameters
         # process the body parameter
         if widget_payment_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(widget_payment_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = widget_payment_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:

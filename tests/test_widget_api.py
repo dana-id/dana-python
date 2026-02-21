@@ -24,7 +24,7 @@ from dana.widget.v1.models import (
 )
 
 from tests.fixtures.api_client import api_instance_widget
-from tests.fixtures.widget import widget_payment_request, apply_token_request, widget_cancel_order_request
+from tests.fixtures.widget import widget_payment_request, apply_token_request, widget_cancel_order_request, widget_payment_request_with_valid_up_to_beyond_30_minutes
 
 class TestWidgetApi:
     """Test class for Widget API endpoints without automation"""
@@ -91,3 +91,20 @@ class TestWidgetApi:
         
         except Exception as e:
             pytest.fail(f"Error during CancelOrder execution: {e}")
+
+    def test_widget_payment_with_valid_up_to_outside_range(
+        self,
+        api_instance_widget: WidgetApi,
+        widget_payment_request_with_valid_up_to_beyond_30_minutes,
+    ):
+        """Should reject a widget payment with valid_up_to more than 30 minutes in the future (API-level validation)"""
+
+        from dana.rest import ApiException
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_widget.widget_payment(widget_payment_request_with_valid_up_to_beyond_30_minutes)
+
+        error_msg = str(excinfo.value)
+        assert "validupto" in error_msg.lower() or "minutes" in error_msg.lower(), \
+            f"Error message must mention 'validUpTo' or 'minutes', got: {error_msg}"
+        print(f"CustomValidation() error as expected: {error_msg}")

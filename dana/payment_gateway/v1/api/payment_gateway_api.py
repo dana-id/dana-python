@@ -1,4 +1,6 @@
-# Copyright 2025 PT Espay Debit Indonesia Koe
+# coding: utf-8
+
+# Copyright 2026 PT Espay Debit Indonesia Koe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# coding: utf-8
 """
     Payment Gateway API
     API for doing operations in DANA Payment Gateway (Gapura)
@@ -38,6 +39,7 @@ from dana.rest import RESTResponseType
 from dana.base.types import RequestSerialized
 from dana.base.model import BaseSdkModel
 from dana.utils.snap_header import SnapHeader
+from dana.payment_gateway.v1.custom_validation import custom_validation
 from typing import Union
 from dana.payment_gateway.v1.models.create_order_by_redirect_request import CreateOrderByRedirectRequest
 from dana.payment_gateway.v1.models.create_order_by_api_request import CreateOrderByApiRequest
@@ -258,6 +260,14 @@ class PaymentGatewayApi:
         # process the form parameters
         # process the body parameter
         if cancel_order_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(cancel_order_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = cancel_order_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -517,6 +527,14 @@ class PaymentGatewayApi:
         # process the form parameters
         # process the body parameter
         if consult_pay_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(consult_pay_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = consult_pay_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -777,6 +795,14 @@ class PaymentGatewayApi:
         # process the form parameters
         # process the body parameter
         if create_order_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(create_order_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = create_order_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -1037,6 +1063,14 @@ class PaymentGatewayApi:
         # process the form parameters
         # process the body parameter
         if query_payment_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(query_payment_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = query_payment_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:
@@ -1299,6 +1333,14 @@ class PaymentGatewayApi:
         # process the form parameters
         # process the body parameter
         if refund_order_request is not None:
+            # Run custom validations (e.g., validUpTo date validation)
+            # This validation runs even when structs are created directly (bypassing setters)
+            try:
+                custom_validation(refund_order_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                # This allows the template to work for all domains
+                pass
             _body_params = refund_order_request
         # set the HTTP header `Accept`
         if 'Accept' not in _header_params:

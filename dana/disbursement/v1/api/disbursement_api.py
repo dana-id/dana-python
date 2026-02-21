@@ -1,4 +1,6 @@
-# Copyright 2025 PT Espay Debit Indonesia Koe
+# coding: utf-8
+
+# Copyright 2026 PT Espay Debit Indonesia Koe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# coding: utf-8
 
 """
     Disbursement API
@@ -29,6 +30,7 @@ import warnings
 from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union, Type
 from typing_extensions import Annotated
+import os
 from dana.utils import url
 
 from dana.disbursement.v1.models.bank_account_inquiry_request import BankAccountInquiryRequest
@@ -353,6 +355,22 @@ class DisbursementApi:
         )
 
 
+
+    def _get_account_inquiry_path(self) -> str:
+        """Get the account inquiry path based on environment.
+        
+        This method ONLY returns paths for the Disbursement account-inquiry endpoint.
+        Uses exact path matching to ensure no other endpoints are affected.
+        
+        Returns:
+            str: The path for account inquiry endpoint
+            - Sandbox: /rest/v1.0/emoney/account-inquiry
+            - Production: /v1.0/emoney/account-inquiry.htm
+        """
+        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
+        return '/v1.0/emoney/account-inquiry.htm' if env == 'production' else '/rest/v1.0/emoney/account-inquiry'
+
+
     @validate_call
     def dana_account_inquiry(
         self,
@@ -618,7 +636,7 @@ class DisbursementApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path='/v1.0/emoney/account-inquiry.htm',
+            resource_path=(self._get_account_inquiry_path()),
             body=dana_account_inquiry_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
@@ -626,7 +644,7 @@ class DisbursementApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/v1.0/emoney/account-inquiry.htm',
+            resource_path=(self._get_account_inquiry_path()),
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1485,7 +1503,7 @@ class DisbursementApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path='/v1.0/emoney/topup.htm',
+            resource_path='/rest/v1.0/emoney/topup',
             body=transfer_to_dana_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
@@ -1493,7 +1511,7 @@ class DisbursementApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/v1.0/emoney/topup.htm',
+            resource_path='/rest/v1.0/emoney/topup',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1773,7 +1791,7 @@ class DisbursementApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path='/v1.0/emoney/topup-status.htm',
+            resource_path='/rest/v1.0/emoney/topup-status',
             body=transfer_to_dana_inquiry_status_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
@@ -1781,7 +1799,7 @@ class DisbursementApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/v1.0/emoney/topup-status.htm',
+            resource_path='/rest/v1.0/emoney/topup-status',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

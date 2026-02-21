@@ -25,6 +25,18 @@ from cryptography.hazmat.primitives.asymmetric import padding
 
 from dana.webhook.finish_notify_request import FinishNotifyRequest
 
+# Sandbox gateway public key used for webhook signature verification when DANA_ENV/ENV is sandbox.
+SANDBOX_WEBHOOK_PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnaKVGRbin4Wh4KN35OPh
+ytJBjYTz7QZKSZjmHfiHxFmulfT87rta+IvGJ0rCBgg+1EtKk1hX8G5gPGJs1htJ
+5jHa3/jCk9l+luzjnuT9UVlwJahvzmFw+IoDoM7hIPjsLtnIe04SgYo0tZBpEmkQ
+vUGhmHPqYnUGSSMIpDLJDvbyr8gtwluja1SbRphgDCoYVXq+uUJ5HzPS049aaxTS
+nfXh/qXuDoB9EzCrgppLDS2ubmk21+dr7WaO/3RFjnwx5ouv6w+iC1XOJKar3CTk
+X6JV1OSST1C9sbPGzMHZ8AGB51BM0mok7davD/5irUk+f0C25OgzkwtxAt80dkDo
+/QIDAQAB
+-----END PUBLIC KEY-----"""
+
+
 class WebhookParser:
     """
     Verifies incoming webhook signatures and parse webhook request into FinishNotifyRequest object
@@ -41,7 +53,10 @@ class WebhookParser:
                         if the key file cannot be read, or if the key format is invalid.
         """
         key_input_content = ""
-        if public_key_path:
+        env = (os.getenv("DANA_ENV") or os.getenv("ENV") or "").strip().lower()
+        if env == "sandbox" or env == "":
+            key_input_content = SANDBOX_WEBHOOK_PUBLIC_KEY
+        elif public_key_path:
             try:
                 key_input_content = Path(public_key_path).read_text().strip()
             except Exception as e:

@@ -1,4 +1,6 @@
-# Copyright 2025 PT Espay Debit Indonesia Koe
+# coding: utf-8
+
+# Copyright 2026 PT Espay Debit Indonesia Koe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# coding: utf-8
 
 """
     Widget API
@@ -46,7 +47,7 @@ class UrlParam(BaseModel, BaseSdkModel):
     UrlParam
     """ # noqa: E501
     url: Annotated[str, Field(strict=True, max_length=512)] = Field(description="URL link")
-    type: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Url param. The enums:<br> * PAY_RETURN - When finish payment, DANA will notify to the URL that has been defined by<br> * NOTIFICATION - After the payment, the user will be redirected to merchant page, this is mandatory<br> ")
+    type: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Url param. The enums:<br> * PAY_RETURN - After the payment, the user will be redirected to merchant page, this is mandatory<br> * NOTIFICATION - When finish payment, DANA will notify to the URL that has been defined by user<br> ")
     is_deeplink: Annotated[str, Field(strict=True, max_length=1)] = Field(description="Deeplink URL or not")
     __properties: ClassVar[List[str]] = ["url", "type", "isDeeplink"]
 

@@ -90,7 +90,29 @@ class PaymentGatewayFixtures:
                 merchant_trans_type="SPECIAL_MOVIE"
             ),
         )
-    
+
+    @staticmethod
+    def get_consult_pay_request_without_buyer() -> ConsultPayRequest:
+        """Get a ConsultPayRequest fixture without buyer
+        
+        Returns:
+            ConsultPayRequest: A configured request object for testing without buyer
+        """
+        request = PaymentGatewayFixtures.get_consult_pay_request()
+        request.additional_info.buyer = None
+        return request
+
+    @staticmethod
+    def get_consult_pay_request_with_external_store_id() -> ConsultPayRequest:
+        """Get a ConsultPayRequest fixture with external store id
+        
+        Returns:
+            ConsultPayRequest: A configured request object for testing with external store id
+        """
+        request = PaymentGatewayFixtures.get_consult_pay_request()
+        request.external_store_id = "test_shop"
+        return request
+
     @staticmethod
     def get_create_order_by_api_request() -> CreateOrderByApiRequest:
         """Get a CreateOrderByApiRequest fixture
@@ -298,6 +320,40 @@ class PaymentGatewayFixtures:
         )
 
     @staticmethod
+    def get_create_order_by_api_with_beyond_30_minutes() -> CreateOrderByApiRequest:
+        """Get a CreateOrderByApiRequest fixture with ValidUpTo set to 31 minutes in the future.
+        
+        This fixture directly sets ValidUpTo to bypass setter validation, used to test
+        custom validation in Execute() functions.
+        
+        Returns:
+            CreateOrderByApiRequest: A configured request object with invalid valid_up_to
+        """
+        merchant_id = PaymentGatewayFixtures.get_merchant_id()
+        partner_reference_no = PaymentGatewayFixtures.generate_partner_reference_no()
+        
+        # Set valid_up_to to 31 minutes in the future (outside of allowed 30-minute range)
+        jakarta_tz = timezone(timedelta(hours=7))
+        beyond_30_minutes = (datetime.now(jakarta_tz) + timedelta(minutes=31)).strftime("%Y-%m-%dT%H:%M:%S+07:00")
+        
+        # Create a valid request first
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        
+        # Use model_construct to bypass field validators and set the invalid date directly
+        # This allows us to test custom_validation() in Execute() even when field validator is bypassed
+        request = CreateOrderByApiRequest.model_construct(
+            partner_reference_no=request.partner_reference_no,
+            merchant_id=request.merchant_id,
+            amount=request.amount,
+            url_params=request.url_params,
+            valid_up_to=beyond_30_minutes,  # Directly set invalid date, bypassing field validator
+            pay_option_details=request.pay_option_details,
+            additional_info=request.additional_info
+        )
+        
+        return request
+
+    @staticmethod
     def get_refund_order_request(
         create_order_request=None, 
         original_reference_no=None,
@@ -340,6 +396,14 @@ class PaymentGatewayFixtures:
 @pytest.fixture
 def consult_pay_request() -> ConsultPayRequest:
     return PaymentGatewayFixtures.get_consult_pay_request()
+
+@pytest.fixture
+def consult_pay_request_without_buyer() -> ConsultPayRequest:
+    return PaymentGatewayFixtures.get_consult_pay_request_without_buyer()
+
+@pytest.fixture
+def consult_pay_request_with_external_store_id() -> ConsultPayRequest:
+    return PaymentGatewayFixtures.get_consult_pay_request_with_external_store_id()
 
 @pytest.fixture
 def create_order_by_api_request() -> CreateOrderByApiRequest:

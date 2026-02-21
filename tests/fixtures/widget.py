@@ -118,10 +118,61 @@ def widget_payment_request() -> WidgetPaymentRequest:
         env_info=env_info,
     )
 
+    # Calculate valid date 10 minutes in the future in Jakarta timezone (GMT+7)
+    valid_up_to = (datetime.now(timezone(timedelta(hours=7))) + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%S+07:00")
+
     return WidgetPaymentRequest(
         partner_reference_no=partner_reference_no,
         merchant_id=merchant_id,
         amount=amount,
+        valid_up_to=valid_up_to,
+        additional_info=additional_info,
+    )
+
+
+@pytest.fixture(scope="function")
+def widget_payment_request_with_valid_up_to_beyond_30_minutes() -> WidgetPaymentRequest:
+    """
+    Fixture to provide a WidgetPaymentRequest with valid_up_to set to 31 minutes
+    in the future (Jakarta time, GMT+7).
+    
+    Uses model_construct() to bypass Pydantic field validators so we can test
+    API-level validation (custom_validation) instead of field-level validation.
+    """
+    merchant_id = os.getenv("MERCHANT_ID")
+    if not merchant_id:
+        pytest.skip("MERCHANT_ID environment variable not set")
+
+    partner_reference_no = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    amount = Money(value="10000.00", currency="IDR")
+
+    created_time = (datetime.now(timezone.utc) + timedelta(hours=7)).strftime("%Y-%m-%dT%H:%M:%S+07:00")
+    order = Order(
+        order_title="DANA Widget Test Order",
+        created_time=created_time,
+    )
+    env_info = EnvInfo(
+        source_platform=SourcePlatform.IPG,
+        terminal_type=TerminalType.SYSTEM,
+    )
+    additional_info = WidgetPaymentRequestAdditionalInfo(
+        product_code="51051000100000000001",
+        order=order,
+        mcc="5732",
+        env_info=env_info,
+    )
+
+    utc_now = datetime.now(timezone.utc)
+    jakarta_now = utc_now + timedelta(hours=7) + timedelta(minutes=31)
+    beyond_30_minutes = jakarta_now.strftime("%Y-%m-%dT%H:%M:%S+07:00")
+
+    # Use model_construct() to bypass Pydantic field validators
+    # This allows us to test API-level validation (custom_validation) instead of field-level validation
+    return WidgetPaymentRequest.model_construct(
+        partner_reference_no=partner_reference_no,
+        merchant_id=merchant_id,
+        amount=amount,
+        valid_up_to=beyond_30_minutes,
         additional_info=additional_info,
     )
 

@@ -1,4 +1,6 @@
-# Copyright 2025 PT Espay Debit Indonesia Koe
+# coding: utf-8
+
+# Copyright 2026 PT Espay Debit Indonesia Koe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# coding: utf-8
 
 """
     Payment Gateway API
@@ -34,7 +35,7 @@ import json
 from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.payment_gateway.v1.models.consult_pay_request_additional_info import ConsultPayRequestAdditionalInfo
 from dana.payment_gateway.v1.models.money import Money
@@ -50,7 +51,8 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
     merchant_id: Annotated[str, Field(strict=True, max_length=64)] = Field(description="Merchant identifier that is unique per each merchant")
     amount: Money = Field(description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO<br> ")
     additional_info: ConsultPayRequestAdditionalInfo = Field(description="Additional information")
-    __properties: ClassVar[List[str]] = ["merchantId", "amount", "additionalInfo"]
+    external_store_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Store identifier to indicate to which store this payment belongs to. Need to be provided to show QRIS payment method.")
+    __properties: ClassVar[List[str]] = ["merchantId", "amount", "additionalInfo", "externalStoreId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -112,7 +114,8 @@ class ConsultPayRequest(BaseModel, BaseSdkModel):
         _obj = cls.model_validate({
             "merchantId": obj.get("merchantId"),
             "amount": Money.from_dict(obj["amount"]) if obj.get("amount") is not None else None,
-            "additionalInfo": ConsultPayRequestAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None
+            "additionalInfo": ConsultPayRequestAdditionalInfo.from_dict(obj["additionalInfo"]) if obj.get("additionalInfo") is not None else None,
+            "externalStoreId": obj.get("externalStoreId")
         })
         return _obj
 
