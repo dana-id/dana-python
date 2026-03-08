@@ -25,6 +25,7 @@ from dana.widget.v1.models.account_unbinding_request import AccountUnbindingRequ
 from dana.widget.v1.models.balance_inquiry_request import BalanceInquiryRequest
 from dana.widget.v1.models.balance_inquiry_request_additional_info import BalanceInquiryRequestAdditionalInfo
 from dana.widget.v1.models.query_payment_request import QueryPaymentRequest
+from dana.widget.v1.models.query_user_profile_request import QueryUserProfileRequest
 from dana.widget.v1.models.cancel_order_request import CancelOrderRequest
 from dana.widget.v1.models.refund_order_request import RefundOrderRequest
 from dana.widget.v1.models import Money, Order, EnvInfo
@@ -217,6 +218,15 @@ def balance_inquiry_request(access_token: str) -> BalanceInquiryRequest:
         partner_reference_no=partner_reference_no,
         balance_types=["BALANCE"],
         additional_info=additional_info,
+    )
+
+
+def query_user_profile_request(access_token: str) -> QueryUserProfileRequest:
+    """Fixture to provide QueryUserProfileRequest built from an access token."""
+
+    return QueryUserProfileRequest(
+        user_resources=["BALANCE"],
+        access_token=access_token
     )
 
 

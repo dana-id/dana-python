@@ -90,12 +90,37 @@ class OpenApiHeader:
             elif private_key:
                 # Handle escaped newlines
                 private_key = private_key.replace("\\n", "\n")
-                private_key_obj = serialization.load_pem_private_key(
-                    private_key.encode(),
-                    password=None,
-                    backend=default_backend()
-                )
-                return private_key_obj
+                
+                # Check if private key already has PEM headers/footers
+                if not private_key.strip().startswith('-----BEGIN'):
+                    # Raw base64 key content - add PEM headers and footers
+                    private_key = f"-----BEGIN PRIVATE KEY-----\n{private_key}\n-----END PRIVATE KEY-----"
+                
+                try:
+                    private_key_obj = serialization.load_pem_private_key(
+                        private_key.encode(),
+                        password=None,
+                        backend=default_backend()
+                    )
+                    return private_key_obj
+                except ValueError as e:
+                    # If loading fails, try alternative PEM formats
+                    if "BEGIN PRIVATE KEY" in private_key:
+                        # Already in PKCS#8 format, try RSA format
+                        rsa_key = private_key.replace("-----BEGIN PRIVATE KEY-----", "-----BEGIN RSA PRIVATE KEY-----")
+                        rsa_key = rsa_key.replace("-----END PRIVATE KEY-----", "-----END RSA PRIVATE KEY-----")
+                        try:
+                            from cryptography.hazmat.primitives.serialization import load_pem_private_key
+                            private_key_obj = load_pem_private_key(
+                                rsa_key.encode(),
+                                password=None,
+                                backend=default_backend()
+                            )
+                            return private_key_obj
+                        except:
+                            pass
+                    
+                    raise ValueError(f"Unable to load private key: {str(e)}. Please ensure the private key is in proper PEM format.")
             else:
                 raise ValueError("Provide one of private_key or private_key_path")
 
@@ -155,14 +180,14 @@ class OpenApiHeader:
         # Generate unique request message ID
         req_msg_id = "sdk" + str(uuid.uuid4())[3:]
         
-        # Return auth settings following snap_header pattern
+        # Return auth settings following correct field order: version, function, clientId, clientSecret, reqTime, reqMsgId, reserve
         return {
             VERSION: generateOpenApiSetting(key=VERSION, value=version),
             FUNCTION: generateOpenApiSetting(key=FUNCTION, value=function_name),
             CLIENT_ID: generateOpenApiSetting(key=CLIENT_ID, value=client_id),
+            CLIENT_SECRET: generateOpenApiSetting(key=CLIENT_SECRET, value=client_secret),
             REQ_TIME: generateOpenApiSetting(key=REQ_TIME, value=timestamp),
             REQ_MSG_ID: generateOpenApiSetting(key=REQ_MSG_ID, value=req_msg_id),
-            CLIENT_SECRET: generateOpenApiSetting(key=CLIENT_SECRET, value=client_secret),
             RESERVE: generateOpenApiSetting(key=RESERVE, value="{}")
         }
 

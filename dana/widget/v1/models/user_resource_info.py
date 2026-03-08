@@ -36,7 +36,7 @@ from dana.base.model import BaseSdkModel
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
-from typing import Optional, Set
+from typing import Optional, Set, Union
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
@@ -52,8 +52,8 @@ class UserResourceInfo(BaseModel, BaseSdkModel):
     @field_validator('resource_type')
     def resource_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['BALANCE', 'TRANSACTION_URL', 'MASK_DANA_ID', 'TOPUP_URL', 'OTT', 'USER_KYC']):
-            raise ValueError("must be one of enum values ('BALANCE', 'TRANSACTION_URL', 'MASK_DANA_ID', 'TOPUP_URL', 'OTT', 'USER_KYC')")
+        if value not in set(['BALANCE', 'TOPUP_URL', 'TRANSACTION_URL', 'OTT', 'MASK_DANA_ID', 'USER_KYC', 'LOGIN_ID', 'CLEAR_TEXT_DANA_ID', 'NICKNAME', 'FULLNAME', 'KTP_NUMBER', 'KTP_PHOTO_DATA', 'SELFIE_PHOTO_DATA', 'AVATAR_URL', 'MASKED_FULLNAME']):
+            raise ValueError("must be one of enum values ('BALANCE', 'TOPUP_URL', 'TRANSACTION_URL', 'OTT', 'MASK_DANA_ID', 'USER_KYC', 'LOGIN_ID', 'CLEAR_TEXT_DANA_ID', 'NICKNAME', 'FULLNAME', 'KTP_NUMBER', 'KTP_PHOTO_DATA', 'SELFIE_PHOTO_DATA', 'AVATAR_URL', 'MASKED_FULLNAME')")
         return value
 
     model_config = ConfigDict(
@@ -99,13 +99,20 @@ class UserResourceInfo(BaseModel, BaseSdkModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: Optional[Union[Dict[str, Any], str]]) -> Optional[Self]:
         """Create an instance of UserResourceInfo from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            # If it's a string (JSON), try to parse it
+            if isinstance(obj, str):
+                try:
+                    obj = json.loads(obj)
+                except json.JSONDecodeError:
+                    return cls.model_validate(obj)
+            else:
+                return cls.model_validate(obj)
 
         _obj = cls.model_validate({
             "resourceType": obj.get("resourceType"),

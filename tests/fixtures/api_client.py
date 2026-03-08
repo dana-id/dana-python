@@ -81,7 +81,8 @@ def api_instance_widget():
         ORIGIN=os.getenv("ORIGIN"),
         X_PARTNER_ID=os.getenv("X_PARTNER_ID"),
         DANA_ENV=Env.SANDBOX,
-        ENV=Env.SANDBOX
+        ENV=Env.SANDBOX,
+        CLIENT_SECRET=os.getenv("CLIENT_SECRET")
     )
     config = SnapConfiguration(api_key=auth_settings)
     client = ApiClient(config)

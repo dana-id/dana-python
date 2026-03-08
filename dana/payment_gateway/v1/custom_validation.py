@@ -19,6 +19,7 @@ This module provides custom validation functions for Payment Gateway API request
 Validations are registered in the validation_registry and executed via custom_validation().
 """
 
+import os
 import re
 from typing import Any, Dict, List, Callable
 from dana.utils.date_validation import validate_valid_up_to_date
@@ -26,6 +27,36 @@ from dana.exceptions import ApiException
 
 # Money value pattern: digits (1-16) + "." + exactly 2 digits (e.g. 10000.00)
 MONEY_VALUE_PATTERN = re.compile(r'^\d{1,16}\.\d{2}$')
+
+# In sandbox, only these payMethods are available (Payment Gateway).
+SANDBOX_ALLOWED_PAY_METHODS = frozenset({
+    'BALANCE', 'CREDIT_CARD', 'DEBIT_CARD', 'VIRTUAL_ACCOUNT', 'NETWORK_PAY',
+})
+
+# In sandbox, only these payOptions are available (Payment Gateway).
+# API may send full identifiers (e.g. VIRTUAL_ACCOUNT_BRI); we accept exact match or suffix _OPTION.
+SANDBOX_ALLOWED_PAY_OPTIONS = frozenset({
+    'CARD', 'QRIS', 'BRI', 'PANIN', 'CIMB', 'MANDIRI', 'BTPN',
+})
+
+
+def _is_sandbox() -> bool:
+    """Return True if current environment is sandbox (DANA_ENV or ENV)."""
+    env = os.getenv('DANA_ENV', os.getenv('ENV', 'sandbox')).lower()
+    return env == 'sandbox'
+
+
+def _pay_option_allowed_in_sandbox(value: str) -> bool:
+    """Check if payOption value is allowed in sandbox (exact or suffix match, e.g. VIRTUAL_ACCOUNT_BRI)."""
+    if not value or not str(value).strip():
+        return False
+    s = str(value).strip()
+    if s in SANDBOX_ALLOWED_PAY_OPTIONS:
+        return True
+    for opt in SANDBOX_ALLOWED_PAY_OPTIONS:
+        if s.endswith('_' + opt):
+            return True
+    return False
 
 
 def validate_additional_info_required(request: Any) -> None:
@@ -137,6 +168,50 @@ def validate_external_store_id_for_qris(request: Any) -> None:
             )
 
 
+def validate_sandbox_pay_method_and_pay_option(request: Any) -> None:
+    """
+    In sandbox, only certain payMethod and payOption values are available.
+
+    - payMethod: only BALANCE, CREDIT_CARD, DEBIT_CARD, VIRTUAL_ACCOUNT, NETWORK_PAY.
+    - payOption: only CARD, QRIS, BRI, PANIN, CIMB, MANDIRI, BTPN (exact or suffix, e.g. VIRTUAL_ACCOUNT_BRI).
+
+    Skipped when not in sandbox (DANA_ENV / ENV != sandbox).
+
+    Raises:
+        ApiException: If in sandbox and a payMethod or payOption is not allowed.
+    """
+    if request is None or not _is_sandbox():
+        return
+    if not hasattr(request, 'pay_option_details') or request.pay_option_details is None:
+        return
+    if not isinstance(request.pay_option_details, list):
+        return
+    for idx, detail in enumerate(request.pay_option_details):
+        if hasattr(detail, 'pay_method') and detail.pay_method is not None:
+            pm = getattr(detail.pay_method, 'value', detail.pay_method) if hasattr(detail.pay_method, 'value') else detail.pay_method
+            pm_str = str(pm).strip()
+            if pm_str and pm_str not in SANDBOX_ALLOWED_PAY_METHODS:
+                raise ApiException(
+                    status=0,
+                    reason=(
+                        f'In sandbox, payMethod must be one of {sorted(SANDBOX_ALLOWED_PAY_METHODS)}; '
+                        f'got {pm_str!r} in payOptionDetails[{idx}]'
+                    )
+                )
+        if hasattr(detail, 'pay_option') and detail.pay_option is not None:
+            po = getattr(detail.pay_option, 'value', detail.pay_option) if hasattr(detail.pay_option, 'value') else detail.pay_option
+            po_str = str(po).strip()
+            # Empty payOption is allowed (e.g. for BALANCE)
+            if po_str and not _pay_option_allowed_in_sandbox(po_str):
+                raise ApiException(
+                    status=0,
+                    reason=(
+                        f'In sandbox, payOption must be one of {sorted(SANDBOX_ALLOWED_PAY_OPTIONS)} '
+                        f'(or suffix like VIRTUAL_ACCOUNT_BRI); got {po!r} in payOptionDetails[{idx}]'
+                    )
+                )
+
+
 # Validation registry maps request class names to their validation functions
 validation_registry: Dict[str, List[Callable[[Any], None]]] = {
     'CreateOrderByApiRequest': [
@@ -144,17 +219,20 @@ validation_registry: Dict[str, List[Callable[[Any], None]]] = {
         validate_money_value_pattern,
         validate_valid_up_to_create_order_request,
         validate_external_store_id_for_qris,
+        validate_sandbox_pay_method_and_pay_option,
     ],
     'CreateOrderByRedirectRequest': [
         validate_additional_info_required,
         validate_money_value_pattern,
         validate_valid_up_to_create_order_request,
+        validate_sandbox_pay_method_and_pay_option,
     ],
     'CreateOrderRequest': [
         validate_additional_info_required,
         validate_money_value_pattern,
         validate_valid_up_to_create_order_request,
         validate_external_store_id_for_qris,
+        validate_sandbox_pay_method_and_pay_option,
     ],
     # Add more request types and their validations here as needed
 }

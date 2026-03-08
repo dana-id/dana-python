@@ -39,6 +39,7 @@ from tests.fixtures.widget import (
     widget_payment_request, 
     widget_query_payment_request, 
     balance_inquiry_request,
+    query_user_profile_request,
     widget_refund_order_request, 
     account_unbinding_request
 )
@@ -249,6 +250,185 @@ class TestWidgetWithAutomation:
         #     assert refund_response.original_partner_reference_no == widget_payment_request.partner_reference_no
         # except Exception as e:
         #     pytest.fail(f'Error during RefundOrder execution: {e}')
+
+        try:
+            # Query User Profile
+            print("Querying user profile...")
+            query_user_profile_req = query_user_profile_request(self.__class__.binding_access_token)
+            
+            print("=== QueryUserProfile Request Debug ===")
+            print(f"Request object: {query_user_profile_req}")
+            print(f"User Resources: {query_user_profile_req.user_resources}")
+            print(f"Access Token: {query_user_profile_req.access_token}")
+            print("=== End Request Debug ===")
+            
+            # Add comprehensive HTTP request debugging  
+            import urllib3
+            import json as json_module
+            
+            # Monkey patch urllib3 to log requests and responses
+            original_urlopen = urllib3.poolmanager.PoolManager.urlopen
+            
+            def debug_urlopen(self, method, url, *args, **kwargs):
+                print("\n" + "="*60)
+                print("=== PYTHON HTTP REQUEST DEBUG ===")
+                print("="*60)
+                print(f"Method: {method}")
+                print(f"URL: {url}")
+                
+                # Log all headers
+                headers = kwargs.get('headers', {})
+                if headers:
+                    print("HTTP Headers:")
+                    for key, value in headers.items():
+                        print(f"  {key}: {value}")
+                
+                # Log request body with detailed analysis
+                body = kwargs.get('body')
+                if body:
+                    print("\nRequest Body Analysis:")
+                    print(f"  Body type: {type(body)}")
+                    print(f"  Body length: {len(body) if body else 0}")
+                    
+                    try:
+                        # Handle different body types
+                        if isinstance(body, bytes):
+                            body_str = body.decode('utf-8')
+                        elif isinstance(body, str):
+                            body_str = body
+                        else:
+                            body_str = str(body)
+                        
+                        print(f"  Body (literal): {repr(body_str)}")
+                        
+                        # Try to parse and pretty print JSON
+                        try:
+                            parsed_json = json_module.loads(body_str)
+                            print("  Body (parsed JSON):")
+                            print(json_module.dumps(parsed_json, indent=4))
+                            
+                            # Analyze DANA request structure
+                            if isinstance(parsed_json, dict):
+                                if 'request' in parsed_json:
+                                    print("  ✅ Contains 'request' wrapper")
+                                    request_part = parsed_json['request']
+                                    if 'head' in request_part:
+                                        head = request_part['head']
+                                        print(f"  ✅ Head section with {len(head)} fields:")
+                                        for k, v in head.items():
+                                            if k == 'accessToken':
+                                                print(f"    ✅ {k}: {v}")
+                                            else:
+                                                print(f"    - {k}: {v}")
+                                    if 'body' in request_part:
+                                        body_part = request_part['body']
+                                        print(f"  ✅ Body section: {body_part}")
+                                if 'signature' in parsed_json:
+                                    sig = parsed_json['signature']
+                                    print(f"  ✅ Signature: {sig[:50]}...")
+                                else:
+                                    print("  ❌ Missing signature!")
+                            else:
+                                print(f"  ❌ Unexpected structure: {list(parsed_json.keys())}")
+                                    
+                        except json_module.JSONDecodeError as e:
+                            print(f"  ❌ Failed to parse JSON: {e}")
+                    except Exception as e:
+                        print(f"  ❌ Failed to process body: {e}")
+                else:
+                    print("  No request body")
+                
+                print("="*60)
+                
+                # Make the actual request
+                response = original_urlopen(self, method, url, *args, **kwargs)
+                
+                # Log response details
+                print("=== PYTHON HTTP RESPONSE DEBUG ===")
+                print("="*60)
+                print(f"Status: {response.status}")
+                print(f"Status reason: {getattr(response, 'reason', 'N/A')}")
+                
+                print("Response Headers:")
+                for key, value in response.headers.items():
+                    print(f"  {key}: {value}")
+                
+                # Read response body without consuming it for the client
+                print("\nResponse Body Analysis:")
+                try:
+                    # Get response data
+                    response_data = response.data
+                    if isinstance(response_data, bytes):
+                        response_text = response_data.decode('utf-8')
+                    else:
+                        response_text = str(response_data)
+                    
+                    print(f"Response body type: {type(response_data)}")
+                    print(f"Response body length: {len(response_text)}")
+                    print(f"Response body (literal): {repr(response_text)}")
+                    
+                    # Parse and analyze JSON response
+                    try:
+                        parsed_response = json_module.loads(response_text)
+                        print("Response body (parsed JSON):")
+                        print(json_module.dumps(parsed_response, indent=4))
+                        
+                        # Analyze DANA response structure
+                        if 'response' in parsed_response:
+                            resp = parsed_response['response']
+                            if 'body' in resp and 'resultInfo' in resp['body']:
+                                result = resp['body']['resultInfo']
+                                print(f"\n📊 API Result: {result.get('resultStatus', 'N/A')} - {result.get('resultCode', 'N/A')}")
+                                if result.get('resultMsg'):
+                                    print(f"📋 Message: {result['resultMsg']}")
+                        
+                    except json_module.JSONDecodeError:
+                        print("❌ Response is not valid JSON")
+                        
+                except Exception as e:
+                    print(f"❌ Could not read response body: {e}")
+                    print(f"Response object type: {type(response)}")
+                    print(f"Response attributes: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+                
+                print("="*60)
+                print()
+                
+                return response
+            
+            # Apply the monkey patch
+            urllib3.poolmanager.PoolManager.urlopen = debug_urlopen
+            
+            try:
+                query_user_profile_response = api_instance_widget.query_user_profile(query_user_profile_req)
+            finally:
+                # Restore original method
+                urllib3.poolmanager.PoolManager.urlopen = original_urlopen
+            
+            assert query_user_profile_response is not None
+            assert query_user_profile_response.response is not None
+            assert query_user_profile_response.response.head is not None
+            assert query_user_profile_response.response.body is not None
+            
+            # Verify result status is success
+            result_info = query_user_profile_response.response.body.result_info
+            assert result_info is not None
+            assert result_info.result_status == 'S', 'Result status should be Success (S)'
+            
+            # Verify that we requested BALANCE resource
+            assert 'BALANCE' in query_user_profile_req.user_resources
+            assert query_user_profile_req.access_token == self.__class__.binding_access_token
+            
+            print("Successfully retrieved user profile with BALANCE resource")
+            print(f"Result Status: {result_info.result_status}")
+            print(f"Result Code: {result_info.result_code}")
+            print(f"Access Token used: {self.__class__.binding_access_token}")
+            
+            # Check if user resources were returned
+            user_resource_infos = query_user_profile_response.response.body.user_resource_infos
+            if user_resource_infos and len(user_resource_infos) > 0:
+                print(f"Returned {len(user_resource_infos)} user resource(s)")
+        except Exception as e:
+            pytest.fail(f'Error during QueryUserProfile execution: {e}')
 
         try:
             # Account Unbinding

@@ -38,7 +38,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List, Optional
 from dana.widget.v1.models.result_info import ResultInfo
 from dana.widget.v1.models.user_resource_info import UserResourceInfo
-from typing import Optional, Set
+from typing import Optional, Set, Union
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
@@ -104,13 +104,20 @@ class QueryUserProfileResponseResponseBody(BaseModel, BaseSdkModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: Optional[Union[Dict[str, Any], str]]) -> Optional[Self]:
         """Create an instance of QueryUserProfileResponseResponseBody from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            # If it's a string (JSON), try to parse it
+            if isinstance(obj, str):
+                try:
+                    obj = json.loads(obj)
+                except json.JSONDecodeError:
+                    return cls.model_validate(obj)
+            else:
+                return cls.model_validate(obj)
 
         _obj = cls.model_validate({
             "resultInfo": ResultInfo.from_dict(obj["resultInfo"]) if obj.get("resultInfo") is not None else None,

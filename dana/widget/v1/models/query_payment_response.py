@@ -39,7 +39,7 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.widget.v1.models.money import Money
 from dana.widget.v1.models.query_payment_response_additional_info import QueryPaymentResponseAdditionalInfo
-from typing import Optional, Set
+from typing import Optional, Set, Union
 from typing_extensions import Self
 from pydantic import AliasGenerator
 from pydantic.alias_generators import to_camel
@@ -133,13 +133,20 @@ class QueryPaymentResponse(BaseModel, BaseSdkModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: Optional[Union[Dict[str, Any], str]]) -> Optional[Self]:
         """Create an instance of QueryPaymentResponse from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            # If it's a string (JSON), try to parse it
+            if isinstance(obj, str):
+                try:
+                    obj = json.loads(obj)
+                except json.JSONDecodeError:
+                    return cls.model_validate(obj)
+            else:
+                return cls.model_validate(obj)
 
         _obj = cls.model_validate({
             "responseCode": obj.get("responseCode"),

@@ -6,6 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **user_resources** | **List[str]** | The resource type list that the merchant server wants to get from DANA | 
+**access_token** | **str** | Access token required for user profile query | 
 
 ## Example
 

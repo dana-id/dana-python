@@ -288,3 +288,87 @@ class TestPaymentGatewayApi:
 
         with pytest.raises((ApiException, ValueError, Exception)):
             api_instance_payment_gateway.create_order(create_order_by_api_request)
+
+
+class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
+    """Sandbox-only validation: payMethod and payOption must be in allowed lists."""
+
+    def test_sandbox_rejects_invalid_pay_method(self, api_instance_payment_gateway: PaymentGatewayApi):
+        """In sandbox, invalid payMethod (e.g. COUPON) should be rejected by custom validation."""
+        import os
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
+        if env != "sandbox":
+            pytest.skip("Sandbox payMethod/payOption validation only runs in sandbox")
+
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        # COUPON is not in allowed sandbox list (BALANCE, CREDIT_CARD, DEBIT_CARD, VIRTUAL_ACCOUNT, NETWORK_PAY)
+        # Use NETWORK_PAY_PG_CARD for pay_option (valid in Pydantic model; CARD is allowed in sandbox)
+        request.pay_option_details = [
+            PayOptionDetail(
+                pay_method="COUPON",
+                pay_option="NETWORK_PAY_PG_CARD",
+                trans_amount=Money(value="222000.00", currency="IDR"),
+            )
+        ]
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(request)
+        msg = str(excinfo.value).lower()
+        assert "paymethod" in msg or "sandbox" in msg
+
+    def test_sandbox_rejects_invalid_pay_option(self, api_instance_payment_gateway: PaymentGatewayApi):
+        """In sandbox, invalid payOption (e.g. NETWORK_PAY_PG_OVO) should be rejected by custom validation."""
+        import os
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.enum import PayMethod
+
+        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
+        if env != "sandbox":
+            pytest.skip("Sandbox payMethod/payOption validation only runs in sandbox")
+
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        # OVO is not in allowed list (CARD, QRIS, BRI, PANIN, CIMB, MANDIRI, BTPN)
+        request.pay_option_details = [
+            PayOptionDetail(
+                pay_method=PayMethod.NETWORK_PAY,
+                pay_option="NETWORK_PAY_PG_OVO",
+                trans_amount=Money(value="222000.00", currency="IDR"),
+            )
+        ]
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(request)
+        msg = str(excinfo.value).lower()
+        assert "payoption" in msg or "sandbox" in msg
+
+    def test_sandbox_accepts_valid_pay_method_and_pay_option(self, api_instance_payment_gateway: PaymentGatewayApi):
+        """In sandbox, valid payMethod (VIRTUAL_ACCOUNT) and payOption (VIRTUAL_ACCOUNT_BRI) pass validation."""
+        import os
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.enum import PayMethod
+
+        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
+        if env != "sandbox":
+            pytest.skip("Sandbox payMethod/payOption validation only runs in sandbox")
+
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        request.pay_option_details = [
+            PayOptionDetail(
+                pay_method=PayMethod.VIRTUAL_ACCOUNT,
+                pay_option="VIRTUAL_ACCOUNT_BRI",
+                trans_amount=Money(value="222000.00", currency="IDR"),
+            )
+        ]
+
+        # Should not raise ApiException for sandbox payMethod/payOption validation
+        try:
+            api_instance_payment_gateway.create_order(request)
+        except ApiException as e:
+            msg = str(e).lower()
+            # Fail if error is about sandbox payMethod/payOption
+            assert "in sandbox, paymethod" not in msg and "in sandbox, payoption" not in msg, msg

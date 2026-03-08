@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import asyncio
+from pathlib import Path
 from playwright.async_api import async_playwright
 from urllib.parse import urlparse, parse_qs, unquote
 import json
@@ -93,19 +94,30 @@ async def automate_oauth(oauth_url, phone_number=None, pin=None, show_log=False)
         
         # First try the specific selector used in PHP implementation
         phone_entered = False
+        # Try exact selector for current DANA OAuth UI (input class txt-input-phone-number-field)
         try:
-            log('Trying to find label.new-clearable-input.form-ipg-phonenumber...')
-            phone_label = await page.query_selector('label.new-clearable-input.form-ipg-phonenumber')
-            if phone_label:
-                log('Phone label found, clicking it...')
-                await phone_label.click()
-                await page.keyboard.type(mobile_number)
-                log(f'Phone number {mobile_number} entered via label.new-clearable-input.form-ipg-phonenumber click')
-                phone_entered = True
-            else:
-                log('Phone label not found, trying alternative methods')
+            log('Trying input.txt-input-phone-number-field (Playwright fill)...')
+            # Don't click first - element may be in DOM but not yet "visible" to Playwright, causing click to timeout.
+            # fill() will focus and type; use a short timeout so we fall through to JS fallback if needed.
+            await page.fill('input.txt-input-phone-number-field', mobile_number, timeout=10000)
+            log(f'Phone number {mobile_number} entered via input.txt-input-phone-number-field')
+            phone_entered = True
         except Exception as e:
-            log(f'Error during specific phone selector handling: {str(e)}')
+            log(f'Error filling input.txt-input-phone-number-field: {str(e)}')
+        if not phone_entered:
+            try:
+                log('Trying to find label.new-clearable-input.form-ipg-phonenumber...')
+                phone_label = await page.query_selector('label.new-clearable-input.form-ipg-phonenumber')
+                if phone_label:
+                    log('Phone label found, clicking it...')
+                    await phone_label.click()
+                    await page.keyboard.type(mobile_number)
+                    log(f'Phone number {mobile_number} entered via label.new-clearable-input.form-ipg-phonenumber click')
+                    phone_entered = True
+                else:
+                    log('Phone label not found, trying alternative methods')
+            except Exception as e:
+                log(f'Error during specific phone selector handling: {str(e)}')
 
         # Fall back to the generic approach if the specific selector didn't work
         if not phone_entered:
@@ -113,7 +125,15 @@ async def automate_oauth(oauth_url, phone_number=None, pin=None, show_log=False)
             log('Looking for phone input field...')
             result = await page.evaluate("""
             (mobile) => {
-                // Try the generic approach matching PHP implementation exactly
+                // Prefer exact class used by current DANA OAuth UI
+                const byClass = document.querySelector('input.txt-input-phone-number-field');
+                if (byClass) {
+                    byClass.focus();
+                    byClass.value = mobile;
+                    byClass.dispatchEvent(new Event('input', { bubbles: true }));
+                    byClass.dispatchEvent(new Event('change', { bubbles: true }));
+                    return { filled: true, message: 'Filled input.txt-input-phone-number-field' };
+                }
                 const inputs = document.querySelectorAll('input');
                 for (const input of Array.from(inputs)) {
                     if (input.type === 'tel' || 
@@ -272,6 +292,37 @@ async def automate_oauth(oauth_url, phone_number=None, pin=None, show_log=False)
         except Exception as e:
             log(f"Error getting input details: {e}")
         
+        # If we only see phone-number inputs, we're still on phone screen - wait and try Continue again before looking for PIN
+        try:
+            only_phone_inputs = await page.evaluate("""
+            () => {
+                const inputs = document.querySelectorAll('input');
+                const hasPinField = Array.from(inputs).some(i => 
+                    i.maxLength === 6 || i.className.includes('pin') || i.maxLength === 1
+                );
+                const allPhone = inputs.length > 0 && Array.from(inputs).every(i => i.className.includes('phone'));
+                return !hasPinField && allPhone;
+            }
+            """)
+            if only_phone_inputs:
+                log("Still on phone screen (no PIN field visible). Clicking Continue again and waiting for PIN screen...")
+                await page.evaluate("""
+                () => {
+                    const buttons = document.querySelectorAll('button');
+                    for (const b of buttons) {
+                        const t = b.innerText.trim().toLowerCase();
+                        if (t.includes('lanjut') || t.includes('continue') || t.includes('next')) {
+                            b.click();
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                """)
+                await page.wait_for_timeout(3000)
+        except Exception as e:
+            log(f"Check for phone vs PIN screen: {e}")
+        
         # Enter PIN using JavaScript exactly like PHP implementation - EXACT MATCH
         log('Looking for PIN input fields...')
         
@@ -280,20 +331,28 @@ async def automate_oauth(oauth_url, phone_number=None, pin=None, show_log=False)
         try:
             log("Trying direct Playwright fill first...")
             fill_result = False
-            # Try specific PIN input selector
+            # Try specific PIN input selector (short timeout so we fall through to JS quickly)
             try:
-                await page.fill(".txt-input-pin-field", used_pin)
+                await page.fill(".txt-input-pin-field", used_pin, timeout=5000)
                 log("Filled PIN directly with Playwright .txt-input-pin-field selector")
                 fill_result = True
             except Exception as e:
                 log(f"Could not fill .txt-input-pin-field: {e}")
-                # Try maxlength=6 selector
+                # Try any input with class containing "pin"
                 try:
-                    await page.fill("input[maxLength='6']", used_pin)
-                    log("Filled PIN directly with Playwright maxLength=6 selector")
+                    await page.fill("input[class*='pin']", used_pin, timeout=5000)
+                    log("Filled PIN via input[class*='pin']")
                     fill_result = True
-                except Exception as e:
-                    log(f"Could not fill input[maxLength='6']: {e}")
+                except Exception as e2:
+                    log(f"Could not fill input[class*='pin']: {e2}")
+                # Try maxlength=6 selector
+                if not fill_result:
+                    try:
+                        await page.fill("input[maxLength='6']", used_pin, timeout=5000)
+                        log("Filled PIN directly with Playwright maxLength=6 selector")
+                        fill_result = True
+                    except Exception as e:
+                        log(f"Could not fill input[maxLength='6']: {e}")
         except Exception as e:
             log(f"Direct fill attempts failed: {e}")
             
@@ -380,14 +439,7 @@ async def automate_oauth(oauth_url, phone_number=None, pin=None, show_log=False)
                 return { success: true, method: "multi", message: `Found ${pinInputs.length} PIN inputs via JS` };
             }
             
-            // Last resort - try ANY input
-            if (inputs.length > 0) {
-                console.log("Last resort: trying any input field");
-                const input = inputs[0];
-                triggerAllEvents(input);
-                return { success: true, method: "any", message: "Tried with first available input as last resort" };
-            }
-            
+            // Do NOT use "any input" fallback - it overwrites the phone number field with PIN when still on phone screen
             console.log("No suitable PIN input fields found");
             return { success: false, method: "none", message: "Could not find any suitable PIN input field" };
         }
@@ -398,15 +450,18 @@ async def automate_oauth(oauth_url, phone_number=None, pin=None, show_log=False)
             log(f"PIN input successful: {pin_input_result.get('message')} (method: {pin_input_result.get('method')})")
         else:
             log(f"Warning: {pin_input_result.get('message', 'Unknown error')}")
-            
-            # Try fallback direct keyboard entry if all else fails
-            log("Attempting fallback PIN entry method with keyboard...")
-            try:
-                await page.keyboard.type(used_pin, {'delay': 200})
-                await page.keyboard.press('Enter')
-                log("Typed PIN using direct keyboard input as fallback")
-            except Exception as ke:
-                log(f"Keyboard fallback also failed: {ke}")
+            # Do NOT type PIN with keyboard when no PIN field was found - we may still be on phone screen
+            # and would overwrite the phone number with the PIN (causing "Format nomor HP salah")
+            if pin_input_result and pin_input_result.get('method') != 'none':
+                log("Attempting fallback PIN entry method with keyboard...")
+                try:
+                    await page.keyboard.type(used_pin, {'delay': 200})
+                    await page.keyboard.press('Enter')
+                    log("Typed PIN using direct keyboard input as fallback")
+                except Exception as ke:
+                    log(f"Keyboard fallback also failed: {ke}")
+            else:
+                log("Skipping keyboard PIN fallback (no PIN field found; may still be on phone number screen)")
                 
         # Try to find and click a confirm button after PIN entry - exactly matching PHP
         log('Looking for confirm button after PIN entry...')

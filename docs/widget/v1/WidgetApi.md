@@ -602,11 +602,20 @@ enum_value = ServiceType.PARKING
 | Value | Description |
 |-------|-------------|
 | `BALANCE` |  |
-| `TRANSACTION_URL` |  |
-| `MASK_DANA_ID` |  |
 | `TOPUP_URL` |  |
+| `TRANSACTION_URL` |  |
 | `OTT` |  |
+| `MASK_DANA_ID` |  |
 | `USER_KYC` |  |
+| `LOGIN_ID` |  |
+| `CLEAR_TEXT_DANA_ID` |  |
+| `NICKNAME` |  |
+| `FULLNAME` |  |
+| `KTP_NUMBER` |  |
+| `KTP_PHOTO_DATA` |  |
+| `SELFIE_PHOTO_DATA` |  |
+| `AVATAR_URL` |  |
+| `MASKED_FULLNAME` |  |
 
 ## ResultStatus
 | Value | Description |

@@ -190,7 +190,12 @@ class RESTClientObject:
                 ):
                     request_body = None
                     if body is not None:
-                        request_body = json.dumps(body)
+                        # If body is already a string or bytes (e.g. pre-serialized JSON from OpenAPI widget),
+                        # send as-is to avoid double JSON encoding. Otherwise serialize.
+                        if isinstance(body, (str, bytes)):
+                            request_body = body
+                        else:
+                            request_body = json.dumps(body)
                     r = self.pool_manager.request(
                         method,
                         url,
