@@ -289,6 +289,138 @@ class TestPaymentGatewayApi:
         with pytest.raises((ApiException, ValueError, Exception)):
             api_instance_payment_gateway.create_order(create_order_by_api_request)
 
+    def test_create_order_rejects_credit_card_without_phone_number(self, api_instance_payment_gateway: PaymentGatewayApi):
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.models import PayOptionAdditionalInfo
+
+        create_order_by_api_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        create_order_by_api_request.pay_option_details = [
+            PayOptionDetail(
+                pay_method="CREDIT_CARD",
+                pay_option="",
+                trans_amount=Money(value="222000.00", currency="IDR"),
+                additional_info=PayOptionAdditionalInfo(phone_number=None),
+            )
+        ]
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(create_order_by_api_request)
+        assert "phone" in str(excinfo.value).lower()
+
+    def test_create_order_rejects_network_pay_pg_card_without_phone_number(self, api_instance_payment_gateway: PaymentGatewayApi):
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.models import PayOptionAdditionalInfo
+
+        create_order_by_api_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        create_order_by_api_request.pay_option_details = [
+            PayOptionDetail(
+                pay_method="NETWORK_PAY",
+                pay_option="NETWORK_PAY_PG_CARD",
+                trans_amount=Money(value="222000.00", currency="IDR"),
+                additional_info=PayOptionAdditionalInfo(),
+            )
+        ]
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(create_order_by_api_request)
+        assert "phone" in str(excinfo.value).lower()
+
+    def test_create_order_rejects_buyer_external_user_id_without_external_user_type(
+        self, api_instance_payment_gateway: PaymentGatewayApi
+    ):
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.models import Buyer, OrderApiObject
+
+        create_order_by_api_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        create_order_by_api_request.additional_info.order = OrderApiObject(
+            order_title="T",
+            scenario="API",
+            buyer=Buyer(external_user_id="uid-1", external_user_type=None),
+        )
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(create_order_by_api_request)
+        msg = str(excinfo.value).lower()
+        assert "externalusertype" in msg or "external_user_type" in msg
+
+    def test_create_order_rejects_goods_with_blank_name_when_goods_present(self, api_instance_payment_gateway: PaymentGatewayApi):
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.models import Goods, OrderApiObject
+
+        create_order_by_api_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        g = Goods.model_construct(
+            name="   ",
+            merchant_goods_id="g1",
+            description="d",
+            category="c",
+            price=Money(value="1.00", currency="IDR"),
+            quantity="1",
+        )
+        create_order_by_api_request.additional_info.order = OrderApiObject(
+            order_title="T",
+            scenario="API",
+            goods=[g],
+        )
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(create_order_by_api_request)
+        assert "goods" in str(excinfo.value).lower() or "name" in str(excinfo.value).lower()
+
+    def test_create_order_rejects_shipping_without_first_name_when_shipping_present(
+        self, api_instance_payment_gateway: PaymentGatewayApi
+    ):
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.models import OrderApiObject, ShippingInfo
+
+        create_order_by_api_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        s = ShippingInfo.model_construct(
+            merchant_shipping_id="m1",
+            country_name="ID",
+            state_name="JK",
+            city_name="Jakarta",
+            address1="a1",
+            first_name="  ",
+            last_name="L",
+            zip_code="12345",
+        )
+        create_order_by_api_request.additional_info.order = OrderApiObject(
+            order_title="T",
+            scenario="API",
+            shipping_info=[s],
+        )
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(create_order_by_api_request)
+        assert "first" in str(excinfo.value).lower() or "shipping" in str(excinfo.value).lower()
+
+    def test_create_order_rejects_aggregated_validation_errors(
+        self, api_instance_payment_gateway: PaymentGatewayApi
+    ):
+        """create_order aggregates multiple custom_validation failures (e.g. phone + buyer)."""
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.models import Buyer, OrderApiObject, PayOptionAdditionalInfo
+
+        create_order_by_api_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        create_order_by_api_request.pay_option_details = [
+            PayOptionDetail(
+                pay_method="CREDIT_CARD",
+                pay_option="",
+                trans_amount=Money(value="222000.00", currency="IDR"),
+                additional_info=PayOptionAdditionalInfo(),
+            )
+        ]
+        create_order_by_api_request.additional_info.order = OrderApiObject(
+            order_title="T",
+            scenario="API",
+            buyer=Buyer(external_user_id="u1", external_user_type=None),
+        )
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(create_order_by_api_request)
+        msg = str(excinfo.value).lower()
+        assert "phonenumber" in msg and "externalusertype" in msg
+        assert ";" in str(excinfo.value)
+
 
 class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
     """Sandbox-only validation: payMethod and payOption must be in allowed lists."""

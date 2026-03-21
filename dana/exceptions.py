@@ -22,7 +22,7 @@
     Do not edit the class manually.
 """  # noqa: E501
 
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Self
 
 class OpenApiException(Exception):
@@ -122,7 +122,11 @@ class ApiException(OpenApiException):
         *,
         body: Optional[str] = None,
         data: Optional[Any] = None,
+        contexts: Optional[List[Dict[str, str]]] = None,
     ) -> None:
+        self.contexts = contexts
+        if contexts is not None and reason is None:
+            reason = "; ".join(f"{c['field']}: {c['message']}" for c in contexts)
         self.status = status
         self.reason = reason
         self.body = body

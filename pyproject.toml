@@ -14,9 +14,9 @@ maintainers = [
 keywords = ["DANA", "DANA ID Docs", "DANA SDK", "DANA Python", "DANA API Client", "DANA Python API Client", "DANA Python SDK"]
 dependencies = [
   "annotated-types==0.7.0",
-  "cffi==1.17.1",
+  "cffi==2.0.0",
   "cryptography>=44.0.2,<46.0.0",
-  "pycparser==2.22",
+  "pycparser==2.23",
   "pydantic>=2.10.6,<3.0.0",
   "pydantic-core>=2.27.2,<3.0.0",
   "python-dateutil==2.9.0.post0",

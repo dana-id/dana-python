@@ -15,9 +15,22 @@
 import importlib
 import pkgutil
 import os
+import re
 from typing import List
 
 PACKAGE_NAME = 'dana'
+
+# Only single path segments that are valid Python identifiers (no traversal / injection).
+_SAFE_PKG_SEGMENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _assert_safe_import_segment(name: str, label: str) -> None:
+    if not name or not _SAFE_PKG_SEGMENT.fullmatch(name):
+        raise ValueError(
+            f"Refusing dynamic import: disallowed {label} {name!r} "
+            "(expected a single identifier-like package segment)"
+        )
+
 
 def import_all_models(base_path: str) -> None:
     """
@@ -48,6 +61,8 @@ def import_all_models(base_path: str) -> None:
         path_to_domain: List[str] = getattr(subdomain.module_finder, 'path', '')
         domain = os.path.basename(path_to_domain)
 
-        # Construct the full module path and import
+        # Construct the full module path and import (whitelist segments — no dynamic/untrusted strings)
+        _assert_safe_import_segment(domain, "domain")
+        _assert_safe_import_segment(subdomain.name, "subdomain")
         module_name = f"{PACKAGE_NAME}.{domain}.{subdomain.name}.models"
         importlib.import_module(module_name)
