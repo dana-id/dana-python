@@ -1238,6 +1238,13 @@ class DisbursementApi:
         )
 
 
+
+    def _get_transfer_to_dana_path(self) -> str:
+        """Transfer to DANA (topup) path based on environment."""
+        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
+        return '/v1.0/emoney/topup.htm' if env == 'production' else '/rest/v1.0/emoney/topup'
+
+
     @validate_call
     def transfer_to_dana(
         self,
@@ -1503,7 +1510,7 @@ class DisbursementApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path='/rest/v1.0/emoney/topup',
+            resource_path=(self._get_transfer_to_dana_path()),
             body=transfer_to_dana_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
@@ -1511,7 +1518,7 @@ class DisbursementApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/rest/v1.0/emoney/topup',
+            resource_path=(self._get_transfer_to_dana_path()),
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1524,6 +1531,13 @@ class DisbursementApi:
             _request_auth=_request_auth,
             _generated_auth=_generated_auth,
         )
+
+
+
+    def _get_transfer_to_dana_inquiry_status_path(self) -> str:
+        """Topup-status inquiry path based on environment."""
+        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
+        return '/v1.0/emoney/topup-status.htm' if env == 'production' else '/rest/v1.0/emoney/topup-status'
 
 
     @validate_call
@@ -1791,7 +1805,7 @@ class DisbursementApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path='/rest/v1.0/emoney/topup-status',
+            resource_path=(self._get_transfer_to_dana_inquiry_status_path()),
             body=transfer_to_dana_inquiry_status_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
@@ -1799,7 +1813,7 @@ class DisbursementApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/rest/v1.0/emoney/topup-status',
+            resource_path=(self._get_transfer_to_dana_inquiry_status_path()),
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
