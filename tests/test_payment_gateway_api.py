@@ -463,7 +463,7 @@ class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
             pytest.skip("Sandbox payMethod/payOption validation only runs in sandbox")
 
         request = PaymentGatewayFixtures.get_create_order_by_api_request()
-        # OVO is not in allowed list (CARD, QRIS, BRI, PANIN, CIMB, MANDIRI, BTPN)
+        # OVO is not in allowed list (CARD, QRIS, BRI, PANIN, CIMB, MANDIRI, BTPN, BSI)
         request.pay_option_details = [
             PayOptionDetail(
                 pay_method=PayMethod.NETWORK_PAY,

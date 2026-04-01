@@ -681,6 +681,7 @@ enum_value = ServiceType.PARKING
 | `VIRTUAL_ACCOUNT_CIMB` |  |
 | `VIRTUAL_ACCOUNT_PERMATA` |  |
 | `VIRTUAL_ACCOUNT_PANI` |  |
+| `VIRTUAL_ACCOUNT_BSI_PAYMENT` |  |
 
 ## Type
 | Value | Description |
