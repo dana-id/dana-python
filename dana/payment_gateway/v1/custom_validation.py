@@ -34,7 +34,7 @@ SANDBOX_ALLOWED_PAY_METHODS: FrozenSet[str] = frozenset({
 })
 
 SANDBOX_ALLOWED_PAY_OPTIONS: FrozenSet[str] = frozenset({
-    'CARD', 'QRIS', 'BRI', 'PANIN', 'CIMB', 'MANDIRI', 'BTPN', 'BSI',
+    'CARD', 'QRIS', 'BRI', 'PANI', 'CIMB', 'MANDIRI', 'BTPN', 'BSI_PAYMENT',
 })
 
 CREDIT_DEBIT_CARD_PAY_METHODS: Set[str] = {'CREDIT_CARD', 'DEBIT_CARD'}
