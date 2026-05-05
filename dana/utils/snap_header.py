@@ -47,7 +47,7 @@ class SnapHeader:
     ]
     SnapApplyTokenRuntimeHeaders: List[str] = [
         X_TIMESTAMP, X_SIGNATURE, 
-        X_CLIENT_KEY, CHANNEL_ID
+        X_CLIENT_KEY, X_PARTNER_ID, CHANNEL_ID
     ]
     SnapApplyOTTRuntimeHeaders: List[str] = [
         AUTHORIZATION_CUSTOMER, X_TIMESTAMP, X_SIGNATURE, 
@@ -76,11 +76,6 @@ class SnapHeader:
         ]
 
         if scenario == "apply_token":
-            # Remove X-PARTNER-ID as it's replaced by X-CLIENT-KEY in apply_token scenario
-            filtered_auth = [
-                auth for auth in filtered_auth 
-                if auth != X_PARTNER_ID  # Explicitly exclude X-PARTNER-ID
-            ]
             return list(set(filtered_auth).union(SnapHeader.SnapApplyTokenRuntimeHeaders))
 
         elif scenario == "apply_ott" or scenario == "unbinding_account":

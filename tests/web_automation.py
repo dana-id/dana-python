@@ -29,186 +29,142 @@ logger = logging.getLogger(__name__)
 async def _automate_payment_widget(payment_url: str, headless: bool = True, output_file: str = None) -> bool:
     """
     Automates the payment flow using Playwright in a headless browser.
-    
+
     Args:
         payment_url: The URL to the payment widget with OTT token
-        
+        output_file: Optional path to write 'SUCCESS' on completion
+
     Returns:
         bool: True if automation completed successfully, False otherwise
     """
-    try:
-        if not payment_url:
-            logger.error("Error: Payment URL is empty")
-            return False
-            
-        print(f"Starting payment widget automation with URL: {payment_url}")
-        
-        # Check if selenium/browser automation is available
-        # In a real implementation, we'd check for Selenium server availability like in PHP
-        
-        async with async_playwright() as p:
-            # Use environment variable to control headless mode, matching PHP's implementation
-            headless_setting = os.getenv('AUTOMATION_HEADLESS', 'true').lower() == 'true'
-            if headless_setting != headless:  # Override with parameter if different
-                headless = headless_setting
-                
-            print(f"Launching browser (headless: {headless})...")
-            browser = await p.chromium.launch(headless=headless)
+    if not payment_url:
+        logger.error("Error: Payment URL is empty")
+        return False
 
-            
-            # Create a new browser context with mobile device simulation
-            device = p.devices['iPhone X']  # Match PHP's device emulation
-            context = await browser.new_context(
-                **device,
-                locale='id-ID'
+    print(f"Starting payment widget automation with URL: {payment_url}")
+
+    headless = os.getenv('AUTOMATION_HEADLESS', 'true').lower() == 'true'
+
+    browser = None
+    success = False
+    try:
+        async with async_playwright() as p:
+            launch_args = [
+                '--no-sandbox',
+                '--disable-web-security',
+                '--disable-features=IsolateOrigins',
+                '--disable-site-isolation-trials',
+                '--disable-blink-features=AutomationControlled',
+                '--disable-dev-shm-usage',
+            ]
+            chromium_path = os.getenv('CHROMIUM_PATH')
+            if not chromium_path and os.getenv('CI'):
+                candidate = '/usr/bin/chromium-browser'
+                if os.path.exists(candidate):
+                    chromium_path = candidate
+
+            print(f"Launching browser (headless: {headless})...")
+            browser = await p.chromium.launch(
+                headless=headless,
+                args=launch_args,
+                **({"executable_path": chromium_path} if chromium_path else {}),
             )
-            
-            # Open a new page
+
+            context = await browser.new_context(
+                user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+                viewport={'width': 390, 'height': 844},
+            )
             page = await context.new_page()
-            
-            # Navigate to the payment URL
+
             print("Navigating to payment URL...")
-            await page.goto(payment_url, wait_until='networkidle')
-            
-            # Wait for page to load and payment button to be visible (up to 60 seconds like PHP)
+            await page.goto(payment_url, timeout=60000)
+
+            # Wait for the pay button (up to 60 s)
             print("Waiting for payment button...")
-            payment_button_found = False
-            
-            # First try to wait for primary button (similar to PHP's wait for visibility)
+            pay_selector = '.btn.btn-primary.btn-pay'
             try:
-                await page.wait_for_selector('.btn.btn-primary.btn-pay', state='visible', timeout=60000)
-                payment_button_found = True
-            except Exception as e:
-                logger.warning(f"Payment button not found after waiting: {e}")
-                
-                # Try other common selectors as fallback (exact same as PHP)
+                await page.wait_for_selector(pay_selector, state='visible', timeout=60000)
+            except Exception:
+                # Fallback: look for any visible button that looks like a pay button
                 fallback_selectors = [
                     '.btn-pay',
                     '.payment-button',
-                    '.btn-primary',
-                    '.dana-button',
-                    'button[type="submit"]'
+                    'button[type="submit"]',
                 ]
-                
-                for selector in fallback_selectors:
+                found_fallback = False
+                for sel in fallback_selectors:
                     try:
-                        elements = await page.query_selector_all(selector)
-                        if len(elements) > 0:
-                            print(f"Found alternative payment button with selector: {selector}")
-                            payment_button_found = True
-                            break
-                    except Exception as e:
-                        # Continue trying other selectors
+                        await page.wait_for_selector(sel, state='visible', timeout=5000)
+                        pay_selector = sel
+                        found_fallback = True
+                        print(f"Using fallback payment button selector: {sel}")
+                        break
+                    except Exception:
                         pass
-            
-            # Click the payment button - similar to PHP implementation
+                if not found_fallback:
+                    # Last resort: JS scan
+                    clicked = await page.evaluate("""
+                        () => {
+                            for (const btn of document.querySelectorAll('button')) {
+                                if (btn.classList.contains('btn-pay') ||
+                                    (btn.innerText || '').match(/bayar|pay/i)) {
+                                    btn.click();
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    """)
+                    if clicked:
+                        print("Clicked payment button via JavaScript fallback")
+                    else:
+                        print("Error: Could not find any payment button")
+                        raise Exception("Primary payment button not found after all fallbacks")
+
+            # Click the pay button
             print("Clicking payment button...")
             try:
-                # First try primary button (exact same as PHP)
-                pay_button = await page.query_selector('.btn.btn-primary.btn-pay')
-                if pay_button:
-                    await pay_button.click()
-                else:
-                    raise Exception("Primary payment button not found")
+                await page.click(pay_selector)
             except Exception as e:
-                print(f"Error clicking primary payment button: {e}, trying JavaScript click...")
-                
-                # Try JavaScript click as fallback - identical to PHP
-                try:
-                    # Exact same JavaScript as in PHP
-                    result = await page.evaluate("""
-                        const buttons = document.querySelectorAll("button");
-                        for (const button of Array.from(buttons)) {
-                            if (button.classList.contains("btn-pay") || 
-                                button.innerText.includes("Pay") || 
-                                button.innerText.includes("BAYAR")) {
-                                button.click();
-                                return true;
-                            }
-                        }
-                        return false;
-                    """)
-                    if result:
-                        print("Successfully clicked button via JavaScript")
-                    else:
-                        logger.warning("JavaScript found no suitable buttons to click")
-                except Exception as e:
-                    logger.error(f"JavaScript click fallback failed: {e}")
-            
-            if not payment_button_found:
-                logger.error("Could not find any payment button after trying multiple selectors")
-                await browser.close()
-                return False
-            
+                print(f"Direct click failed ({e}), trying JS click...")
+                await page.evaluate(f"document.querySelector('{pay_selector}')?.click()")
+
+            # Wait for success indicator
             print("Waiting for payment success message...")
-            success = False
-            
             try:
-                # Wait for payment success message - identical to PHP implementation
-                success_timeout = 30000 
-                start_time = time.time() * 1000
-                
-                # Implement exact same polling logic as PHP
-                while time.time() * 1000 - start_time < success_timeout:
-                    page_source = await page.content()
-                    
-                    # Check for success indicators
-                    if ('Payment Success' in page_source) or ('Pembayaran Sukses' in page_source):
-                        print("Payment completed successfully!")
-                        success = True
-                        break
-                    
-                    # Also check for failure indicators
-                    if ('Payment Failed' in page_source) or ('Pembayaran Gagal' in page_source):
-                        logger.warning("Payment failed message detected on page")
-                        # Take a screenshot of the failure
-                        failure_path = os.path.join(tempfile.gettempdir(), 'payment_failed.png')
-                        await page.screenshot(path=failure_path)
-                        print(f"Saved failure screenshot to {failure_path}")
-                        # Don't break, continue waiting in case it might recover
-                    
-                    await page.wait_for_timeout(1000)  # Poll every second
-                
-                if not success:
-                    logger.warning("Timeout waiting for payment success")
-                    page_content = await page.content()
-                    logger.warning(f"Final page source snippet: {page_content[:500]}...")
-                    
-            except Exception as e:
-                logger.error(f"Error while waiting for success message: {e}")
-            
-            # Take screenshot for debugging
-            try:
-                screenshots_dir = Path(tempfile.gettempdir()) / "dana_test_screenshots"
-                screenshots_dir.mkdir(exist_ok=True)
-                screenshot_path = screenshots_dir / f"payment_widget_{int(time.time())}.png"
-                await page.screenshot(path=str(screenshot_path))
-                print(f"Screenshot saved to {screenshot_path}")
-            except Exception as e:
-                logger.error(f"Failed to take screenshot: {e}")
-            
-            # Output file handling (similar to PHP implementation)
+                await page.wait_for_selector(
+                    'text="Payment Success"',
+                    timeout=120000,
+                )
+                print("Payment completed successfully!")
+                success = True
+            except Exception:
+                print("Warning: Timeout waiting for payment success indicator")
+
+            # Write output file on success
             if output_file and success:
                 try:
-                    output_dir = os.path.dirname(output_file)
-                    if output_dir and not os.path.exists(output_dir):
-                        os.makedirs(output_dir, exist_ok=True)
-                    
+                    os.makedirs(os.path.dirname(output_file) or '.', exist_ok=True)
                     with open(output_file, 'w') as f:
                         f.write('SUCCESS')
                     print(f"Wrote success indicator to {output_file}")
                 except Exception as e:
                     logger.error(f"Failed to write output file: {e}")
-                
-            # Close browser
+
             await browser.close()
             print("Browser closed successfully")
-            
-            return success
-            
+
     except Exception as e:
-        logger.error(f"Error during payment automation: {e}")
-        return False
+        print(f"Error during payment widget automation: {e}")
+        import traceback
+        traceback.print_exc()
+        if browser:
+            try:
+                await browser.close()
+            except Exception:
+                pass
+
+    return success
 
 def automate_payment_widget(payment_url: str, headless: bool = True, output_file: str = None) -> bool:
     """Synchronous wrapper for the asynchronous payment widget automation function.
@@ -248,109 +204,152 @@ async def _automate_payment_payment_gateway(payment_url: str) -> bool:
         bool: True if automation completed successfully, False otherwise
     """
     if not payment_url:
-        logger.error("Error: Payment URL is empty")
+        print("Error: Payment URL is empty")
         return False
-    
-    # Log operation for debugging
+
     print(f"Starting payment automation with URL: {payment_url}")
-    
-    try:
-        async with async_playwright() as p:
-            # Setup Chrome options - similar to PHP's ChromeOptions
-            # In PHP, headless might be commented out for debugging
-            headless_mode = os.getenv('AUTOMATION_HEADLESS', 'true').lower() == 'true'
-            browser = await p.chromium.launch(headless=headless_mode, args=[
-                '--disable-gpu',
-                '--no-sandbox', 
-                '--disable-web-security',
-                '--disable-features=IsolateOrigins',
-                '--disable-site-isolation-trials',
-                '--disable-features=BlockInsecurePrivateNetworkRequests',
-                '--disable-blink-features=AutomationControlled',
-                '--disable-dev-shm-usage'
-            ])
-            
-            # Mobile emulation setup - match PHP's deviceMetrics
-            context = await browser.new_context(
-                viewport={'width': 390, 'height': 844},
-                device_scale_factor=3.0,
-                user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
-                locale='id-ID'
-            )
-            
-            page = await context.new_page()
-            
-            # Navigate to the checkout URL (matching PHP implementation)
-            await page.goto(payment_url)
-            try:
-                await page.wait_for_url("**/checkout**", timeout=10000)
+
+    max_attempts = 2
+    for attempt in range(1, max_attempts + 1):
+        try:
+            async with async_playwright() as p:
+                headless_mode = os.getenv('AUTOMATION_HEADLESS', 'true').lower() == 'true'
+                chromium_path = os.getenv('CHROMIUM_PATH')
+                if not chromium_path and os.getenv('CI'):
+                    candidate = '/usr/bin/chromium-browser'
+                    if os.path.exists(candidate):
+                        chromium_path = candidate
+
+                browser = await p.chromium.launch(
+                    headless=headless_mode,
+                    slow_mo=100,
+                    args=[
+                        '--no-sandbox',
+                        '--disable-web-security',
+                        '--disable-features=IsolateOrigins',
+                        '--disable-site-isolation-trials',
+                        '--disable-blink-features=AutomationControlled',
+                        '--disable-dev-shm-usage',
+                    ],
+                    **({"executable_path": chromium_path} if chromium_path else {}),
+                )
+
+                context = await browser.new_context(
+                    viewport={'width': 390, 'height': 844},
+                    user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+                )
+
+                page = await context.new_page()
+
+                print(f"Navigating to checkout (attempt {attempt})...")
+                await page.goto(payment_url, timeout=60000)
+                # Use 'load' (not networkidle) to avoid timing out on persistent background requests
+                await page.wait_for_load_state('load', timeout=30000)
+                await page.wait_for_timeout(2000)  # Extra settle time for JS-rendered content
                 print("Loaded checkout page")
-            except Exception as e:
-                logger.warning(f"URL didn't contain 'checkout': {e}")
-            
-            print("Looking for DANA payment option...")
-                        
-            # Attempt to find DANA payment option using multiple selector strategies
-            dana_payment_button = None
-            selectors = [
-                "div.bank-item.sdetfe-lbl-dana-pay-option",
-                "div.bank-item[class*='dana-pay-option']",
-                "//div[contains(@class, 'bank-title') and contains(text(), 'DANA')]", # XPath
-                "//div[contains(@class, 'bank-item')]//*[contains(text(), 'DANA')]", # XPath
-            ]
-            
-            for selector in selectors:
-                try:
-                    # Determine if using XPath or CSS selector
-                    locator = page.locator(selector)
-                        
-                    if await locator.count() > 0:
-                        print(f"DANA payment option found with selector: {selector}")
-                        dana_payment_button = locator
-                        break
-                except Exception as e:
-                    logger.warning(f"Error finding DANA payment option with selector {selector}: {e}")
-            
-            if dana_payment_button:
-                # Click the DANA payment option first
-                await dana_payment_button.click()
-                await page.wait_for_timeout(3000)  # Wait 1 second after click
-                
-                # Now handle OAuth flow - similar to PHP's handleOAuthFlow
+
+                print("Looking for DANA payment option...")
+
+                # Try Playwright CSS selectors first
+                dana_locator = None
+                bank_item_selectors = [
+                    "div.bank-item.sdetfe-lbl-dana-pay-option",
+                    "div.bank-item[class*='dana-pay-option']",
+                    "div.bank-item:has(div.bank-title:has-text('DANA'))",
+                    "div.bank-title:has-text('DANA')",
+                    "div.bank-item:has-text('DANA')",
+                    "xpath=//div[contains(@class,'bank-title') and contains(text(),'DANA')]",
+                    "xpath=//div[contains(@class,'bank-item')]//*[contains(text(),'DANA')]",
+                ]
+                for sel in bank_item_selectors:
+                    try:
+                        loc = page.locator(sel).first
+                        await loc.wait_for(state='visible', timeout=3000)
+                        if await loc.is_visible():
+                            print(f"DANA payment option found with selector: {sel}")
+                            dana_locator = loc
+                            break
+                    except Exception:
+                        pass
+
+                if dana_locator is not None:
+                    await dana_locator.click()
+                else:
+                    # JavaScript fallback: scan all elements for DANA text and click
+                    print("CSS selectors failed, trying JavaScript scan for DANA option...")
+                    dana_clicked = await page.evaluate("""
+                        () => {
+                            const candidates = [
+                                ...document.querySelectorAll('[class*="bank-item"]'),
+                                ...document.querySelectorAll('[class*="bank-title"]'),
+                                ...document.querySelectorAll('[class*="payment-option"]'),
+                                ...document.querySelectorAll('[class*="dana"]'),
+                                ...document.querySelectorAll('button'),
+                                ...document.querySelectorAll('a'),
+                            ];
+                            // Deduplicate
+                            const seen = new Set();
+                            const unique = candidates.filter(el => {
+                                if (seen.has(el)) return false;
+                                seen.add(el);
+                                return true;
+                            });
+                            for (const el of unique) {
+                                const text = (el.textContent || '').trim();
+                                if (text === 'DANA' || text.startsWith('DANA') ||
+                                    el.className.toLowerCase().includes('dana')) {
+                                    // Prefer clicking the outermost bank-item ancestor
+                                    const bankItem = el.closest('[class*="bank-item"]') || el;
+                                    bankItem.click();
+                                    return bankItem.className || 'unknown';
+                                }
+                            }
+                            return null;
+                        }
+                    """)
+                    if dana_clicked:
+                        print(f"DANA option clicked via JavaScript (element class: {dana_clicked})")
+                    else:
+                        print("DANA payment option not found by any method. Exiting...")
+                        await browser.close()
+                        if attempt < max_attempts:
+                            print("Retrying...")
+                            continue
+                        return False
+
+                await page.wait_for_timeout(1000)
+
+                # OAuth flow runs in a new page opened by the click
                 await _handle_oauth_flow(page, context)
-                
-                # Wait for any redirects to complete
-                await page.wait_for_timeout(3000)  # 10 seconds like PHP's wait(10)
-                
-                # Look for success indicators (just wait for network activity to settle)
+
+                await page.wait_for_timeout(5000)
+
+                screenshots_dir = Path(tempfile.gettempdir()) / "dana_test_screenshots"
+                screenshots_dir.mkdir(exist_ok=True)
+                screenshot_path = screenshots_dir / f"pg_payment_{int(time.time())}.png"
                 try:
-                    # Wait 5 seconds to let the page settle
-                    await page.wait_for_timeout(5000)  # 5 seconds like PHP's wait(5)
-                    print("Network activity settled")
-                    
-                    # Take a screenshot for debugging
-                    screenshots_dir = Path(tempfile.gettempdir()) / "dana_test_screenshots"
-                    screenshots_dir.mkdir(exist_ok=True)
-                    screenshot_path = screenshots_dir / f"pg_payment_{int(time.time())}.png"
                     await page.screenshot(path=str(screenshot_path))
                     print(f"Screenshot saved to {screenshot_path}")
-                    
-                    return True
-                except Exception as e:
-                    logger.warning(f"Network activity timeout - continuing anyway: {e}")
-                    
-                return True  # Assume success if we got this far
-            else:
-                logger.error("DANA payment option not found. Exiting...")
+                except Exception:
+                    pass
+
+                print("Network activity settled")
+                await browser.close()
+                return True
+
+        except Exception as e:
+            print(f"Error during payment gateway automation (attempt {attempt}): {e}")
+            import traceback
+            traceback.print_exc()
+            if attempt >= max_attempts:
                 return False
-    except Exception as e:
-        logger.error(f"Error during automation: {e}")
-        return False
+
+    return False
 
 
 # Constants for auth flow
-DEFAULT_PHONE_NUMBER = "087875849373"
-DEFAULT_PIN = "131000"
+DEFAULT_PHONE_NUMBER = "083811223355"
+DEFAULT_PIN = "181818"
 
 async def _handle_oauth_flow(page, context):
     """Handle OAuth flow with phone number and PIN entry.
