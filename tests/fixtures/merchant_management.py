@@ -195,3 +195,19 @@ def query_shop_request():
     )
     
     return request
+
+
+@pytest.fixture
+def query_asset_card_list_request():
+    """Create a VA-focused queryAssetCardList request."""
+    from dana.merchant_management.v1.models.query_asset_card_list_request import QueryAssetCardListRequest
+
+    merchant_id = os.getenv("MERCHANT_ID", "216620060017038045162")
+
+    request = QueryAssetCardListRequest(
+        member_id=merchant_id,
+        enable_only="true",
+        asset_type_list=["VA_ACCOUNT"]
+    )
+
+    return request

@@ -30,6 +30,7 @@
 
 # import models into model package
 from dana.merchant_management.v1.models.address_info import AddressInfo
+from dana.merchant_management.v1.models.asset_card_list_item import AssetCardListItem
 from dana.merchant_management.v1.models.business_docs import BusinessDocs
 from dana.merchant_management.v1.models.create_division_request import CreateDivisionRequest
 from dana.merchant_management.v1.models.create_division_request_ext_info import CreateDivisionRequestExtInfo
@@ -43,9 +44,15 @@ from dana.merchant_management.v1.models.create_shop_response_response import Cre
 from dana.merchant_management.v1.models.create_shop_response_response_body import CreateShopResponseResponseBody
 from dana.merchant_management.v1.models.create_shop_response_response_head import CreateShopResponseResponseHead
 from dana.merchant_management.v1.models.division_resource_info import DivisionResourceInfo
+from dana.merchant_management.v1.models.member_asset_result_info import MemberAssetResultInfo
 from dana.merchant_management.v1.models.merchant_resource_information import MerchantResourceInformation
 from dana.merchant_management.v1.models.mobile_no_info import MobileNoInfo
 from dana.merchant_management.v1.models.pic_info import PicInfo
+from dana.merchant_management.v1.models.query_asset_card_list_request import QueryAssetCardListRequest
+from dana.merchant_management.v1.models.query_asset_card_list_response import QueryAssetCardListResponse
+from dana.merchant_management.v1.models.query_asset_card_list_response_response import QueryAssetCardListResponseResponse
+from dana.merchant_management.v1.models.query_asset_card_list_response_response_body import QueryAssetCardListResponseResponseBody
+from dana.merchant_management.v1.models.query_asset_card_list_response_response_head import QueryAssetCardListResponseResponseHead
 from dana.merchant_management.v1.models.query_division_request import QueryDivisionRequest
 from dana.merchant_management.v1.models.query_division_response import QueryDivisionResponse
 from dana.merchant_management.v1.models.query_division_response_response import QueryDivisionResponseResponse

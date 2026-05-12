@@ -30,7 +30,6 @@ import warnings
 from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union, Type
 from typing_extensions import Annotated
-import os
 from dana.utils import url
 
 from dana.disbursement.v1.models.bank_account_inquiry_request import BankAccountInquiryRequest
@@ -355,22 +354,6 @@ class DisbursementApi:
         )
 
 
-
-    def _get_account_inquiry_path(self) -> str:
-        """Get the account inquiry path based on environment.
-        
-        This method ONLY returns paths for the Disbursement account-inquiry endpoint.
-        Uses exact path matching to ensure no other endpoints are affected.
-        
-        Returns:
-            str: The path for account inquiry endpoint
-            - Sandbox: /rest/v1.0/emoney/account-inquiry
-            - Production: /v1.0/emoney/account-inquiry.htm
-        """
-        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
-        return '/v1.0/emoney/account-inquiry.htm' if env == 'production' else '/rest/v1.0/emoney/account-inquiry'
-
-
     @validate_call
     def dana_account_inquiry(
         self,
@@ -636,7 +619,7 @@ class DisbursementApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path=(self._get_account_inquiry_path()),
+            resource_path='/rest/v1.0/emoney/account-inquiry',
             body=dana_account_inquiry_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
@@ -644,7 +627,7 @@ class DisbursementApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path=(self._get_account_inquiry_path()),
+            resource_path='/rest/v1.0/emoney/account-inquiry',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1238,13 +1221,6 @@ class DisbursementApi:
         )
 
 
-
-    def _get_transfer_to_dana_path(self) -> str:
-        """Transfer to DANA (topup) path based on environment."""
-        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
-        return '/v1.0/emoney/topup.htm' if env == 'production' else '/rest/v1.0/emoney/topup'
-
-
     @validate_call
     def transfer_to_dana(
         self,
@@ -1510,7 +1486,7 @@ class DisbursementApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path=(self._get_transfer_to_dana_path()),
+            resource_path='/rest/v1.0/emoney/topup',
             body=transfer_to_dana_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
@@ -1518,7 +1494,7 @@ class DisbursementApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path=(self._get_transfer_to_dana_path()),
+            resource_path='/rest/v1.0/emoney/topup',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1531,13 +1507,6 @@ class DisbursementApi:
             _request_auth=_request_auth,
             _generated_auth=_generated_auth,
         )
-
-
-
-    def _get_transfer_to_dana_inquiry_status_path(self) -> str:
-        """Topup-status inquiry path based on environment."""
-        env = os.getenv("DANA_ENV", os.getenv("ENV", "sandbox")).lower()
-        return '/v1.0/emoney/topup-status.htm' if env == 'production' else '/rest/v1.0/emoney/topup-status'
 
 
     @validate_call
@@ -1805,7 +1774,7 @@ class DisbursementApi:
         _auth_settings = SnapHeader.merge_with_snap_runtime_headers(_auth_settings)
         _generated_auth = SnapHeader.get_snap_generated_auth(
             method='POST', 
-            resource_path=(self._get_transfer_to_dana_inquiry_status_path()),
+            resource_path='/rest/v1.0/emoney/topup-status',
             body=transfer_to_dana_inquiry_status_request.to_json(),
             private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY'),
             private_key_path=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY_PATH')
@@ -1813,7 +1782,7 @@ class DisbursementApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path=(self._get_transfer_to_dana_inquiry_status_path()),
+            resource_path='/rest/v1.0/emoney/topup-status',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

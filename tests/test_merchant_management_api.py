@@ -16,6 +16,7 @@ from dana.merchant_management.v1 import MerchantManagementApi
 from dana.merchant_management.v1.models import (
     CreateShopRequest, 
     CreateShopResponse,
+    QueryAssetCardListRequest,
     QueryMerchantResourceRequest,
     QueryMerchantResourceResponse,
     QueryShopRequest
@@ -24,7 +25,7 @@ from dana.rest import ApiException
 
 # Import fixtures directly from their modules to avoid circular imports
 from tests.fixtures.api_client import api_instance_merchant_management
-from tests.fixtures.merchant_management import create_shop_request, query_merchant_resource_request, query_shop_request
+from tests.fixtures.merchant_management import create_shop_request, query_asset_card_list_request, query_merchant_resource_request, query_shop_request
 
 import pytest
 
@@ -108,4 +109,29 @@ class TestMerchantManagementApi:
         assert result_info.result_code == "SUCCESS"
         assert result_info.result_code_id == "00000000"
         assert result_info.result_status == "S"
+
+    def test_query_asset_card_list_success(self, api_instance_merchant_management: MerchantManagementApi, query_asset_card_list_request: QueryAssetCardListRequest):
+        """Should query VA asset card list with enable_only=true."""
+
+        api_response = api_instance_merchant_management.query_asset_card_list(query_asset_card_list_request)
+
+        assert api_response is not None
+        assert hasattr(api_response, 'response')
+        assert hasattr(api_response.response, 'body')
+        assert hasattr(api_response.response.body, 'result_info')
+
+        result_info = api_response.response.body.result_info
+        assert result_info.result_status is not None
+        assert result_info.result_code_id is not None
+        assert result_info.result_msg is not None
+        assert result_info.result_status in ["S", "F", "U"]
+
+        if (
+            result_info.result_status == "S"
+            and result_info.result_code_id == "00000000"
+            and hasattr(api_response.response.body, "asset_card_list")
+            and api_response.response.body.asset_card_list
+        ):
+            for card in api_response.response.body.asset_card_list:
+                assert card.asset_type == "VA_ACCOUNT"
  

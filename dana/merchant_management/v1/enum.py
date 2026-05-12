@@ -108,3 +108,45 @@ class ShopBizType(str, Enum):
     ONLINE = "ONLINE"
     OFFLINE = "OFFLINE"
 
+class ContactBizType(str, Enum):
+    TRANSFER_HIS = "TRANSFER_HIS"
+    DIRECT_TRANSFER = "DIRECT_TRANSFER"
+    GENERAL_CARD = "GENERAL_CARD"
+    DIRECTPAY_CARD = "DIRECTPAY_CARD"
+    PAYMENT_CARD = "PAYMENT_CARD"
+    CASHOUT_CARD = "CASHOUT_CARD"
+    IMPS_ACCOUNT = "IMPS_ACCOUNT"
+    INVESTMENT_ACCOUNT = "INVESTMENT_ACCOUNT"
+
+class AssetType(str, Enum):
+    CHECKING_ACCOUNT = "CHECKING_ACCOUNT"
+    SAVINGS_ACCOUNT = "SAVINGS_ACCOUNT"
+    LOAN_ACCOUNT = "LOAN_ACCOUNT"
+    IMPS_ACCOUNT = "IMPS_ACCOUNT"
+    DEBIT_CARD = "DEBIT_CARD"
+    CREDIT_CARD = "CREDIT_CARD"
+    SECURED_CREDIT_CARD = "SECURED_CREDIT_CARD"
+    VA_ACCOUNT = "VA_ACCOUNT"
+    OTC_ACCOUNT = "OTC_ACCOUNT"
+    REFUND_ACCOUNT = "REFUND_ACCOUNT"
+    CREDIT_ACCOUNT = "CREDIT_ACCOUNT"
+    LOAN = "LOAN"
+    MUTUAL_FUNDS_ACCOUNT = "MUTUAL_FUNDS_ACCOUNT"
+    INVESTMENT = "INVESTMENT"
+
+class DefaultAsset(str, Enum):
+    TRUE = "true"
+    FALSE = "false"
+
+class EnableStatus(str, Enum):
+    TRUE = "true"
+    FALSE = "false"
+
+class DirectDebit(str, Enum):
+    TRUE = "true"
+    FALSE = "false"
+
+class EnableOnly(str, Enum):
+    TRUE = "true"
+    FALSE = "false"
+

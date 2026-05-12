@@ -6,6 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**create_division**](MerchantManagementApi.md#create_division) | **POST** /dana/merchant/division/createDivision.htm | Create Division
 [**create_shop**](MerchantManagementApi.md#create_shop) | **POST** /dana/merchant/shop/createShop.htm | Member – Create Shop
+[**query_asset_card_list**](MerchantManagementApi.md#query_asset_card_list) | **POST** /dana/member/asset/queryAssetCardList.htm | Member – Query asset card list
 [**query_division**](MerchantManagementApi.md#query_division) | **POST** /dana/merchant/division/queryDivision.htm | Query Division
 [**query_merchant_resource**](MerchantManagementApi.md#query_merchant_resource) | **POST** /dana/merchant/queryMerchantResource.htm | Member – Merchant Open API Check Disbursement Account
 [**query_shop**](MerchantManagementApi.md#query_shop) | **POST** /dana/merchant/shop/queryShop.htm | Member – Query Shop
@@ -164,6 +165,83 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Create shop response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **query_asset_card_list**
+> query_asset_card_list(query_asset_card_list_request) -> QueryAssetCardListResponse 
+
+Member – Query asset card list
+
+Query member asset cards filtered by contact business type and asset type.
+JSON envelope uses `request.head`, `request.body`, and root `signature` (same Open API pattern as other `.htm` endpoints).
+
+
+### Example
+
+```python
+import os
+from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.QueryAssetCardListRequest import QueryAssetCardListRequest
+from dana.api_client import ApiClient
+from dana.rest import ApiException
+from pprint import pprint
+
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
+    )
+)
+
+
+# Configure API key authorization: CLIENT_SECRET
+# For OPEN_API type, we use CLIENT_SECRET authentication
+configuration = OpenApiConfiguration(
+    api_key=OpenApiAuthSettings(
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
+        CLIENT_ID=os.environ.get("CLIENT_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
+    )
+)
+
+with ApiClient(configuration) as api_client:
+    api_instance = MerchantManagementApi(api_client)
+    query_asset_card_list_request = QueryAssetCardListRequest()
+
+    try:
+        api_response = api_instance.query_asset_card_list(query_asset_card_list_request)
+        print("The response of MerchantManagementApi->query_asset_card_list:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling MerchantManagementApi->query_asset_card_list: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **query_asset_card_list_request** | [**QueryAssetCardListRequest**](MerchantManagement/QueryAssetCardListRequest.md)|  | 
+
+### Return type
+
+[**QueryAssetCardListResponse**](MerchantManagement/QueryAssetCardListResponse.md)
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Query asset card list response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -718,6 +796,72 @@ enum_value = ShopParentType.MERCHANT
 |-------|-------------|
 | `ONLINE` |  |
 | `OFFLINE` |  |
+
+
+
+## ContactBizType
+| Value | Description |
+|-------|-------------|
+| `TRANSFER_HIS` |  |
+| `DIRECT_TRANSFER` |  |
+| `GENERAL_CARD` |  |
+| `DIRECTPAY_CARD` |  |
+| `PAYMENT_CARD` |  |
+| `CASHOUT_CARD` |  |
+| `IMPS_ACCOUNT` |  |
+| `INVESTMENT_ACCOUNT` |  |
+
+
+
+## AssetType
+| Value | Description |
+|-------|-------------|
+| `CHECKING_ACCOUNT` |  |
+| `SAVINGS_ACCOUNT` |  |
+| `LOAN_ACCOUNT` |  |
+| `IMPS_ACCOUNT` |  |
+| `DEBIT_CARD` |  |
+| `CREDIT_CARD` |  |
+| `SECURED_CREDIT_CARD` |  |
+| `VA_ACCOUNT` |  |
+| `OTC_ACCOUNT` |  |
+| `REFUND_ACCOUNT` |  |
+| `CREDIT_ACCOUNT` |  |
+| `LOAN` |  |
+| `MUTUAL_FUNDS_ACCOUNT` |  |
+| `INVESTMENT` |  |
+
+
+
+## DefaultAsset
+| Value | Description |
+|-------|-------------|
+| `true` |  |
+| `false` |  |
+
+
+
+## EnableStatus
+| Value | Description |
+|-------|-------------|
+| `true` |  |
+| `false` |  |
+
+
+
+## DirectDebit
+| Value | Description |
+|-------|-------------|
+| `true` |  |
+| `false` |  |
+
+
+
+## EnableOnly
+| Value | Description |
+|-------|-------------|
+| `true` |  |
+| `false` |  |
 
 
 

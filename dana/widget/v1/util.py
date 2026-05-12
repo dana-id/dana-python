@@ -85,7 +85,7 @@ class Util:
         
         # Set base URL based on environment and mode
         if mode == Mode.DEEPLINK:
-            base_url = 'https://link.dana.id/bindSnap' if env.lower() == 'production' else 'https://m.sandbox.dana.id/n/link/binding'
+            base_url = 'https://m.dana.id/n/link/bind' if env.lower() == 'production' else 'https://m.sandbox.dana.id/n/link/binding'
         elif mode == Mode.API:
             base_url = 'https://m.dana.id/v1.0/get-auth-code' if env.lower() == 'production' else 'https://m.sandbox.dana.id/v1.0/get-auth-code'
         
@@ -109,7 +109,7 @@ class Util:
             if env.lower() != 'production':
                 scopes = 'CASHIER,AGREEMENT_PAY,QUERY_BALANCE,DEFAULT_BASIC_PROFILE,MINI_DANA'
             else:
-                scopes = 'CASHIER'
+                scopes = 'MINI_DANA,CASHIER,QUERY_BALANCE,DEFAULT_BASIC_PROFILE'
         
         # Use provided external ID or generate a UUID
         external_id = getattr(data, 'external_id', None)
@@ -271,5 +271,16 @@ class Util:
         ott_value = getattr(user_resources[0], 'value', None) if user_resources else None
         if not ott_value:
             return web_redirect_url
-        
-        return web_redirect_url + '&ott=' + ott_value
+
+        parsed = urllib.parse.urlparse(web_redirect_url)
+        q = dict(urllib.parse.parse_qsl(parsed.query, keep_blank_values=True))
+        q['ott'] = str(ott_value)
+        new_query = urllib.parse.urlencode(q)
+        return urllib.parse.urlunparse((
+            parsed.scheme,
+            parsed.netloc,
+            parsed.path,
+            parsed.params,
+            new_query,
+            parsed.fragment,
+        ))
