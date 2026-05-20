@@ -8,6 +8,7 @@ Method | HTTP request | Description
 [**create_shop**](MerchantManagementApi.md#create_shop) | **POST** /dana/merchant/shop/createShop.htm | Member – Create Shop
 [**query_asset_card_list**](MerchantManagementApi.md#query_asset_card_list) | **POST** /dana/member/asset/queryAssetCardList.htm | Member – Query asset card list
 [**query_division**](MerchantManagementApi.md#query_division) | **POST** /dana/merchant/division/queryDivision.htm | Query Division
+[**query_merchant_info**](MerchantManagementApi.md#query_merchant_info) | **POST** /dana/member/merchant/queryMerchantInfo.htm | Member – Query Merchant Info
 [**query_merchant_resource**](MerchantManagementApi.md#query_merchant_resource) | **POST** /dana/merchant/queryMerchantResource.htm | Member – Merchant Open API Check Disbursement Account
 [**query_shop**](MerchantManagementApi.md#query_shop) | **POST** /dana/merchant/shop/queryShop.htm | Member – Query Shop
 [**update_division**](MerchantManagementApi.md#update_division) | **POST** /dana/merchant/division/updateDivision.htm | Update Division
@@ -317,6 +318,83 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Query division response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **query_merchant_info**
+> query_merchant_info(query_merchant_info_request) -> QueryMerchantInfoResponse 
+
+Member – Query Merchant Info
+
+Query merchant profile information by login identifier (for example mobile number).
+JSON envelope uses `request.head`, `request.body`, and root `signature` (same Open API pattern as other `.htm` endpoints).
+
+
+### Example
+
+```python
+import os
+from dana.utils.snap_configuration import SnapConfiguration, AuthSettings, Env
+from dana.merchant_management.v1 import MerchantManagementApi
+from dana.merchant_management.v1.models.QueryMerchantInfoRequest import QueryMerchantInfoRequest
+from dana.api_client import ApiClient
+from dana.rest import ApiException
+from pprint import pprint
+
+# configuration and ApiClient object can be used for multiple operations
+# They should be singleton through the application lifecycle
+configuration = SnapConfiguration(
+    api_key=AuthSettings(
+        PRIVATE_KEY=os.environ.get("PRIVATE_KEY"), # or you can set PRIVATE_KEY_PATH 
+        ORIGIN=os.environ.get("ORIGIN"),
+        X_PARTNER_ID=os.environ.get("X_PARTNER_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"), # or you can set ENV
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
+    )
+)
+
+
+# Configure API key authorization: CLIENT_SECRET
+# For OPEN_API type, we use CLIENT_SECRET authentication
+configuration = OpenApiConfiguration(
+    api_key=OpenApiAuthSettings(
+        CLIENT_SECRET=os.environ.get("CLIENT_SECRET"),
+        CLIENT_ID=os.environ.get("CLIENT_ID"),
+        DANA_ENV=os.environ.get("DANA_ENV"),
+        ENV=os.environ.get("ENV")
+    )
+)
+
+with ApiClient(configuration) as api_client:
+    api_instance = MerchantManagementApi(api_client)
+    query_merchant_info_request = QueryMerchantInfoRequest()
+
+    try:
+        api_response = api_instance.query_merchant_info(query_merchant_info_request)
+        print("The response of MerchantManagementApi->query_merchant_info:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling MerchantManagementApi->query_merchant_info: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **query_merchant_info_request** | [**QueryMerchantInfoRequest**](MerchantManagement/QueryMerchantInfoRequest.md)|  | 
+
+### Return type
+
+[**QueryMerchantInfoResponse**](MerchantManagement/QueryMerchantInfoResponse.md)
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Query merchant info response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -862,6 +940,86 @@ enum_value = ShopParentType.MERCHANT
 |-------|-------------|
 | `true` |  |
 | `false` |  |
+
+
+
+## LoginType
+| Value | Description |
+|-------|-------------|
+| `ROLE` |  |
+| `MOBILE_NO` |  |
+
+
+
+## ContactAddressType
+| Value | Description |
+|-------|-------------|
+| `OFFICE_ADD` |  |
+| `REG_ADD` |  |
+| `HOME_ADD` |  |
+
+
+
+## Status
+| Value | Description |
+|-------|-------------|
+| `ENABLE` |  |
+| `FROZEN` |  |
+| `CLOSE` |  |
+
+
+
+## DebitFreezeStatus
+| Value | Description |
+|-------|-------------|
+| `ENABLE` |  |
+| `FROZEN` |  |
+| `CLOSE` |  |
+
+
+
+## CreditFreezeStatus
+| Value | Description |
+|-------|-------------|
+| `ENABLE` |  |
+| `FROZEN` |  |
+| `CLOSE` |  |
+
+
+
+## AccountType
+| Value | Description |
+|-------|-------------|
+| `MERCHANT_SETTLEMENT_ACCOUNT` |  |
+| `MERCHANT_PAYABLE_ACCOUNT` |  |
+| `MERCHANT_DEPOSIT_ACCOUNT` |  |
+
+
+
+## MerchantType
+| Value | Description |
+|-------|-------------|
+| `INDIVIDUAL` |  |
+| `CORPORATION` |  |
+| `FINANCIAL_INST` |  |
+
+
+
+## MerchantSubType
+| Value | Description |
+|-------|-------------|
+| `COMPANY_TYPE_22` |  |
+| `COMPANY_TYPE_31` |  |
+| `COMPANY_TYPE_41` |  |
+
+
+
+## MerchantStatus
+| Value | Description |
+|-------|-------------|
+| `PENDING` |  |
+| `ACTIVE` |  |
+| `FROZEN` |  |
 
 
 

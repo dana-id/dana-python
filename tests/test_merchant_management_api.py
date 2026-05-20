@@ -25,11 +25,16 @@ from dana.rest import ApiException
 
 # Import fixtures directly from their modules to avoid circular imports
 from tests.fixtures.api_client import api_instance_merchant_management
-from tests.fixtures.merchant_management import create_shop_request, query_asset_card_list_request, query_merchant_resource_request, query_shop_request
+from tests.fixtures.merchant_management import (
+    create_shop_request,
+    query_asset_card_list_request,
+    query_merchant_info_request,
+    query_merchant_resource_request,
+    query_shop_request,
+)
 
 import pytest
 
-@pytest.mark.skip
 class TestMerchantManagementApi:
     """Test class for Merchant Management API endpoints"""
     def test_create_shop_and_query_shop_success(self, api_instance_merchant_management: MerchantManagementApi, create_shop_request: CreateShopRequest, query_shop_request: QueryShopRequest):
@@ -109,6 +114,37 @@ class TestMerchantManagementApi:
         assert result_info.result_code == "SUCCESS"
         assert result_info.result_code_id == "00000000"
         assert result_info.result_status == "S"
+
+    def test_query_merchant_info_success(self, api_instance_merchant_management: MerchantManagementApi, query_merchant_info_request):
+        """Should query merchant profile by login identifier (e.g. mobile number)."""
+
+        api_response = api_instance_merchant_management.query_merchant_info(query_merchant_info_request)
+
+        assert api_response is not None
+        assert hasattr(api_response, 'response')
+        assert hasattr(api_response.response, 'body')
+        assert hasattr(api_response.response.body, 'result_info')
+
+        result_info = api_response.response.body.result_info
+        assert result_info.result_status is not None
+        assert result_info.result_code_id is not None
+        assert result_info.result_msg is not None
+        assert result_info.result_status == "S"
+        assert result_info.result_code_id == "00000000"
+
+        if (
+            hasattr(api_response.response.body, "merchant_information")
+            and api_response.response.body.merchant_information is not None
+        ):
+            info = api_response.response.body.merchant_information
+            assert info.merchant_id
+            assert info.merchant_type
+            assert info.merchant_status
+
+            if query_merchant_info_request.is_query_account and getattr(info, "accounts", None):
+                for account in info.accounts:
+                    assert account.account_no
+                    assert account.account_type
 
     def test_query_asset_card_list_success(self, api_instance_merchant_management: MerchantManagementApi, query_asset_card_list_request: QueryAssetCardListRequest):
         """Should query VA asset card list with enable_only=true."""

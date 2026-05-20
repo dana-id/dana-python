@@ -150,3 +150,47 @@ class EnableOnly(str, Enum):
     TRUE = "true"
     FALSE = "false"
 
+class LoginType(str, Enum):
+    ROLE = "ROLE"
+    MOBILE_NO = "MOBILE_NO"
+
+class ContactAddressType(str, Enum):
+    OFFICE_ADD = "OFFICE_ADD"
+    REG_ADD = "REG_ADD"
+    HOME_ADD = "HOME_ADD"
+
+class Status(str, Enum):
+    ENABLE = "ENABLE"
+    FROZEN = "FROZEN"
+    CLOSE = "CLOSE"
+
+class DebitFreezeStatus(str, Enum):
+    ENABLE = "ENABLE"
+    FROZEN = "FROZEN"
+    CLOSE = "CLOSE"
+
+class CreditFreezeStatus(str, Enum):
+    ENABLE = "ENABLE"
+    FROZEN = "FROZEN"
+    CLOSE = "CLOSE"
+
+class AccountType(str, Enum):
+    MERCHANT_SETTLEMENT_ACCOUNT = "MERCHANT_SETTLEMENT_ACCOUNT"
+    MERCHANT_PAYABLE_ACCOUNT = "MERCHANT_PAYABLE_ACCOUNT"
+    MERCHANT_DEPOSIT_ACCOUNT = "MERCHANT_DEPOSIT_ACCOUNT"
+
+class MerchantType(str, Enum):
+    INDIVIDUAL = "INDIVIDUAL"
+    CORPORATION = "CORPORATION"
+    FINANCIAL_INST = "FINANCIAL_INST"
+
+class MerchantSubType(str, Enum):
+    COMPANY_TYPE_22 = "COMPANY_TYPE_22"
+    COMPANY_TYPE_31 = "COMPANY_TYPE_31"
+    COMPANY_TYPE_41 = "COMPANY_TYPE_41"
+
+class MerchantStatus(str, Enum):
+    PENDING = "PENDING"
+    ACTIVE = "ACTIVE"
+    FROZEN = "FROZEN"
+

@@ -211,3 +211,18 @@ def query_asset_card_list_request():
     )
 
     return request
+
+
+@pytest.fixture
+def query_merchant_info_request():
+    """Create a queryMerchantInfo request (mobile login by default)."""
+    from dana.merchant_management.v1.models.query_merchant_info_request import QueryMerchantInfoRequest
+
+    role_id = os.getenv("MERCHANT_ID", "216620060017038045162")
+    login_type = "ROLE"
+
+    return QueryMerchantInfoRequest(
+        role_id=role_id,
+        login_type=login_type,
+        is_query_account=True,
+    )

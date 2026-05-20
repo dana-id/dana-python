@@ -41,6 +41,8 @@ from dana.merchant_management.v1.models.query_asset_card_list_request import Que
 from dana.merchant_management.v1.models.query_asset_card_list_response import QueryAssetCardListResponse
 from dana.merchant_management.v1.models.query_division_request import QueryDivisionRequest
 from dana.merchant_management.v1.models.query_division_response import QueryDivisionResponse
+from dana.merchant_management.v1.models.query_merchant_info_request import QueryMerchantInfoRequest
+from dana.merchant_management.v1.models.query_merchant_info_response import QueryMerchantInfoResponse
 from dana.merchant_management.v1.models.query_merchant_resource_request import QueryMerchantResourceRequest
 from dana.merchant_management.v1.models.query_merchant_resource_response import QueryMerchantResourceResponse
 from dana.merchant_management.v1.models.query_shop_request import QueryShopRequest
@@ -330,6 +332,7 @@ class MerchantManagementApi:
         # For OPEN_API type, we use CLIENT_SECRET authentication with signature
         # merge list of auth settings with Open API runtime headers
         _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.merchant.division.createDivision"
         # Create the full request structure for OPEN_API
         # Wrap the simplified body parameters in the proper DANA request format
         
@@ -338,7 +341,7 @@ class MerchantManagementApi:
             method='POST',
             resource_path='/dana/merchant/division/createDivision.htm',
             body='{}',  # Empty body for head generation
-            function_name="dana.merchant.division.createDivision",
+            function_name=_function_name,
             client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
             client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
         )
@@ -646,6 +649,7 @@ class MerchantManagementApi:
         # For OPEN_API type, we use CLIENT_SECRET authentication with signature
         # merge list of auth settings with Open API runtime headers
         _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.merchant.shop.createShop"
         # Create the full request structure for OPEN_API
         # Wrap the simplified body parameters in the proper DANA request format
         
@@ -654,7 +658,7 @@ class MerchantManagementApi:
             method='POST',
             resource_path='/dana/merchant/shop/createShop.htm',
             body='{}',  # Empty body for head generation
-            function_name="dana.merchant.shop.createShop",
+            function_name=_function_name,
             client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
             client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
         )
@@ -962,6 +966,7 @@ class MerchantManagementApi:
         # For OPEN_API type, we use CLIENT_SECRET authentication with signature
         # merge list of auth settings with Open API runtime headers
         _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.member.asset.queryAssetCardList"
         # Create the full request structure for OPEN_API
         # Wrap the simplified body parameters in the proper DANA request format
         
@@ -970,7 +975,7 @@ class MerchantManagementApi:
             method='POST',
             resource_path='/dana/member/asset/queryAssetCardList.htm',
             body='{}',  # Empty body for head generation
-            function_name="dana.member.asset.queryAssetCardList",
+            function_name=_function_name,
             client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
             client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
         )
@@ -1278,6 +1283,7 @@ class MerchantManagementApi:
         # For OPEN_API type, we use CLIENT_SECRET authentication with signature
         # merge list of auth settings with Open API runtime headers
         _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.merchant.division.queryDivision"
         # Create the full request structure for OPEN_API
         # Wrap the simplified body parameters in the proper DANA request format
         
@@ -1286,7 +1292,7 @@ class MerchantManagementApi:
             method='POST',
             resource_path='/dana/merchant/division/queryDivision.htm',
             body='{}',  # Empty body for head generation
-            function_name="dana.merchant.division.queryDivision",
+            function_name=_function_name,
             client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
             client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
         )
@@ -1321,6 +1327,323 @@ class MerchantManagementApi:
         return self.api_client.param_serialize(
             method='POST',
             resource_path='/dana/merchant/division/queryDivision.htm',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+            _generated_auth=_generated_auth,
+        )
+
+
+    @validate_call
+    def query_merchant_info(
+        self,
+        query_merchant_info_request: QueryMerchantInfoRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> QueryMerchantInfoResponse:
+        """Member – Query Merchant Info
+
+        Query merchant profile information by login identifier (for example mobile number). JSON envelope uses `request.head`, `request.body`, and root `signature` (same Open API pattern as other `.htm` endpoints). 
+
+        :param query_merchant_info_request: (required)
+        :type query_merchant_info_request: QueryMerchantInfoRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._query_merchant_info_serialize(
+            query_merchant_info_request=query_merchant_info_request,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "QueryMerchantInfoResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def query_merchant_info_with_http_info(
+        self,
+        query_merchant_info_request: QueryMerchantInfoRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[QueryMerchantInfoResponse]:
+        """Member – Query Merchant Info
+
+        Query merchant profile information by login identifier (for example mobile number). JSON envelope uses `request.head`, `request.body`, and root `signature` (same Open API pattern as other `.htm` endpoints). 
+
+        :param query_merchant_info_request: (required)
+        :type query_merchant_info_request: QueryMerchantInfoRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._query_merchant_info_serialize(
+            query_merchant_info_request=query_merchant_info_request,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "QueryMerchantInfoResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def query_merchant_info_without_preload_content(
+        self,
+        query_merchant_info_request: QueryMerchantInfoRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Member – Query Merchant Info
+
+        Query merchant profile information by login identifier (for example mobile number). JSON envelope uses `request.head`, `request.body`, and root `signature` (same Open API pattern as other `.htm` endpoints). 
+
+        :param query_merchant_info_request: (required)
+        :type query_merchant_info_request: QueryMerchantInfoRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._query_merchant_info_serialize(
+            query_merchant_info_request=query_merchant_info_request,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "QueryMerchantInfoResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _query_merchant_info_serialize(
+        self,
+        query_merchant_info_request: Type[BaseSdkModel],
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if query_merchant_info_request is not None:
+            _body_params = query_merchant_info_request
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = [
+            'CLIENT_SECRET'
+        ]
+
+        # For OPEN_API type, we use CLIENT_SECRET authentication with signature
+        # merge list of auth settings with Open API runtime headers
+        _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.ap.bizprod.biz.service.openapi.merchant.queryMerchantInfo"
+        # Create the full request structure for OPEN_API
+        # Wrap the simplified body parameters in the proper DANA request format
+        
+        # Generate head parameters
+        _generated_auth = OpenApiHeader.get_open_api_generated_headers(
+            method='POST',
+            resource_path='/dana/member/merchant/queryMerchantInfo.htm',
+            body='{}',  # Empty body for head generation
+            function_name=_function_name,
+            client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
+            client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
+        )
+        
+        # Extract values from auth settings for JSON body
+        head_params = {
+            key: auth_setting['value'] 
+            for key, auth_setting in _generated_auth.items()
+        }
+        
+        # Create the full request structure
+        request_body = {
+            "request": {
+                "head": head_params,
+                "body": query_merchant_info_request.to_dict()
+            }
+        }
+                
+        # Generate signature
+        _signature =  OpenApiHeader.generate_open_api_signature(
+                body=json.dumps(request_body),
+                private_key=self.api_client.configuration.get_api_key_with_prefix('PRIVATE_KEY')
+            )
+       
+        # Add signature to the request
+        if _signature:
+            request_body['signature'] = _signature
+        
+        # Convert final request to JSON string
+        _body_params = request_body
+
+        return self.api_client.param_serialize(
+            method='POST',
+            resource_path='/dana/member/merchant/queryMerchantInfo.htm',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1594,6 +1917,7 @@ class MerchantManagementApi:
         # For OPEN_API type, we use CLIENT_SECRET authentication with signature
         # merge list of auth settings with Open API runtime headers
         _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.merchant.queryMerchantResource"
         # Create the full request structure for OPEN_API
         # Wrap the simplified body parameters in the proper DANA request format
         
@@ -1602,7 +1926,7 @@ class MerchantManagementApi:
             method='POST',
             resource_path='/dana/merchant/queryMerchantResource.htm',
             body='{}',  # Empty body for head generation
-            function_name="dana.merchant.queryMerchantResource",
+            function_name=_function_name,
             client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
             client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
         )
@@ -1910,6 +2234,7 @@ class MerchantManagementApi:
         # For OPEN_API type, we use CLIENT_SECRET authentication with signature
         # merge list of auth settings with Open API runtime headers
         _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.merchant.shop.queryShop"
         # Create the full request structure for OPEN_API
         # Wrap the simplified body parameters in the proper DANA request format
         
@@ -1918,7 +2243,7 @@ class MerchantManagementApi:
             method='POST',
             resource_path='/dana/merchant/shop/queryShop.htm',
             body='{}',  # Empty body for head generation
-            function_name="dana.merchant.shop.queryShop",
+            function_name=_function_name,
             client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
             client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
         )
@@ -2226,6 +2551,7 @@ class MerchantManagementApi:
         # For OPEN_API type, we use CLIENT_SECRET authentication with signature
         # merge list of auth settings with Open API runtime headers
         _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.merchant.division.updateDivision"
         # Create the full request structure for OPEN_API
         # Wrap the simplified body parameters in the proper DANA request format
         
@@ -2234,7 +2560,7 @@ class MerchantManagementApi:
             method='POST',
             resource_path='/dana/merchant/division/updateDivision.htm',
             body='{}',  # Empty body for head generation
-            function_name="dana.merchant.division.updateDivision",
+            function_name=_function_name,
             client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
             client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
         )
@@ -2542,6 +2868,7 @@ class MerchantManagementApi:
         # For OPEN_API type, we use CLIENT_SECRET authentication with signature
         # merge list of auth settings with Open API runtime headers
         _auth_settings = OpenApiHeader.merge_with_open_api_runtime_headers(_auth_settings)
+        _function_name = "dana.merchant.shop.updateShop"
         # Create the full request structure for OPEN_API
         # Wrap the simplified body parameters in the proper DANA request format
         
@@ -2550,7 +2877,7 @@ class MerchantManagementApi:
             method='POST',
             resource_path='/dana/merchant/shop/updateShop.htm',
             body='{}',  # Empty body for head generation
-            function_name="dana.merchant.shop.updateShop",
+            function_name=_function_name,
             client_id=self.api_client.configuration.get_api_key_with_prefix('X_PARTNER_ID'),
             client_secret=self.api_client.configuration.get_api_key_with_prefix('CLIENT_SECRET')
         )
