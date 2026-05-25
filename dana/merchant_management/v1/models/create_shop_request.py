@@ -94,8 +94,8 @@ class CreateShopRequest(BaseModel, BaseSdkModel):
     @field_validator('size_type')
     def size_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['UMI', 'UKE', 'UME', 'UBE']):
-            raise ValueError("must be one of enum values ('UMI', 'UKE', 'UME', 'UBE')")
+        if value not in set(['UMI', 'UKE', 'UME', 'UBE', 'URE']):
+            raise ValueError("must be one of enum values ('UMI', 'UKE', 'UME', 'UBE', 'URE')")
         return value
 
     @field_validator('tax_no')

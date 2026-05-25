@@ -98,8 +98,8 @@ class UpdateShopRequest(BaseModel, BaseSdkModel):
         if value is None:
             return value
 
-        if value not in set(['UMI', 'UKE', 'UME', 'UBE']):
-            raise ValueError("must be one of enum values ('UMI', 'UKE', 'UME', 'UBE')")
+        if value not in set(['UMI', 'UKE', 'UME', 'UBE', 'URE']):
+            raise ValueError("must be one of enum values ('UMI', 'UKE', 'UME', 'UBE', 'URE')")
         return value
 
     @field_validator('loyalty')

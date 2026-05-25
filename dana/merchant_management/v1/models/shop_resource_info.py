@@ -34,7 +34,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from dana.merchant_management.v1.models.address_info import AddressInfo
 from typing import Optional, Set
@@ -59,6 +59,16 @@ class ShopResourceInfo(BaseModel, BaseSdkModel):
     lat: Optional[StrictStr] = Field(default=None, description="Latitude")
     nmid: Optional[StrictStr] = Field(default=None, description="Network merchant identifier")
     __properties: ClassVar[List[str]] = ["merchantId", "parentDivisionId", "parentRoleType", "mainName", "sizeType", "shopAddress", "externalShopId", "logoUrlMap", "extInfo", "ln", "lat", "nmid"]
+
+    @field_validator('size_type')
+    def size_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['UMI', 'UKE', 'UME', 'UBE', 'URE']):
+            raise ValueError("must be one of enum values ('UMI', 'UKE', 'UME', 'UBE', 'URE')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

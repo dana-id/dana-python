@@ -39,6 +39,7 @@ from tests.fixtures.disbursement import (
     get_transfer_to_bank_inquiry_status_request,
     get_transfer_to_dana_inquiry_status_request
 )
+from tests.helpers.disbursement_customer_retry import with_customer_number_retry
 
 
 class TestDisbursementApi:
@@ -47,11 +48,16 @@ class TestDisbursementApi:
     def test_dana_account_inquiry_success(self, api_instance_disbursement: DisbursementApi):
         """Should give success response and validate DANA account inquiry functionality"""
         
-        # Arrange
         request = get_dynamic_dana_account_inquiry_request()
-        
-        # Act
-        api_response = api_instance_disbursement.dana_account_inquiry(request)
+        partner_reference_no = request.partner_reference_no
+
+        def run(customer_number: str):
+            attempt = get_dynamic_dana_account_inquiry_request()
+            attempt.partner_reference_no = partner_reference_no
+            attempt.customer_number = customer_number
+            return api_instance_disbursement.dana_account_inquiry(attempt)
+
+        api_response, _ = with_customer_number_retry(run)
         
         # Assert - Check response structure and required fields
         assert isinstance(api_response, DanaAccountInquiryResponse)
@@ -80,10 +86,7 @@ class TestDisbursementApi:
     def test_bank_account_inquiry_success(self, api_instance_disbursement: DisbursementApi):
         """Should give success response and validate bank account inquiry functionality"""
         
-        # Arrange
         request = get_dynamic_bank_account_inquiry_request()
-        
-        # Act
         api_response = api_instance_disbursement.bank_account_inquiry(request)
         
         # Assert - Check response structure and required fields
@@ -160,11 +163,16 @@ class TestDisbursementApi:
     def test_transfer_to_dana_success(self, api_instance_disbursement: DisbursementApi):
         """Should successfully perform transfer to DANA operation"""
         
-        # Arrange
         request = get_dynamic_transfer_to_dana_request()
-        
-        # Act
-        api_response = api_instance_disbursement.transfer_to_dana(request)
+        partner_reference_no = request.partner_reference_no
+
+        def run(customer_number: str):
+            attempt = get_dynamic_transfer_to_dana_request()
+            attempt.partner_reference_no = partner_reference_no
+            attempt.customer_number = customer_number
+            return api_instance_disbursement.transfer_to_dana(attempt)
+
+        api_response, _ = with_customer_number_retry(run)
         
         # Assert
         assert isinstance(api_response, TransferToDanaResponse)
@@ -179,13 +187,20 @@ class TestDisbursementApi:
     def test_transfer_to_dana_inquiry_status_success(self, api_instance_disbursement: DisbursementApi):
         """Should successfully inquire transfer to DANA status"""
         
-        # Arrange - First perform a transfer to DANA to get a valid reference
         transfer_request = get_dynamic_transfer_to_dana_request()
-        transfer_response = api_instance_disbursement.transfer_to_dana(transfer_request)
-        
+        partner_reference_no = transfer_request.partner_reference_no
+
+        def run_transfer(customer_number: str):
+            attempt = get_dynamic_transfer_to_dana_request()
+            attempt.partner_reference_no = partner_reference_no
+            attempt.customer_number = customer_number
+            return api_instance_disbursement.transfer_to_dana(attempt)
+
+        transfer_response, _ = with_customer_number_retry(run_transfer)
+
         # Create inquiry status request using the transfer response
         inquiry_request = get_transfer_to_dana_inquiry_status_request(
-            transfer_response.partner_reference_no
+            transfer_response.partner_reference_no or partner_reference_no
         )
         
         # Wait a bit before checking status

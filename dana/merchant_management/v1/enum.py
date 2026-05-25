@@ -22,6 +22,7 @@ class SizeType(str, Enum):
     UKE = "UKE"
     UME = "UME"
     UBE = "UBE"
+    URE = "URE"
 
 class Loyalty(str, Enum):
     TRUE = "true"

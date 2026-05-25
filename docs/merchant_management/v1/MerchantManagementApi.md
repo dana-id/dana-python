@@ -725,6 +725,7 @@ enum_value = ShopParentType.MERCHANT
 | `UKE` |  |
 | `UME` |  |
 | `UBE` |  |
+| `URE` |  |
 
 
 
