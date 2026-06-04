@@ -142,32 +142,135 @@ class WebhookParser:
             return "", Exception(f"MinifyJSON: failed to marshal JSON for minification: {e}")
 
     @staticmethod
+    def _has_triple_escaped_json_string_field(json_str: str) -> bool:
+        return '":"{\\\\\\"' in json_str
+
+    @staticmethod
+    def _process_over_escaped_minified_json(json_str: str) -> str:
+        normalized = json_str.replace('\\\\"', '"')
+        return WebhookParser._process_nested_json_fields(normalized)
+
+    @staticmethod
+    def _process_nested_json_fields(json_str: str) -> str:
+        normalized_str = json_str.replace('\\\\"', '\\"')
+
+        def replace_func(match):
+            field_name = match.group(1)
+            json_value = match.group(2)
+            escaped_value = json_value.replace('"', '\\"')
+            return f'"{field_name}":"{escaped_value}"'
+
+        return re.sub(r'"(\w+)":"(\{.*?\})"', replace_func, normalized_str)
+
+    @staticmethod
     def _ensure_minified_json(json_str: str) -> tuple[str, Exception]:
         """
         Ensures JSON string is minified
         Returns tuple of (minified_json, error)
         """
         try:
-            normalized_str = json_str.replace('\\"', '"')
-            
-            pattern = r'"(\w+)":"(\{.*?\})"'
-            def replace_func(match):
-                field_name = match.group(1)
-                json_value = match.group(2)
-                escaped_value = json_value.replace('"', '\\"')
-                return f'"{field_name}":"{escaped_value}"'
-            
-            processed_str = re.sub(pattern, replace_func, normalized_str)
-            
+            if WebhookParser._is_json_minified(json_str) and not WebhookParser._has_triple_escaped_json_string_field(json_str):
+                return json_str, None
+
+            if WebhookParser._is_json_minified(json_str):
+                return WebhookParser._process_over_escaped_minified_json(json_str), None
+
+            normalized_str = json_str.replace('\\\\"', '\\"')
+            processed_str = WebhookParser._process_nested_json_fields(normalized_str)
+
             if WebhookParser._is_json_minified(processed_str):
                 return processed_str, None
-            
+
             return WebhookParser._minify_json(processed_str)
-            
+
         except json.JSONDecodeError as e:
             return "", Exception(f"EnsureMinifiedJSON: failed to unmarshal JSON: {e}")
         except Exception as e:
             return "", Exception(f"EnsureMinifiedJSON: failed to marshal JSON for minification: {e}")
+
+    @staticmethod
+    def _is_valid_json(json_str: str) -> bool:
+        try:
+            json.loads(json_str)
+            return True
+        except json.JSONDecodeError:
+            return False
+
+    @staticmethod
+    def _collapse_triple_backslash_quotes(s: str) -> str:
+        if '\\\\\\"' not in s:
+            return s
+        return s.replace('\\\\\\"', '\\"')
+
+    @staticmethod
+    def _collapse_double_backslash_quotes(s: str) -> str:
+        if '\\\\"' not in s:
+            return s
+        return s.replace('\\\\"', '"')
+
+    @staticmethod
+    def _remove_colon_space_before_quoted_value(s: str) -> str:
+        if ': \\"' not in s:
+            return s
+        return s.replace(': \\"', ':\\"')
+
+    @staticmethod
+    def _normalize_over_escaped_quotes(s: str) -> str:
+        if '\\\\"' in s:
+            return s.replace('\\\\"', '\\"')
+        return s
+
+    @staticmethod
+    def _body_forms_for_signature(request_body: str) -> list[str]:
+        seen: set[str] = set()
+        forms: list[str] = []
+
+        def add(form: str) -> None:
+            if form and form not in seen:
+                seen.add(form)
+                forms.append(form)
+
+        collapsed = WebhookParser._collapse_triple_backslash_quotes(request_body)
+        if collapsed != request_body and WebhookParser._is_valid_json(collapsed):
+            add(collapsed)
+
+        collapsed_spaced = WebhookParser._remove_colon_space_before_quoted_value(collapsed)
+        if collapsed_spaced != request_body and WebhookParser._is_valid_json(collapsed_spaced):
+            add(collapsed_spaced)
+
+        collapsed = WebhookParser._collapse_double_backslash_quotes(request_body)
+        if collapsed != request_body and WebhookParser._is_valid_json(collapsed):
+            add(collapsed)
+
+        spaced = WebhookParser._remove_colon_space_before_quoted_value(request_body)
+        if spaced != request_body and WebhookParser._is_valid_json(spaced):
+            add(spaced)
+
+        collapsed = WebhookParser._collapse_triple_backslash_quotes(spaced)
+        if collapsed != request_body and WebhookParser._is_valid_json(collapsed):
+            add(collapsed)
+
+        if WebhookParser._is_valid_json(request_body):
+            add(request_body)
+
+        normalized = WebhookParser._normalize_over_escaped_quotes(request_body)
+        if normalized != request_body and WebhookParser._is_json_minified(normalized) and WebhookParser._is_valid_json(normalized):
+            add(normalized)
+
+        nested_processed = WebhookParser._process_nested_json_fields(request_body)
+        if nested_processed != request_body:
+            add(nested_processed)
+
+        minified, err = WebhookParser._ensure_minified_json(request_body)
+        if err:
+            if not forms:
+                raise ValueError("failed to prepare any signature body form") from err
+        else:
+            add(minified)
+
+        if not forms:
+            raise ValueError("failed to prepare any signature body form")
+        return forms
 
     @staticmethod
     def _sha256_lower_hex(data: str) -> str:
@@ -179,13 +282,38 @@ class WebhookParser:
         relative_path_url: str,
         body: str,
         x_timestamp: str
-    ) -> tuple[str, Exception]:
-        processed_body, err = self._ensure_minified_json(body)
-        if err:
-            return "", Exception(f"_construct_string_to_verify: failed to ensure JSON is minified: {err}")
-        
-        body_hash = self._sha256_lower_hex(processed_body)
-        return f"{http_method}:{relative_path_url}:{body_hash}:{x_timestamp}", None
+    ) -> str:
+        path = relative_path_url if relative_path_url.startswith("/") else f"/{relative_path_url}"
+        body_hash = self._sha256_lower_hex(body)
+        return f"{http_method.upper()}:{path}:{body_hash}:{x_timestamp}"
+
+    def _verify_signature(
+        self,
+        http_method: str,
+        relative_path_url: str,
+        body: str,
+        x_timestamp: str,
+        x_signature: str,
+    ) -> None:
+        body_forms = self._body_forms_for_signature(body)
+        signature_bytes = base64.b64decode(x_signature)
+
+        for body_form in body_forms:
+            string_to_verify = self._construct_string_to_verify(
+                http_method, relative_path_url, body_form, x_timestamp
+            )
+            try:
+                self.public_key.verify(
+                    signature_bytes,
+                    string_to_verify.encode("utf-8"),
+                    padding.PKCS1v15(),
+                    hashes.SHA256(),
+                )
+                return
+            except InvalidSignature:
+                continue
+
+        raise ValueError("Signature verification failed.")
 
     def parse_webhook(
         self,
@@ -200,33 +328,33 @@ class WebhookParser:
         if not x_signature or not x_timestamp:
             raise ValueError("Missing X-SIGNATURE or X-TIMESTAMP header.")
 
-        string_to_verify, err = self._construct_string_to_verify(
-            http_method=http_method,
-            relative_path_url=relative_path_url,
-            body=body,
-            x_timestamp=x_timestamp
-        )
-        if err:
-            raise ValueError(str(err))
-        signature_bytes = base64.b64decode(x_signature)
-        try:
-            self.public_key.verify(
-                signature_bytes,
-                string_to_verify.encode('utf-8'),
-                padding.PKCS1v15(),
-                hashes.SHA256()
-            )
-        except InvalidSignature:
-            raise ValueError("Signature verification failed.")
+        self._verify_signature(http_method, relative_path_url, body, x_timestamp, x_signature)
 
-        processed_body, err = self._ensure_minified_json(body)
-        if err:
-            raise ValueError(f"Failed to process JSON body: {err}")
-            
+        # Try multiple body transformations for parsing in order of likelihood:
+        # 1. Collapsed triple-backslash form (handles over-escaped \\\" → \")
+        # 2. Process nested JSON fields (handles bare-quote inner JSON like "field":"{...}")
+        # 3. ensureMinifiedJson fallback for pretty-printed bodies
+        payload_dict = None
+        for candidate in [
+            self._collapse_triple_backslash_quotes(body),
+            self._process_nested_json_fields(body),
+        ]:
+            try:
+                payload_dict = json.loads(candidate)
+                break
+            except json.JSONDecodeError:
+                continue
+
+        if payload_dict is None:
+            processed_body, err = self._ensure_minified_json(body)
+            if err:
+                raise ValueError(f"Failed to process JSON body: {err}")
+            try:
+                payload_dict = json.loads(processed_body)
+            except json.JSONDecodeError:
+                raise ValueError("Invalid JSON in request body.")
+
         try:
-            payload_dict = json.loads(processed_body)
             return FinishNotifyRequest.from_dict(payload_dict)
-        except json.JSONDecodeError:
-            raise ValueError("Invalid JSON in request body.")
         except Exception as e:
             raise ValueError(f"Failed to parse body into FinishNotifyRequest: {e}")

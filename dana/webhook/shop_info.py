@@ -36,7 +36,7 @@ class ShopInfo(BaseModel, BaseSdkModel):
     shop_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of shop identifier. Required if externalShopId is blank")
     external_shop_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of external shop identifier. Required if shopId is blank")
     operator_id: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of operator identifier")
-    shop_address: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(default=None, description="Information of shop address")
+    shop_address: Optional[str] = Field(default=None, description="Information of shop address")
     division_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of division identifier")
     external_division_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Information of external division identifier")
     division_type: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default=None, description="Information of division type")
