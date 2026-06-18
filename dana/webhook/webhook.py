@@ -221,6 +221,14 @@ class WebhookParser:
         return s
 
     @staticmethod
+    def _remove_spaces_in_json_key_names(body: str) -> str:
+        return re.sub(
+            r'(\\*)"((?:\w+\s)+\w+)(\\*)"(\s*:)',
+            lambda m: m.group(1) + '"' + m.group(2).replace(' ', '') + m.group(3) + '"' + m.group(4),
+            body
+        )
+
+    @staticmethod
     def _body_forms_for_signature(request_body: str) -> list[str]:
         seen: set[str] = set()
         forms: list[str] = []
@@ -260,6 +268,16 @@ class WebhookParser:
         nested_processed = WebhookParser._process_nested_json_fields(request_body)
         if nested_processed != request_body:
             add(nested_processed)
+
+        key_despace = WebhookParser._remove_spaces_in_json_key_names(request_body)
+        if key_despace != request_body:
+            add(key_despace)
+
+        key_despace_collapsed = WebhookParser._remove_spaces_in_json_key_names(
+            WebhookParser._collapse_triple_backslash_quotes(request_body)
+        )
+        if key_despace_collapsed != request_body:
+            add(key_despace_collapsed)
 
         minified, err = WebhookParser._ensure_minified_json(request_body)
         if err:

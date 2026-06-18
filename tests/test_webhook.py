@@ -273,3 +273,42 @@ class TestWebhookParser:
         assert result.amount.currency == "IDR"
         assert result.latest_transaction_status == "00"
         assert result.transaction_status_desc == "SUCCESS"
+
+    def test_production_qris_spaced_key_in_body(self):
+        """QRIS webhook body containing spaces inside JSON key names (e.g. 'c urrency', 'q rInfoCacheIndex').
+        Tests that the spaced-key normalisation strips the spaces before signature verification."""
+        public_key = os.getenv("WEBHOOK_PUBLIC_KEY")
+
+        webhook_http_method = "POST"
+        webhook_relative_url = "/v2/dana/callback-qris"
+
+        webhook_body_str = r'{"amount":{"currency":"IDR","value":"1000.00"},"originalReferenceNo":"20260615111212800100166774003221871","merchantId":"216620040007047069653","latestTransactionStatus":"00","addi tionalInfo":{"shopInfo":{"externalShopId":"a9ab9ac5","shopName":"PT REKA MIKRO MOBILITAS","shopId":"216660000003346861448","shopAddress":"{\"address1\":\"a9ab9ac5\",\"address2\":\"a9ab9ac5\",\"area\":\"Abiansemal\",\"city\":\"Kab. Badung\",\"contactAddressId\":\"120100000003577990444\",\"contactAddressType\":\"OFFICE_ADD\",\"country\":\"Indonesia\",\"defaultAddress\":false,\"province\":\"Bali\",\"verified\":true,\"zipcode\":\"80351\"}"},"tipsAmount":{"amount":"0.0","centFactor":"100","cent":"0","currencyValue":"360","currency":"IDR","currencyCode":"IDR"},"extendInfo":"{\"payment_scene\":\"C_SCAN_B\",\"QR_TYPE\":\"QR_DYNAMIC\",\"externalShopId\":\"a9ab9ac5\",\"osType\":\"android\",\"sourcePlatform\":\"MAIN_APP\",\"billNumber\":\"TRX20260615cd1772\"}","paymentInfo":{"payOptionInfos":[{"transAmount":{"currency":"IDR","value":"1000.00"},"payAmount":{"currency":"IDR","value":"1000.00"},"payMethod":"BALANCE","chargeAmount":{"currency":"IDR","value":"0.00"},"extendInfo":"{}","payOptionBillExtendInfo":"{}"}],"cashierRequestId":"413d8c580ebb8c5aaff235ddc14e7274","paidTime":"2026-06-15T10:56:17+07:00","payRequestExtendInfo":"{\"payment_scene\":\"C_SCAN_B\",\"supportNewCashierFlow\":\"false\",\"EMVCO_CODE_INFO\":\"{\\\"acquiringBankName\\\":\\\"DANA\\\",\\\"additionalInfo\\\":{\\\"billNumber\\\":\\\"TRX20260615cd1772\\\",\\\"terminalLabel\\\":\\\"MER2026042717424830271473\\\"},\\\"countryCode\\\":\\\"ID\\\",\\\"creditAccountInfos\\\":[],\\\"extendInfo\\\":{},\\\"externalSerialNo\\\":\\\"774003221871\\\",\\\"gpnMerchantId\\\":\\\"216660000003346861448-a9ab9ac5\\\",\\\"instId\\\":\\\"DANA\\\",\\\"merchantCity\\\":\\\"Kab. Badung\\\",\\\"merchantNameLocation\\\":\\\"PT REKA MIKRO MOBILITAS\\\",\\\"merchantPan\\\":\\\"936009150002729888\\\",\\\"merchantPanLuhn\\\":\\\"9360091500027298882\\\",\\\"merchantType\\\":\\\"PSO\\\",\\\"onUs\\\":true,\\\"postalCode\\\":\\\"80351\\\",\\\"q rInfoCacheIndex\\\":\\\"MO_EMVCO_PARSE_CACHEGZ009D65D35EC9C4444699D3EE332B431E35danabizpluginGZ001781495773115\\\",\\\"trxCode\\\":\\\"Payment Credit\\\",\\\"trxFeeAmount\\\":{\\\"amount\\\":0.00,\\\"cent\\\":0,\\\"centFactor\\\":100,\\\"currency\\\":\\\"IDR\\\",\\\"currencyCode\\\":\\\"IDR\\\",\\\"currencyValue\\\":\\\"360\\\"}}\",\"isClientSupportFaceAuth\":\"false\",\"callbackClientVersion\":\"2.1\",\"passThroughToPromotion\":\"{\\\"ORDER_TITLE\\\":\\\"Pay to PT REKA MIKRO MOBILITAS\\\",\\\"gpnMerchantId\\\":\\\"216660000003346861448-a9ab9ac5\\\",\\\"CLIENT_ID\\\":\\\"2026042717424830271473\\\",\\\"SHOP_INFO\\\":\\\"{\\\\\\\"externalShopId\\\\\\\":\\\\\\\"a9ab9ac5\\\\\\\",\\\\\\\"mccCodes\\\\\\\":[\\\\\\\"4789\\\\\\\"],\\\\\\\"shopAddress\\\\\\\":\\\\\\\"{\\\\\\\\\\\\\\\"address1\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"a9ab9ac5\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"address2\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"a9ab9ac5\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"area\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"Abiansemal\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"city\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"Kab. Badung\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"contactAddressId\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"120100000003577990444\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"contactAddressType\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"OFFICE_ADD\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"country\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"Indonesia\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"defaultAddress\\\\\\\\\\\\\\\":false,\\\\\\\\\\\\\\\"province\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"Bali\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"verified\\\\\\\\\\\\\\\":true,\\\\\\\\\\\\\\\"zipcode\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"80351\\\\\\\\\\\\\\\"}\\\\\\\",\\\\\\\"shopId\\\\\\\":\\\\\\\"216660000003346861448\\\\\\\",\\\\\\\"shopName\\\\\\\":\\\\\\\"PT REKA MIKRO MOBILITAS\\\\\\\"}\\\"}\",\"orderStatus\":\"INIT\",\"SERVICE_INFO\":\"null\",\"isFrictionless\":\"false\",\"passToFluxnet\":\"{\\\"onUs\\\":\\\"true\\\",\\\"merchantName\\\":\\\"PT REKA MIKRO MOBILITAS\\\"}\",\"CHARGE_USER_FEE_INFO\":\"[]\",\"merchantCategoryCode\":\"4789\",\"externalShopId\":\"a9ab9ac5\",\"merchantCategoryName\":\"TRANSPORTATION SERVICES (NOT ELSEWHERE CLASSIFIED)\",\"needAmlCheck\":\"false\",\"billNumber\":\"TRX20260615cd1772\",\"passThroughToRisk\":\"{\\\"isModifySmartpay\\\":\\\"false\\\",\\\"passkeys\\\":\\\"false\\\",\\\"isPasskeysSupported\\\":\\\"false\\\",\\\"isSupportWAOtp\\\":\\\"true\\\",\\\"isFrictionless\\\":\\\"false\\\",\\\"payerTypingChallenge\\\":\\\"false\\\"}\",\"SUPPORT_FRICTIONLESS\":\"false\"}","extendInfo":"{\"topupAndPay\":\"false\",\"paymentStatus\":\"SUCCESS\"}"}},"externalStoreID":"a9ab9ac5","originalPartnerReferenceNo":"TRX20260615cd1772","finishedTime":"2026-06-15T10:56:17+07:00","createdTime":"2026-06-15T10:56:13+07:00","transactionStatusDesc":"SUCCESS"}'
+
+        x_timestamp = "2026-06-15T11:09:00+07:00"
+        signature = "ZR3ZYxx2MDn5qocjcLxu7eEzJxOQ7NpYryG19/sSS1CdjeBQuedw2G9zc9BjMuNQiMFXscxCqQqNbKl64r2x2Dur51FVReFlUUKUw0WiZNQr+EqN/A+3Vk8lJ74SeBErd8IflKO6KZ1zt97Ab0YSxlCJ0GH8fVwSiqZINbtbMq4gEuYu0n0mJ2zc2/gn4weyKIctosmL3ygm0VU+gUmU1+zopt1K4Q0umRiW3LqwLNC96Tk1iYFVsJuCu+8KcHYT88DPhwXdTjwrXydIqIF3oyqpMHyBRAX1za7Q6z5Zsv8or3glwWNexfmNBg9GiwpKjHWPIrGqtbj1zo3KbRvFCQ=="
+
+        headers = {
+            "Channel-Id": "DANA",
+            "Charset": "UTF-8",
+            "Content-Type": "application/json",
+            "User-Agent": "Jakarta Commons-HttpClient/3.1",
+            "X-Partner-Id": "2026042717424830271473",
+            "X-Signature": signature,
+            "X-Timestamp": x_timestamp,
+        }
+
+        parser = WebhookParser(public_key=public_key)
+        result = parser.parse_webhook(
+            http_method=webhook_http_method,
+            relative_path_url=webhook_relative_url,
+            headers=headers,
+            body=webhook_body_str,
+        )
+
+        assert result is not None
+        assert result.original_partner_reference_no == "TRX20260615cd1772"
+        assert result.original_reference_no == "20260615111212800100166774003221871"
+        assert result.merchant_id == "216620040007047069653"
+        assert result.amount.value == "1000.00"
+        assert result.latest_transaction_status == "00"
+        assert result.transaction_status_desc == "SUCCESS"
