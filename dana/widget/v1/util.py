@@ -85,7 +85,7 @@ class Util:
         
         # Set base URL based on environment and mode
         if mode == Mode.DEEPLINK:
-            base_url = 'https://m.dana.id/n/link/bind' if env.lower() == 'production' else 'https://m.sandbox.dana.id/n/link/binding'
+            base_url = 'https://m.dana.id/n/link/binding' if env.lower() == 'production' else 'https://m.sandbox.dana.id/n/link/binding'
         elif mode == Mode.API:
             base_url = 'https://m.dana.id/v1.0/get-auth-code' if env.lower() == 'production' else 'https://m.sandbox.dana.id/v1.0/get-auth-code'
         
