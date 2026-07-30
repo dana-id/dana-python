@@ -214,7 +214,7 @@ def get_customer_top_up_request_with_division():
         fund_type="AGENT_TOPUP_FOR_USER_SETTLE",
         external_division_id="DIV123456",
         charge_target="DIVISION",
-        account_type="DANA_WALLET"
+        account_type="MERCHANT_DEPOSIT_ACCOUNT"
     )
     
     request = TransferToDanaRequest(

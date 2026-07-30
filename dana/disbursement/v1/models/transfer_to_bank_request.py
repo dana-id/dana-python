@@ -34,7 +34,7 @@ import json
 
 from dana.base.model import BaseSdkModel
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from dana.disbursement.v1.models.money import Money
@@ -50,12 +50,22 @@ class TransferToBankRequest(BaseModel, BaseSdkModel):
     """ # noqa: E501
     partner_reference_no: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Unique transaction identifier on partner system which assigned to each transaction<br> Notes:<br> If the partner receives a timeout or an unexpected response from DANA and partner expects to perform retry request to DANA, please use the partnerReferenceNo that is the same as the one used in the transaction request process before ")
     customer_number: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Customer account number, in format 628xxx")
-    account_type: Optional[Annotated[str, Field(strict=True, max_length=25)]] = Field(default=None, description="Customer account type")
+    account_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Customer account type ")
     beneficiary_account_number: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Beneficiary account number")
     beneficiary_bank_code: Annotated[str, Field(strict=True, max_length=8)] = Field(description="Beneficiary Bank code")
     amount: Money = Field(description="Amount. Contains two sub-fields:<br> 1. Value: Transaction amount, including the cents<br> 2. Currency: Currency code based on ISO ")
     additional_info: TransferToBankRequestAdditionalInfo = Field()
     __properties: ClassVar[List[str]] = ["partnerReferenceNo", "customerNumber", "accountType", "beneficiaryAccountNumber", "beneficiaryBankCode", "amount", "additionalInfo"]
+
+    @field_validator('account_type')
+    def account_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['MERCHANT_DEPOSIT_ACCOUNT', 'SETTLEMENT_ACCOUNT', 'DIVISION_DEPOSIT_ACCOUNT']):
+            raise ValueError("must be one of enum values ('MERCHANT_DEPOSIT_ACCOUNT', 'SETTLEMENT_ACCOUNT', 'DIVISION_DEPOSIT_ACCOUNT')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

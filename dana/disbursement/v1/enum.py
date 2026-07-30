@@ -16,6 +16,11 @@ class ChargeTarget(str, Enum):
     DIVISION = "DIVISION"
     MERCHANT = "MERCHANT"
 
+class AccountType(str, Enum):
+    MERCHANT_DEPOSIT_ACCOUNT = "MERCHANT_DEPOSIT_ACCOUNT"
+    SETTLEMENT_ACCOUNT = "SETTLEMENT_ACCOUNT"
+    DIVISION_DEPOSIT_ACCOUNT = "DIVISION_DEPOSIT_ACCOUNT"
+
 class LatestTransactionStatus(str, Enum):
     N00 = "00"
     N01 = "01"

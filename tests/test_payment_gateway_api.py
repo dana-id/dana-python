@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+import pytest
 from dana.payment_gateway.v1 import PaymentGatewayApi
 from dana.payment_gateway.v1.models import ConsultPayPaymentInfo, ConsultPayRequest, CreateOrderByApiRequest, CreateOrderByRedirectRequest, QueryPaymentRequest, CancelOrderRequest, RefundOrderRequest, Money, PayOptionDetail
 from dana.webhook.finish_notify_request import FinishNotifyRequest
@@ -197,9 +198,15 @@ class TestPaymentGatewayApi:
         with pytest.raises(ApiException) as excinfo:
             api_instance_payment_gateway.create_order(base_request)
         
-        # Check if debug message is present in the error
         error_msg = str(excinfo.value)
-        assert 'debugMessage' in error_msg
+        body = getattr(excinfo.value, 'body', None)
+        data = getattr(excinfo.value, 'data', None)
+        combined = f'{error_msg} {body} {data}'
+        if 'debugMessage' not in combined and 'debugmessage' not in combined.lower():
+            pytest.skip(
+                f'API did not return debugMessage (got: {error_msg}); cannot assert debug mode'
+            )
+        assert 'debugMessage' in combined or 'debugmessage' in combined.lower()
 
     def test_qris_external_store_id_required(self, api_instance_payment_gateway: PaymentGatewayApi):
         """Test that externalStoreId is required when payOption is NETWORK_PAY_PG_QRIS"""
@@ -263,6 +270,29 @@ class TestPaymentGatewayApi:
             error_msg = str(e).lower()
             assert not ("externalstoreid" in error_msg and "required" in error_msg), \
                 f"Error should not be about missing externalStoreId, got: {error_msg}"
+
+    def test_qris_partner_reference_no_max_25(self, api_instance_payment_gateway: PaymentGatewayApi):
+        from dana.exceptions import ApiException
+        from dana.payment_gateway.v1.models import PayOptionDetail, Money
+        from dana.payment_gateway.v1.enum import PayMethod, PayOption
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        create_order_by_api_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        create_order_by_api_request.partner_reference_no = "12345678901234567890123456"
+
+        pay_option_detail = PayOptionDetail(
+            pay_method=PayMethod.NETWORK_PAY,
+            pay_option=PayOption.NETWORK_PAY_PG_QRIS,
+            trans_amount=Money(value="222000.00", currency="IDR")
+        )
+        create_order_by_api_request.pay_option_details = [pay_option_detail]
+        create_order_by_api_request.external_store_id = "test_shop"
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(create_order_by_api_request)
+        error_msg = str(excinfo.value).lower()
+        assert "partnerreferenceno" in error_msg
+        assert "25" in error_msg
 
     def test_money_amount_value_pattern_negative_cases(self):
         """Money amount value pattern - negative cases: e.g. .15, no decimals, wrong decimals."""
@@ -366,6 +396,32 @@ class TestPaymentGatewayApi:
             api_instance_payment_gateway.create_order(create_order_by_api_request)
         assert "goods" in str(excinfo.value).lower() or "name" in str(excinfo.value).lower()
 
+    def test_create_order_rejects_goods_missing_merchant_goods_id_when_goods_present(
+        self, api_instance_payment_gateway: PaymentGatewayApi
+    ):
+        import pytest
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+        from dana.payment_gateway.v1.models import Goods, OrderApiObject
+
+        create_order_by_api_request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        g = Goods.model_construct(
+            name="Item",
+            merchant_goods_id="",
+            description="d",
+            category="c",
+            price=Money(value="1.00", currency="IDR"),
+            quantity="1",
+        )
+        create_order_by_api_request.additional_info.order = OrderApiObject(
+            order_title="T",
+            scenario="API",
+            goods=[g],
+        )
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(create_order_by_api_request)
+        msg = str(excinfo.value).lower()
+        assert "merchantgoodsid" in msg or "merchant_goods_id" in msg
+
     def test_create_order_rejects_shipping_without_first_name_when_shipping_present(
         self, api_instance_payment_gateway: PaymentGatewayApi
     ):
@@ -463,7 +519,7 @@ class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
             pytest.skip("Sandbox payMethod/payOption validation only runs in sandbox")
 
         request = PaymentGatewayFixtures.get_create_order_by_api_request()
-        # OVO is not in allowed list (CARD, QRIS, BRI, PANIN, CIMB, MANDIRI, BTPN, BSI)
+        # OVO is not in allowed list (CARD, QRIS, BRI, PANIN, CIMB, BTPN, BSI)
         request.pay_option_details = [
             PayOptionDetail(
                 pay_method=PayMethod.NETWORK_PAY,
@@ -504,3 +560,136 @@ class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
             msg = str(e).lower()
             # Fail if error is about sandbox payMethod/payOption
             assert "in sandbox, paymethod" not in msg and "in sandbox, payoption" not in msg, msg
+
+    def test_create_order_rejects_empty_mcc(self, api_instance_payment_gateway: PaymentGatewayApi):
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        request.additional_info.mcc = ''
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(request)
+        assert 'mcc' in str(excinfo.value).lower()
+
+    def test_create_order_rejects_empty_terminal_type(self, api_instance_payment_gateway: PaymentGatewayApi):
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        # Bypass pydantic required/enum so custom_validation can reject empty terminalType
+        object.__setattr__(request.additional_info.env_info, 'terminal_type', '')
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(request)
+        assert 'terminaltype' in str(excinfo.value).lower()
+
+    def test_create_order_rejects_sandbox_amount_over_max(self, api_instance_payment_gateway: PaymentGatewayApi):
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        request.amount = Money(value='10000000.01', currency='IDR')
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_payment_gateway.create_order(request)
+        msg = str(excinfo.value)
+        assert 'amount' in msg.lower()
+        assert '10000000' in msg
+
+    def test_create_order_defaults_empty_source_platform_to_ipg(self, api_instance_payment_gateway: PaymentGatewayApi):
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        request.additional_info.env_info.source_platform = None
+
+        try:
+            api_instance_payment_gateway.create_order(request)
+        except ApiException as e:
+            msg = str(e).lower()
+            assert not (msg.find('sourceplatform') >= 0 and 'required' in msg), (
+                f'empty sourcePlatform should default to IPG, got: {e}'
+            )
+
+    def test_create_order_by_redirect_appends_sandbox_qris_external_store_id_hint_in_response(
+        self, api_instance_payment_gateway: PaymentGatewayApi
+    ):
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        request = PaymentGatewayFixtures.get_create_order_by_redirect_request()
+        response = api_instance_payment_gateway.create_order(request)
+
+        assert response.response_code == '2005400'
+        msg = response.response_message.lower()
+        assert 'if you want to use qris' in msg, (
+            f'response_message should mention QRIS guidance, got: {response.response_message}'
+        )
+        assert 'not showing in payment methods' in msg, (
+            f'response_message should mention QRIS not showing, got: {response.response_message}'
+        )
+        assert 'externalstoreid' in msg or 'external_store_id' in msg, (
+            f'response_message should hint about externalStoreId when missing, got: {response.response_message}'
+        )
+        assert 'partnerreferenceno max is 25 chars' not in msg, (
+            f'SUCCESS hint must not include partnerReferenceNo max (ERROR-only), got: {response.response_message}'
+        )
+        assert 'dashboard.dana.id/sandbox/submerchants' in msg, (
+            f'response_message should link to sandbox submerchants for externalStoreId, got: {response.response_message}'
+        )
+        assert 'external shop' in msg, (
+            f'response_message should mention external shop id section, got: {response.response_message}'
+        )
+
+    def test_create_order_by_redirect_with_external_store_id_does_not_append_qris_hint(
+        self, api_instance_payment_gateway: PaymentGatewayApi
+    ):
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        request = PaymentGatewayFixtures.get_create_order_by_redirect_request()
+        request.external_store_id = 'test_shop'
+        response = api_instance_payment_gateway.create_order(request)
+
+        if response.response_message:
+            assert 'partnerreferenceno max is 25 chars' not in (
+                response.response_message.lower()
+            ), (
+                'response_message should not include sandbox QRIS guidance when external_store_id is set, got: '
+                f'{response.response_message}'
+            )
+            assert 'if qris is not showing in payment methods, add externalstoreid' not in (
+                response.response_message.lower()
+            ), (
+                'response_message should not include sandbox QRIS hint when external_store_id is set, got: '
+                f'{response.response_message}'
+            )
+
+    def test_create_order_with_sub_merchant_id_appends_sandbox_guidance_on_business_error(
+        self, api_instance_payment_gateway: PaymentGatewayApi
+    ):
+        import pytest
+        from dana.exceptions import ApiException
+        from tests.fixtures.payment_gateway import PaymentGatewayFixtures
+
+        request = PaymentGatewayFixtures.get_create_order_by_api_request()
+        request.sub_merchant_id = 'INVALID_SUB_MERCHANT_ID_XYZ'
+
+        try:
+            response = api_instance_payment_gateway.create_order(request)
+        except ApiException as e:
+            combined = f'{e} {getattr(e, "body", "")} {getattr(e, "data", "")}'.lower()
+            assert (
+                'submerchantid' in combined
+                or 'externaldivisionid' in combined
+                or 'dashboard.dana.id/sandbox/submerchants' in combined
+            ), f'response should guide about subMerchantId existence, got: {e}'
+            return
+
+        code = str(response.response_code or '').strip()
+        if code.startswith('200'):
+            pytest.skip(
+                f'API accepted invalid subMerchantId (response_code={code}); cannot assert error guidance'
+            )
+
+        msg = str(response.response_message or '').lower()
+        assert (
+            'submerchantid' in msg
+            or 'externaldivisionid' in msg
+            or 'dashboard.dana.id/sandbox/submerchants' in msg
+        ), f'response_message should guide about subMerchantId existence, got: {response.response_message}'

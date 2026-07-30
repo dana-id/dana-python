@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import time
+import pytest
 from dana.disbursement.v1.api import DisbursementApi
 from dana.disbursement.v1.models import (
     DanaAccountInquiryRequest,
@@ -36,6 +37,8 @@ from tests.fixtures.disbursement import (
     get_dynamic_bank_account_inquiry_request,
     get_dynamic_transfer_to_bank_request,
     get_dynamic_transfer_to_dana_request,
+    get_customer_top_up_request_with_division,
+    get_transfer_to_bank_request,
     get_transfer_to_bank_inquiry_status_request,
     get_transfer_to_dana_inquiry_status_request
 )
@@ -228,6 +231,84 @@ class TestDisbursementApi:
         # Assert - Check transaction status is valid
         valid_statuses = ['00', '01', '02', '03', '04', '05', '06', '07']
         assert api_response.latest_transaction_status in valid_statuses, 'Latest transaction status should be valid'
-        
+
+    def test_bank_account_inquiry_rejects_wrong_beneficiary_account_in_sandbox(
+        self, api_instance_disbursement: DisbursementApi
+    ):
+        request = get_dynamic_bank_account_inquiry_request()
+        request.beneficiary_account_number = '0000000000'
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_disbursement.bank_account_inquiry(request)
+        assert 'beneficiaryaccountnumber' in str(excinfo.value).lower()
+
+    def test_bank_account_inquiry_rejects_wrong_bank_code_in_sandbox(
+        self, api_instance_disbursement: DisbursementApi
+    ):
+        request = get_dynamic_bank_account_inquiry_request()
+        request.additional_info.beneficiary_bank_code = '002'
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_disbursement.bank_account_inquiry(request)
+        assert 'beneficiarybankcode' in str(excinfo.value).lower()
+
+    def test_bank_account_inquiry_rejects_empty_fund_type(
+        self, api_instance_disbursement: DisbursementApi
+    ):
+        request = get_dynamic_bank_account_inquiry_request()
+        request.additional_info.fund_type = ''
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_disbursement.bank_account_inquiry(request)
+        assert 'fundtype' in str(excinfo.value).lower()
+
+    def test_bank_account_inquiry_ignores_sandbox_account_type_and_beneficiary_account_name(
+        self, api_instance_disbursement: DisbursementApi
+    ):
+        request = get_dynamic_bank_account_inquiry_request()
+        request.additional_info.account_type = 'MERCHANT_DEPOSIT_ACCOUNT'
+        request.additional_info.beneficiary_account_name = 'Someone'
+
+        api_response = api_instance_disbursement.bank_account_inquiry(request)
+
+        assert isinstance(api_response, BankAccountInquiryResponse)
+        assert api_response.response_code is not None
+
+    def test_transfer_to_dana_ignores_sandbox_charge_target_and_external_division_id(
+        self, api_instance_disbursement: DisbursementApi
+    ):
+        request = get_customer_top_up_request_with_division()
+
+        api_response = api_instance_disbursement.transfer_to_dana(request)
+
+        assert isinstance(api_response, TransferToDanaResponse)
+        assert api_response.response_code is not None
+
+    def test_transfer_to_bank_rejects_sandbox_amount_over_max(
+        self, api_instance_disbursement: DisbursementApi
+    ):
+        from dana.disbursement.v1.models import Money
+
+        request = get_transfer_to_bank_request()
+        request.amount = Money(value='20000000.01', currency='IDR')
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_disbursement.transfer_to_bank(request)
+        msg = str(excinfo.value)
+        assert 'amount' in msg.lower()
+        assert '20000000' in msg
+
+    def test_dana_account_inquiry_rejects_sandbox_amount_over_max(
+        self, api_instance_disbursement: DisbursementApi
+    ):
+        from dana.disbursement.v1.models import Money
+
+        request = get_dynamic_dana_account_inquiry_request()
+        request.amount = Money(value='20000000.01', currency='IDR')
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_disbursement.dana_account_inquiry(request)
+        assert '20000000' in str(excinfo.value)
+
   
         

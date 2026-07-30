@@ -16,6 +16,7 @@ import pytest
 import os
 
 from dana.widget.v1.api import WidgetApi
+from dana.rest import ApiException
 from dana.widget.v1.models import (
     ApplyOTTRequest,
     QueryPaymentRequest,
@@ -108,3 +109,53 @@ class TestWidgetApi:
         assert "validupto" in error_msg.lower() or "minutes" in error_msg.lower(), \
             f"Error message must mention 'validUpTo' or 'minutes', got: {error_msg}"
         print(f"CustomValidation() error as expected: {error_msg}")
+
+    def test_widget_payment_rejects_empty_product_code(self, api_instance_widget: WidgetApi, widget_payment_request):
+        widget_payment_request.additional_info.product_code = ''
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_widget.widget_payment(widget_payment_request)
+        assert 'productcode' in str(excinfo.value).lower()
+
+    def test_widget_payment_rejects_empty_terminal_type(self, api_instance_widget: WidgetApi, widget_payment_request):
+        # Bypass pydantic required/enum so custom_validation can reject empty terminalType
+        object.__setattr__(widget_payment_request.additional_info.env_info, 'terminal_type', '')
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_widget.widget_payment(widget_payment_request)
+        assert 'terminaltype' in str(excinfo.value).lower()
+
+    def test_widget_payment_allows_empty_mcc(self, api_instance_widget: WidgetApi, widget_payment_request):
+        widget_payment_request.additional_info.mcc = ''
+
+        try:
+            api_instance_widget.widget_payment(widget_payment_request)
+        except ApiException as e:
+            msg = str(e).lower()
+            assert not (msg.find('mcc') >= 0 and 'required' in msg), (
+                f'mcc may be empty for Widget, got: {e}'
+            )
+
+    def test_widget_payment_rejects_sandbox_amount_over_max(self, api_instance_widget: WidgetApi, widget_payment_request):
+        from dana.widget.v1.models import Money
+
+        widget_payment_request.amount = Money(value='10000000.01', currency='IDR')
+
+        with pytest.raises(ApiException) as excinfo:
+            api_instance_widget.widget_payment(widget_payment_request)
+        msg = str(excinfo.value)
+        assert 'amount' in msg.lower()
+        assert '10000000' in msg
+
+    def test_widget_payment_defaults_empty_source_platform_to_ipg(
+        self, api_instance_widget: WidgetApi, widget_payment_request
+    ):
+        widget_payment_request.additional_info.env_info.source_platform = None
+
+        try:
+            api_instance_widget.widget_payment(widget_payment_request)
+        except ApiException as e:
+            msg = str(e).lower()
+            assert not (msg.find('sourceplatform') >= 0 and 'required' in msg), (
+                f'empty sourcePlatform should default to IPG, got: {e}'
+            )

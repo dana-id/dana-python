@@ -19,9 +19,11 @@ This module provides custom validation functions for Payment Gateway API request
 Validations are registered in the validation_registry and executed via custom_validation().
 """
 
+import json
 import os
 import re
-from typing import Any, Callable, Dict, FrozenSet, List, Set
+from types import SimpleNamespace
+from typing import Any, Callable, Dict, FrozenSet, List, Optional, Set
 
 from dana.utils.date_validation import validate_valid_up_to_date
 from dana.exceptions import ApiException
@@ -34,10 +36,13 @@ SANDBOX_ALLOWED_PAY_METHODS: FrozenSet[str] = frozenset({
 })
 
 SANDBOX_ALLOWED_PAY_OPTIONS: FrozenSet[str] = frozenset({
-    'CARD', 'QRIS', 'BRI', 'PANI', 'CIMB', 'MANDIRI', 'BTPN', 'BSI_PAYMENT',
+    'CARD', 'QRIS', 'BRI', 'PANI', 'CIMB', 'BTPN', 'BSI_PAYMENT',
 })
 
-CREDIT_DEBIT_CARD_PAY_METHODS: Set[str] = {'CREDIT_CARD', 'DEBIT_CARD'}
+# Sandbox maximum amount (major units) for Payment Gateway create order.
+SANDBOX_MAX_AMOUNT = 10000000
+
+CARD_PAY_METHODS: Set[str] = {'CARD', 'CREDIT_CARD', 'DEBIT_CARD'}
 NETWORK_PAY_PG_CARD = 'NETWORK_PAY_PG_CARD'
 EWALLET_PAY_OPTIONS: Set[str] = {
     'NETWORK_PAY_PG_SPAY',
@@ -45,6 +50,20 @@ EWALLET_PAY_OPTIONS: Set[str] = {
     'NETWORK_PAY_PG_GOPAY',
     'NETWORK_PAY_PG_LINKAJA',
 }
+
+SANDBOX_QRIS_GUIDANCE_HINT_SUCCESS = (
+    'If you want to use QRIS and it is not showing in payment methods, make sure you already fill '
+    'externalStoreId. See https://dashboard.dana.id/sandbox/submerchants in the external shop id section.'
+)
+SANDBOX_QRIS_GUIDANCE_HINT_ERROR = (
+    'If you want to use QRIS, make sure you fill externalStoreId. See '
+    'https://dashboard.dana.id/sandbox/submerchants in the external shop id section. '
+    'For QRIS, partnerReferenceNo max is 25 chars.'
+)
+SANDBOX_SUB_MERCHANT_ID_GUIDANCE_HINT = (
+    'Make sure your subMerchantId exists. You can see it at '
+    'https://dashboard.dana.id/sandbox/submerchants in the External Division ID section.'
+)
 
 
 def _is_sandbox() -> bool:
@@ -79,11 +98,34 @@ def _trim_str(value: Any) -> str:
 
 
 def _rune_len(s: str) -> int:
-    return len(list(s))
+    return len(s)
 
 
 def _ctx(field: str, message: str) -> Dict[str, str]:
     return {'field': field, 'message': message}
+
+
+def _append_sandbox_hint(
+    response_message: Optional[str],
+    hint: str,
+    *already_present_markers: str,
+) -> str:
+    """Always append (Go-compatible). Uses markers to avoid duplicates. No 150-char truncate."""
+    msg = (response_message or '').strip()
+    lower_msg = msg.lower()
+    for marker in already_present_markers:
+        if marker and marker.lower() in lower_msg:
+            return msg
+    if not msg:
+        return hint
+    if msg.endswith('.'):
+        return f'{msg} {hint}'
+    return f'{msg}. {hint}'
+
+
+def _is_business_error_response(response_code: Any) -> bool:
+    code = str(response_code or '').strip()
+    return code == '' or not code.startswith('200')
 
 
 def validate_additional_info_required(request: Any) -> None:
@@ -91,6 +133,49 @@ def validate_additional_info_required(request: Any) -> None:
         return
     if hasattr(request, 'additional_info') and request.additional_info is None:
         raise ApiException(status=0, contexts=[_ctx('additionalInfo', 'additionalInfo is required')])
+
+
+def default_source_platform(request: Any) -> None:
+    """Set envInfo.sourcePlatform to IPG when missing/empty."""
+    if request is None:
+        return
+    additional_info = getattr(request, 'additional_info', None)
+    if additional_info is None:
+        return
+    env_info = getattr(additional_info, 'env_info', None)
+    if env_info is None:
+        return
+    source_platform = getattr(env_info, 'source_platform', None)
+    if source_platform is None or str(source_platform).strip() == '':
+        env_info.source_platform = 'IPG'
+
+
+def validate_required_additional_info_fields_not_empty(request: Any) -> None:
+    """Reject empty strings for required additionalInfo fields (mcc, envInfo.terminalType)."""
+    if request is None:
+        return
+    additional_info = getattr(request, 'additional_info', None)
+    if additional_info is None:
+        return
+
+    contexts: List[Dict[str, str]] = []
+    if not _trim_str(getattr(additional_info, 'mcc', None)):
+        contexts.append(
+            _ctx('additionalInfo.mcc', 'additionalInfo.mcc is required and cannot be empty')
+        )
+
+    env_info = getattr(additional_info, 'env_info', None)
+    terminal_type = getattr(env_info, 'terminal_type', None) if env_info is not None else None
+    if not _trim_str(terminal_type):
+        contexts.append(
+            _ctx(
+                'additionalInfo.envInfo.terminalType',
+                'additionalInfo.envInfo.terminalType is required and cannot be empty',
+            )
+        )
+
+    if contexts:
+        raise ApiException(status=0, contexts=contexts)
 
 
 def validate_money_value_pattern(request: Any) -> None:
@@ -107,6 +192,26 @@ def validate_money_value_pattern(request: Any) -> None:
         ])
 
 
+def validate_sandbox_amount(request: Any) -> None:
+    """In sandbox, amount.value must not exceed SANDBOX_MAX_AMOUNT."""
+    if request is None or not _is_sandbox():
+        return
+    if not hasattr(request, 'amount') or request.amount is None:
+        return
+    value = getattr(request.amount, 'value', None)
+    if value is None or str(value).strip() == '':
+        return
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return
+    if parsed > SANDBOX_MAX_AMOUNT:
+        raise ApiException(status=0, contexts=[_ctx(
+            'amount.value',
+            f'in sandbox, amount.value must not exceed {SANDBOX_MAX_AMOUNT}; got {value!r}',
+        )])
+
+
 def validate_valid_up_to_create_order_request(request: Any) -> None:
     if request is None:
         return
@@ -120,7 +225,10 @@ def validate_valid_up_to_create_order_request(request: Any) -> None:
 
 
 def validate_external_store_id_for_qris(request: Any) -> None:
+    """API-only: externalStoreId required when payOption is NETWORK_PAY_PG_QRIS."""
     if request is None:
+        return
+    if request.__class__.__name__ == 'CreateOrderByRedirectRequest':
         return
     if not hasattr(request, 'pay_option_details') or request.pay_option_details is None:
         return
@@ -140,12 +248,40 @@ def validate_external_store_id_for_qris(request: Any) -> None:
             ])
 
 
+def validate_partner_reference_no_for_qris(request: Any) -> None:
+    """API-only: partnerReferenceNo max 25 when payOption is NETWORK_PAY_PG_QRIS."""
+    if request is None:
+        return
+    if request.__class__.__name__ == 'CreateOrderByRedirectRequest':
+        return
+    if not hasattr(request, 'pay_option_details') or request.pay_option_details is None:
+        return
+    has_qris = False
+    if isinstance(request.pay_option_details, list):
+        for pay_option_detail in request.pay_option_details:
+            if hasattr(pay_option_detail, 'pay_option') and pay_option_detail.pay_option == 'NETWORK_PAY_PG_QRIS':
+                has_qris = True
+                break
+    if not has_qris:
+        return
+    partner_reference_no = _trim_str(getattr(request, 'partner_reference_no', None))
+    if _rune_len(partner_reference_no) > 25:
+        raise ApiException(status=0, contexts=[
+            _ctx(
+                'partnerReferenceNo',
+                'partnerReferenceNo must be at most 25 characters when payOption is NETWORK_PAY_PG_QRIS',
+            )
+        ])
+
+
 def validate_sandbox_pay_method_and_pay_option(request: Any) -> None:
     if request is None or not _is_sandbox():
         return
     pay_option_details = getattr(request, 'pay_option_details', None)
     if not pay_option_details or not isinstance(pay_option_details, list):
         return
+    allowed_methods = 'BALANCE, CREDIT_CARD, DEBIT_CARD, VIRTUAL_ACCOUNT, NETWORK_PAY'
+    allowed_options = 'CARD, QRIS, BRI, PANI, CIMB, BTPN, BSI_PAYMENT'
     for i, detail in enumerate(pay_option_details):
         if not detail:
             continue
@@ -156,8 +292,8 @@ def validate_sandbox_pay_method_and_pay_option(request: Any) -> None:
                     _ctx(
                         f'payOptionDetails[{i}].payMethod',
                         (
-                            f'In sandbox, payMethod must be one of [{", ".join(sorted(SANDBOX_ALLOWED_PAY_METHODS))}]; '
-                            f'got {pm_str}'
+                            f'in sandbox, payMethod must be one of [{allowed_methods}]; '
+                            f'got {pm_str!r} in payOptionDetails[{i}]'
                         ),
                     )
                 ])
@@ -168,8 +304,8 @@ def validate_sandbox_pay_method_and_pay_option(request: Any) -> None:
                     _ctx(
                         f'payOptionDetails[{i}].payOption',
                         (
-                            f'In sandbox, payOption must be one of [{", ".join(sorted(SANDBOX_ALLOWED_PAY_OPTIONS))}] '
-                            f'(or suffix like VIRTUAL_ACCOUNT_BRI); got {po_str}'
+                            f'in sandbox, payOption must be one of [{allowed_options}] '
+                            f'(or suffix like VIRTUAL_ACCOUNT_BRI); got {po_str!r} in payOptionDetails[{i}]'
                         ),
                     )
                 ])
@@ -177,6 +313,8 @@ def validate_sandbox_pay_method_and_pay_option(request: Any) -> None:
 
 def validate_conditional_pay_option_additional_info_create_order_request(request: Any) -> None:
     if request is None:
+        return
+    if request.__class__.__name__ == 'CreateOrderByRedirectRequest':
         return
     pay_option_details = getattr(request, 'pay_option_details', None)
     if not pay_option_details or not isinstance(pay_option_details, list):
@@ -195,7 +333,7 @@ def validate_conditional_pay_option_additional_info_create_order_request(request
             phone_raw = getattr(additional_info, 'phone_number', None)
         phone_number = _trim_str(phone_raw)
 
-        is_card = pay_method in CREDIT_DEBIT_CARD_PAY_METHODS or pay_option == NETWORK_PAY_PG_CARD
+        is_card = pay_method in CARD_PAY_METHODS or pay_option == NETWORK_PAY_PG_CARD
         is_ewallet = pay_option in EWALLET_PAY_OPTIONS
 
         if is_card or is_ewallet:
@@ -237,14 +375,14 @@ def validate_optional_fields_with_required_nested_create_order_request(request: 
             contexts.append(
                 _ctx(
                     'additionalInfo.order.buyer.externalUserType',
-                    'externalUserType is required when externalUserId is filled',
+                    'additionalInfo.order.buyer.externalUserType is required when externalUserId is filled',
                 )
             )
         if has_type and not has_id:
             contexts.append(
                 _ctx(
                     'additionalInfo.order.buyer.externalUserId',
-                    'externalUserId is required when externalUserType is filled',
+                    'additionalInfo.order.buyer.externalUserId is required when externalUserType is filled',
                 )
             )
 
@@ -253,13 +391,35 @@ def validate_optional_fields_with_required_nested_create_order_request(request: 
         for i, g in enumerate(goods):
             if not g:
                 continue
-            name = _trim_str(getattr(g, 'name', None))
-            if not name:
+            prefix = f'additionalInfo.order.goods[{i}]'
+            if not _trim_str(getattr(g, 'name', None)):
+                contexts.append(_ctx(f'{prefix}.name', f'{prefix}.name is required when goods is filled'))
+            if not _trim_str(getattr(g, 'merchant_goods_id', None)):
                 contexts.append(
-                    _ctx(
-                        f'additionalInfo.order.goods[{i}].name',
-                        'name is required when goods is filled',
-                    )
+                    _ctx(f'{prefix}.merchantGoodsId', f'{prefix}.merchantGoodsId is required when goods is filled')
+                )
+            if not _trim_str(getattr(g, 'description', None)):
+                contexts.append(
+                    _ctx(f'{prefix}.description', f'{prefix}.description is required when goods is filled')
+                )
+            if not _trim_str(getattr(g, 'category', None)):
+                contexts.append(
+                    _ctx(f'{prefix}.category', f'{prefix}.category is required when goods is filled')
+                )
+            if not _trim_str(getattr(g, 'quantity', None)):
+                contexts.append(
+                    _ctx(f'{prefix}.quantity', f'{prefix}.quantity is required when goods is filled')
+                )
+            price = getattr(g, 'price', None)
+            price_value = _trim_str(getattr(price, 'value', None)) if price is not None else ''
+            price_currency = _trim_str(getattr(price, 'currency', None)) if price is not None else ''
+            if not price_value:
+                contexts.append(
+                    _ctx(f'{prefix}.price.value', f'{prefix}.price.value is required when goods is filled')
+                )
+            if not price_currency:
+                contexts.append(
+                    _ctx(f'{prefix}.price.currency', f'{prefix}.price.currency is required when goods is filled')
                 )
 
     shipping_info = getattr(order, 'shipping_info', None)
@@ -267,14 +427,25 @@ def validate_optional_fields_with_required_nested_create_order_request(request: 
         for i, s in enumerate(shipping_info):
             if not s:
                 continue
-            first_name = _trim_str(getattr(s, 'first_name', None))
-            if not first_name:
-                contexts.append(
-                    _ctx(
-                        f'additionalInfo.order.shippingInfo[{i}].firstName',
-                        'firstName is required when shippingInfo is filled',
+            prefix = f'additionalInfo.order.shippingInfo[{i}]'
+            required_fields = [
+                ('merchant_shipping_id', 'merchantShippingId'),
+                ('country_name', 'countryName'),
+                ('state_name', 'stateName'),
+                ('city_name', 'cityName'),
+                ('address1', 'address1'),
+                ('first_name', 'firstName'),
+                ('last_name', 'lastName'),
+                ('zip_code', 'zipCode'),
+            ]
+            for attr, camel in required_fields:
+                if not _trim_str(getattr(s, attr, None)):
+                    contexts.append(
+                        _ctx(
+                            f'{prefix}.{camel}',
+                            f'{prefix}.{camel} is required when shippingInfo is filled',
+                        )
                     )
-                )
 
     if contexts:
         raise ApiException(status=0, contexts=contexts)
@@ -282,36 +453,46 @@ def validate_optional_fields_with_required_nested_create_order_request(request: 
 
 validation_registry: Dict[str, List[Callable[[Any], None]]] = {
     'CreateOrderByApiRequest': [
+        default_source_platform,
         validate_additional_info_required,
+        validate_required_additional_info_fields_not_empty,
         validate_money_value_pattern,
+        validate_sandbox_amount,
         validate_valid_up_to_create_order_request,
         validate_external_store_id_for_qris,
-        validate_sandbox_pay_method_and_pay_option,
+        validate_partner_reference_no_for_qris,
         validate_conditional_pay_option_additional_info_create_order_request,
+        validate_sandbox_pay_method_and_pay_option,
         validate_optional_fields_with_required_nested_create_order_request,
     ],
     'CreateOrderByRedirectRequest': [
+        default_source_platform,
         validate_additional_info_required,
+        validate_required_additional_info_fields_not_empty,
         validate_money_value_pattern,
+        validate_sandbox_amount,
         validate_valid_up_to_create_order_request,
         validate_sandbox_pay_method_and_pay_option,
-        validate_conditional_pay_option_additional_info_create_order_request,
         validate_optional_fields_with_required_nested_create_order_request,
     ],
     'CreateOrderRequest': [
+        default_source_platform,
         validate_additional_info_required,
+        validate_required_additional_info_fields_not_empty,
         validate_money_value_pattern,
+        validate_sandbox_amount,
         validate_valid_up_to_create_order_request,
         validate_external_store_id_for_qris,
-        validate_sandbox_pay_method_and_pay_option,
+        validate_partner_reference_no_for_qris,
         validate_conditional_pay_option_additional_info_create_order_request,
+        validate_sandbox_pay_method_and_pay_option,
         validate_optional_fields_with_required_nested_create_order_request,
     ],
 }
 
 
 def custom_validation(request: Any) -> None:
-    """Run all validators for the request type and aggregate client validation contexts."""
+    """Run all validators for the request type and aggregate as validation failed: ..."""
     if request is None:
         return
 
@@ -320,14 +501,119 @@ def custom_validation(request: Any) -> None:
         return
 
     aggregated: List[Dict[str, str]] = []
+    messages: List[str] = []
     for validator in validation_registry[class_name]:
         try:
             validator(request)
         except ApiException as e:
             if e.contexts:
                 aggregated.extend(e.contexts)
+                messages.extend(c.get('message', '') for c in e.contexts if c.get('message'))
+            elif e.reason:
+                messages.append(str(e.reason))
             else:
                 raise
 
-    if aggregated:
-        raise ApiException(status=0, contexts=aggregated)
+    if messages:
+        raise ApiException(
+            status=0,
+            reason=f"validation failed: {'; '.join(messages)}",
+            contexts=aggregated or None,
+        )
+
+
+def custom_validation_response(request: Any, response: Any) -> None:
+    """Augment CreateOrder responses in sandbox (QRIS / subMerchantId guidance)."""
+    if not _is_sandbox() or request is None or response is None:
+        return
+    if not hasattr(response, 'response_message'):
+        return
+
+    # SUCCESS QRIS hint ONLY for CreateOrderByRedirectRequest without externalStoreId
+    if request.__class__.__name__ == 'CreateOrderByRedirectRequest':
+        external_store_id = getattr(request, 'external_store_id', None)
+        if not (external_store_id and str(external_store_id).strip()):
+            object.__setattr__(
+                response,
+                'response_message',
+                _append_sandbox_hint(
+                    response.response_message,
+                    SANDBOX_QRIS_GUIDANCE_HINT_SUCCESS,
+                    'externalstoreid',
+                ),
+            )
+
+    sub_merchant_id = getattr(request, 'sub_merchant_id', None)
+    if sub_merchant_id and str(sub_merchant_id).strip():
+        response_code = getattr(response, 'response_code', None)
+        if _is_business_error_response(response_code):
+            object.__setattr__(
+                response,
+                'response_message',
+                _append_sandbox_hint(
+                    response.response_message,
+                    SANDBOX_SUB_MERCHANT_ID_GUIDANCE_HINT,
+                    'submerchantid',
+                    'externaldivisionid',
+                ),
+            )
+
+
+def enrich_create_order_error(request: Any, exc: ApiException) -> ApiException:
+    """Enrich CreateOrder HTTP errors in sandbox (keeps exception; updates reason / data)."""
+    if not _is_sandbox() or request is None or exc is None:
+        return exc
+
+    body = exc.body
+    if body is None or body == '':
+        return exc
+
+    try:
+        if isinstance(body, (bytes, bytearray)):
+            body_str = body.decode('utf-8')
+        else:
+            body_str = str(body)
+        payload = json.loads(body_str)
+    except (TypeError, ValueError, UnicodeDecodeError):
+        return exc
+    if not isinstance(payload, dict):
+        return exc
+
+    response = SimpleNamespace(
+        response_code=str(payload.get('responseCode') or ''),
+        response_message=str(payload.get('responseMessage') or ''),
+        partner_reference_no=str(payload.get('partnerReferenceNo') or ''),
+    )
+    custom_validation_response(request, response)
+
+    reason = exc.reason
+    # ERROR QRIS hint on exception reason for Redirect without externalStoreId (Go puts on err string)
+    if request.__class__.__name__ == 'CreateOrderByRedirectRequest':
+        external_store_id = getattr(request, 'external_store_id', None)
+        if not (external_store_id and str(external_store_id).strip()):
+            hinted = _append_sandbox_hint(
+                '',
+                SANDBOX_QRIS_GUIDANCE_HINT_ERROR,
+                'externalstoreid',
+                'partnerreferenceno',
+            )
+            status = exc.status if exc.status is not None else ''
+            reason = f'{status}: {hinted}'
+
+    enriched_data = {
+        'responseCode': response.response_code,
+        'responseMessage': response.response_message,
+        'partnerReferenceNo': response.partner_reference_no,
+    }
+    if isinstance(exc.data, dict):
+        enriched_data = {**exc.data, **enriched_data}
+
+    # Preserve subclass (e.g. NotFoundException for HTTP 404) so callers can catch by type
+    enriched = type(exc)(
+        status=exc.status,
+        reason=reason,
+        body=exc.body,
+        data=enriched_data,
+    )
+    enriched.headers = getattr(exc, 'headers', None)
+    return enriched

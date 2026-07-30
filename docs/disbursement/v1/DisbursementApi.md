@@ -420,6 +420,15 @@ enum_value = ChargeTarget.DIVISION
 
 
 
+## AccountType
+| Value | Description |
+|-------|-------------|
+| `MERCHANT_DEPOSIT_ACCOUNT` |  |
+| `SETTLEMENT_ACCOUNT` |  |
+| `DIVISION_DEPOSIT_ACCOUNT` |  |
+
+
+
 ## LatestTransactionStatus
 | Value | Description |
 |-------|-------------|

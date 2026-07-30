@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **partner_reference_no** | **str** | Unique transaction identifier on partner system which assigned to each transaction<br /> Notes:<br /> If the partner receives a timeout or an unexpected response from DANA and partner expects to perform retry request to DANA, please use the partnerReferenceNo that is the same as the one used in the transaction request process before  | [optional] 
 **customer_number** | **str** | Customer account number, in format 628xxx | 
-**account_type** | **str** | Customer account type | [optional] 
+**account_type** | **str** | Customer account type  | [optional] 
 **beneficiary_account_number** | **str** | Beneficiary account number | 
 **beneficiary_bank_code** | **str** | Beneficiary Bank code | 
 **amount** | [**Money**](Money.md) | Amount. Contains two sub-fields:<br /> 1. Value: Transaction amount, including the cents<br /> 2. Currency: Currency code based on ISO  | 

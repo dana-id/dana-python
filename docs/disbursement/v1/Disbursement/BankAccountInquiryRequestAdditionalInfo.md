@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **charge_target** | **str** | Additional information of charge target. The values are:<br /> • null<br /> • DIVISION<br /> • MERCHANT<br /> Notes: If the value is DIVISION, externalDivisionId will be Mandatory  | [optional] 
 **beneficiary_bank_code** | **str** | Additional information of beneficiary Bank code | 
 **beneficiary_account_name** | **str** | Additional information of beneficiary account name for validation purpose | [optional] 
-**account_type** | **str** | Additional information of account type | [optional] 
+**account_type** | **str** | Additional information of account type  | [optional] 
 **access_token** | **str** | Contains customer token, which has been obtained from binding process, refer to Account Binding &amp; Unbinding documentation<br /> If request is coming from user interaction, this field is mandatory. If not, just filled customerNumber  | [optional] 
 
 ## Example

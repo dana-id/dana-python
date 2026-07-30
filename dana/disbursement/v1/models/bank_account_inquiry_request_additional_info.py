@@ -51,7 +51,7 @@ class BankAccountInquiryRequestAdditionalInfo(BaseModel, BaseSdkModel):
     charge_target: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of charge target. The values are:<br> • null<br> • DIVISION<br> • MERCHANT<br> Notes: If the value is DIVISION, externalDivisionId will be Mandatory ")
     beneficiary_bank_code: Annotated[str, Field(strict=True, max_length=8)] = Field(description="Additional information of beneficiary Bank code")
     beneficiary_account_name: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of beneficiary account name for validation purpose")
-    account_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of account type")
+    account_type: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(default=None, description="Additional information of account type ")
     access_token: Optional[Annotated[str, Field(strict=True, max_length=512)]] = Field(default=None, description="Contains customer token, which has been obtained from binding process, refer to Account Binding & Unbinding documentation<br> If request is coming from user interaction, this field is mandatory. If not, just filled customerNumber ")
     __properties: ClassVar[List[str]] = ["fundType", "externalDivisionId", "chargeTarget", "beneficiaryBankCode", "beneficiaryAccountName", "accountType", "accessToken"]
 
@@ -63,6 +63,16 @@ class BankAccountInquiryRequestAdditionalInfo(BaseModel, BaseSdkModel):
 
         if value not in set(['DIVISION', 'MERCHANT']):
             raise ValueError("must be one of enum values ('DIVISION', 'MERCHANT')")
+        return value
+
+    @field_validator('account_type')
+    def account_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['MERCHANT_DEPOSIT_ACCOUNT', 'SETTLEMENT_ACCOUNT', 'DIVISION_DEPOSIT_ACCOUNT']):
+            raise ValueError("must be one of enum values ('MERCHANT_DEPOSIT_ACCOUNT', 'SETTLEMENT_ACCOUNT', 'DIVISION_DEPOSIT_ACCOUNT')")
         return value
 
     model_config = ConfigDict(

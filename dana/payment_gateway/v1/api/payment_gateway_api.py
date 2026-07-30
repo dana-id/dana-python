@@ -39,7 +39,12 @@ from dana.rest import RESTResponseType
 from dana.base.types import RequestSerialized
 from dana.base.model import BaseSdkModel
 from dana.utils.snap_header import SnapHeader
-from dana.payment_gateway.v1.custom_validation import custom_validation
+from dana.payment_gateway.v1.custom_validation import (
+    custom_validation,
+    custom_validation_response,
+    enrich_create_order_error,
+)
+from dana.exceptions import ApiException
 from typing import Union
 from dana.payment_gateway.v1.models.create_order_by_redirect_request import CreateOrderByRedirectRequest
 from dana.payment_gateway.v1.models.create_order_by_api_request import CreateOrderByApiRequest
@@ -106,15 +111,28 @@ class PaymentGatewayApi:
             '200': "CancelOrderResponse",
             '202': "CancelOrderResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(cancel_order_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'cancel_order' == 'create_order':
+                try:
+                    raise enrich_create_order_error(cancel_order_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def cancel_order_with_http_info(
         self,
@@ -168,15 +186,28 @@ class PaymentGatewayApi:
             '200': "CancelOrderResponse",
             '202': "CancelOrderResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(cancel_order_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'cancel_order' == 'create_order':
+                try:
+                    raise enrich_create_order_error(cancel_order_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def cancel_order_without_preload_content(
         self,
@@ -375,15 +406,28 @@ class PaymentGatewayApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ConsultPayResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(consult_pay_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'consult_pay' == 'create_order':
+                try:
+                    raise enrich_create_order_error(consult_pay_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def consult_pay_with_http_info(
         self,
@@ -436,15 +480,28 @@ class PaymentGatewayApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ConsultPayResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(consult_pay_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'consult_pay' == 'create_order':
+                try:
+                    raise enrich_create_order_error(consult_pay_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def consult_pay_without_preload_content(
         self,
@@ -643,15 +700,28 @@ class PaymentGatewayApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "CreateOrderResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(create_order_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'create_order' == 'create_order':
+                try:
+                    raise enrich_create_order_error(create_order_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def create_order_with_http_info(
         self,
@@ -704,15 +774,28 @@ class PaymentGatewayApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "CreateOrderResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(create_order_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'create_order' == 'create_order':
+                try:
+                    raise enrich_create_order_error(create_order_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def create_order_without_preload_content(
         self,
@@ -911,15 +994,28 @@ class PaymentGatewayApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "QueryPaymentResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(query_payment_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'query_payment' == 'create_order':
+                try:
+                    raise enrich_create_order_error(query_payment_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def query_payment_with_http_info(
         self,
@@ -972,15 +1068,28 @@ class PaymentGatewayApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "QueryPaymentResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(query_payment_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'query_payment' == 'create_order':
+                try:
+                    raise enrich_create_order_error(query_payment_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def query_payment_without_preload_content(
         self,
@@ -1179,15 +1288,28 @@ class PaymentGatewayApi:
             '200': "RefundOrderResponse",
             '202': "RefundOrderResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(refund_order_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'refund_order' == 'create_order':
+                try:
+                    raise enrich_create_order_error(refund_order_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def refund_order_with_http_info(
         self,
@@ -1241,15 +1363,28 @@ class PaymentGatewayApi:
             '200': "RefundOrderResponse",
             '202': "RefundOrderResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(refund_order_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'refund_order' == 'create_order':
+                try:
+                    raise enrich_create_order_error(refund_order_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
     @validate_call
     def refund_order_without_preload_content(
         self,

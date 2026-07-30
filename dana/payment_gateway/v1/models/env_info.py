@@ -53,7 +53,7 @@ class EnvInfo(BaseModel, BaseSdkModel):
     os_type: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Operating system type")
     app_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="App version")
     sdk_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="SDK version")
-    source_platform: Annotated[str, Field(strict=True, max_length=32)] = Field(description="The source platform is always independent payment gateway (IPG)")
+    source_platform: Optional[Annotated[str, Field(strict=True, max_length=32)]] = Field(default='IPG', description="The source platform is always independent payment gateway (IPG). Defaults to IPG when omitted.")
     order_os_type: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Order operating system type")
     merchant_app_version: Optional[Annotated[str, Field(strict=True, max_length=128)]] = Field(default=None, description="Merchant App version")
     terminal_type: Annotated[str, Field(strict=True, max_length=32)] = Field(description="Terminal type. The enums:<br> * APP - Mobile Application<br> * WEB - Browser Web<br> * WAP - Mobile Wap<br> * SYSTEM - System Call<br> ")
@@ -65,8 +65,9 @@ class EnvInfo(BaseModel, BaseSdkModel):
     @field_validator('source_platform')
     def source_platform_validate_enum(cls, value):
         """Validates the enum"""
-        if value == "":
+        if not value:
             return value
+
         if value not in set(['IPG']):
             raise ValueError("must be one of enum values ('IPG')")
         return value
@@ -149,7 +150,7 @@ class EnvInfo(BaseModel, BaseSdkModel):
             "osType": obj.get("osType"),
             "appVersion": obj.get("appVersion"),
             "sdkVersion": obj.get("sdkVersion"),
-            "sourcePlatform": obj.get("sourcePlatform"),
+            "sourcePlatform": obj.get("sourcePlatform") if obj.get("sourcePlatform") is not None else 'IPG',
             "orderOsType": obj.get("orderOsType"),
             "merchantAppVersion": obj.get("merchantAppVersion"),
             "terminalType": obj.get("terminalType"),

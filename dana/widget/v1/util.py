@@ -182,11 +182,14 @@ class Util:
                 except TypeError:
                     seamless_data = json.loads(json.dumps(seamless_data))
             
-            # Ensure seamless_data is a dict and convert mobileNumber to mobile if needed
+            # Ensure seamless_data is a dict and convert mobileNumber/mobile_number to mobile if needed
             if isinstance(seamless_data, dict):
                 if 'mobileNumber' in seamless_data:
                     seamless_data['mobile'] = seamless_data['mobileNumber']
                     del seamless_data['mobileNumber']
+                if 'mobile_number' in seamless_data:
+                    seamless_data['mobile'] = seamless_data['mobile_number']
+                    del seamless_data['mobile_number']
                 
                 if mode == Mode.DEEPLINK:
                     seamless_data['externalUid'] = getattr(data, 'external_id', '')
@@ -202,8 +205,8 @@ class Util:
         # Remove None values
         url_params = {k: v for k, v in url_params.items() if v is not None}
         
-        # Build the final URL
-        return base_url + '?' + urllib.parse.urlencode(url_params)
+        # Build the final URL (RFC3986 quote for seamlessData/seamlessSign parity with Go/PHP)
+        return base_url + '?' + urllib.parse.urlencode(url_params, quote_via=urllib.parse.quote)
     
     @staticmethod
     def generate_seamless_sign(seamless_data: Dict[str, Any], private_key: Optional[str] = None, private_key_path: Optional[str] = None) -> str:

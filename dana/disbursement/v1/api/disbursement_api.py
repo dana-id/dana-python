@@ -51,6 +51,12 @@ from dana.rest import RESTResponseType
 from dana.base.types import RequestSerialized
 from dana.base.model import BaseSdkModel
 from dana.utils.snap_header import SnapHeader
+from dana.disbursement.v1.custom_validation import (
+    custom_validation,
+    custom_validation_response,
+    enrich_transfer_to_dana_error,
+)
+from dana.exceptions import ApiException
 
 
 class DisbursementApi:
@@ -122,15 +128,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "BankAccountInquiryResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(bank_account_inquiry_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'bank_account_inquiry' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(bank_account_inquiry_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -189,15 +208,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "BankAccountInquiryResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(bank_account_inquiry_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'bank_account_inquiry' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(bank_account_inquiry_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -292,6 +324,12 @@ class DisbursementApi:
         # process the form parameters
         # process the body parameter
         if bank_account_inquiry_request is not None:
+            # Run custom validations / sandbox mutations
+            try:
+                custom_validation(bank_account_inquiry_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                pass
             _body_params = bank_account_inquiry_request
 
 
@@ -410,15 +448,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "DanaAccountInquiryResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(dana_account_inquiry_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'dana_account_inquiry' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(dana_account_inquiry_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -477,15 +528,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "DanaAccountInquiryResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(dana_account_inquiry_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'dana_account_inquiry' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(dana_account_inquiry_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -580,6 +644,12 @@ class DisbursementApi:
         # process the form parameters
         # process the body parameter
         if dana_account_inquiry_request is not None:
+            # Run custom validations / sandbox mutations
+            try:
+                custom_validation(dana_account_inquiry_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                pass
             _body_params = dana_account_inquiry_request
 
 
@@ -699,15 +769,28 @@ class DisbursementApi:
             '200': "TransferToBankResponse",
             '202': "TransferToBankResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(transfer_to_bank_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'transfer_to_bank' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(transfer_to_bank_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -767,15 +850,28 @@ class DisbursementApi:
             '200': "TransferToBankResponse",
             '202': "TransferToBankResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(transfer_to_bank_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'transfer_to_bank' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(transfer_to_bank_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -871,6 +967,12 @@ class DisbursementApi:
         # process the form parameters
         # process the body parameter
         if transfer_to_bank_request is not None:
+            # Run custom validations / sandbox mutations
+            try:
+                custom_validation(transfer_to_bank_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                pass
             _body_params = transfer_to_bank_request
 
 
@@ -989,15 +1091,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "TransferToBankInquiryStatusResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(transfer_to_bank_inquiry_status_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'transfer_to_bank_inquiry_status' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(transfer_to_bank_inquiry_status_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -1056,15 +1171,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "TransferToBankInquiryStatusResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(transfer_to_bank_inquiry_status_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'transfer_to_bank_inquiry_status' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(transfer_to_bank_inquiry_status_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -1159,6 +1287,12 @@ class DisbursementApi:
         # process the form parameters
         # process the body parameter
         if transfer_to_bank_inquiry_status_request is not None:
+            # Run custom validations / sandbox mutations
+            try:
+                custom_validation(transfer_to_bank_inquiry_status_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                pass
             _body_params = transfer_to_bank_inquiry_status_request
 
 
@@ -1277,15 +1411,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "TransferToDanaResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(transfer_to_dana_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'transfer_to_dana' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(transfer_to_dana_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -1344,15 +1491,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "TransferToDanaResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(transfer_to_dana_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'transfer_to_dana' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(transfer_to_dana_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -1447,6 +1607,12 @@ class DisbursementApi:
         # process the form parameters
         # process the body parameter
         if transfer_to_dana_request is not None:
+            # Run custom validations / sandbox mutations
+            try:
+                custom_validation(transfer_to_dana_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                pass
             _body_params = transfer_to_dana_request
 
 
@@ -1565,15 +1731,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "TransferToDanaInquiryStatusResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(transfer_to_dana_inquiry_status_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response.data
+        except ApiException as e:
+            if 'transfer_to_dana_inquiry_status' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(transfer_to_dana_inquiry_status_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -1632,15 +1811,28 @@ class DisbursementApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "TransferToDanaInquiryStatusResponse",
         }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        try:
+            response_data = self.api_client.call_api(
+                *_param,
+                _request_timeout=_request_timeout
+            )
+            response_data.read()
+            api_response = self.api_client.response_deserialize(
+                response_data=response_data,
+                response_types_map=_response_types_map,
+            )
+            try:
+                custom_validation_response(transfer_to_dana_inquiry_status_request, api_response.data)
+            except (ImportError, ModuleNotFoundError, NameError):
+                pass
+            return api_response
+        except ApiException as e:
+            if 'transfer_to_dana_inquiry_status' == 'transfer_to_dana':
+                try:
+                    raise enrich_transfer_to_dana_error(transfer_to_dana_inquiry_status_request, e)
+                except (ImportError, ModuleNotFoundError, NameError):
+                    raise e
+            raise e
 
 
     @validate_call
@@ -1735,6 +1927,12 @@ class DisbursementApi:
         # process the form parameters
         # process the body parameter
         if transfer_to_dana_inquiry_status_request is not None:
+            # Run custom validations / sandbox mutations
+            try:
+                custom_validation(transfer_to_dana_inquiry_status_request)
+            except (ImportError, ModuleNotFoundError, NameError):
+                # If CustomValidation doesn't exist for this domain, skip it
+                pass
             _body_params = transfer_to_dana_inquiry_status_request
 
 
