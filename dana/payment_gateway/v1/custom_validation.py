@@ -53,16 +53,18 @@ EWALLET_PAY_OPTIONS: Set[str] = {
 
 SANDBOX_QRIS_GUIDANCE_HINT_SUCCESS = (
     'If you want to use QRIS and it is not showing in payment methods, make sure you already fill '
-    'externalStoreId. See https://dashboard.dana.id/sandbox/submerchants in the external shop id section.'
+    'externalStoreId. See https://dashboard.dana.id/sandbox/submerchants in the external shop id section. '
+    'For QRIS, partnerReferenceNo max is 25 chars.'
 )
 SANDBOX_QRIS_GUIDANCE_HINT_ERROR = (
     'If you want to use QRIS, make sure you fill externalStoreId. See '
     'https://dashboard.dana.id/sandbox/submerchants in the external shop id section. '
     'For QRIS, partnerReferenceNo max is 25 chars.'
 )
-SANDBOX_SUB_MERCHANT_ID_GUIDANCE_HINT = (
-    'Make sure your subMerchantId exists. You can see it at '
-    'https://dashboard.dana.id/sandbox/submerchants in the External Division ID section.'
+SANDBOX_NOT_FOUND_STORE_GUIDANCE_HINT = (
+    'If you are using QRIS / making order for your store / submerchant, make sure externalStoreId / '
+    'subMerchant exists. See https://dashboard.dana.id/sandbox/submerchants external shop id section '
+    'for external store id and external division id section for submerchant'
 )
 
 
@@ -126,6 +128,81 @@ def _append_sandbox_hint(
 def _is_business_error_response(response_code: Any) -> bool:
     code = str(response_code or '').strip()
     return code == '' or not code.startswith('200')
+
+
+def _is_successful_snap_response(response_code: Any) -> bool:
+    return str(response_code or '').strip().startswith('200')
+
+
+def _should_append_store_submerchant_hint(response_code: Any, response_message: Any) -> bool:
+    msg = str(response_message or '').lower().strip()
+    if 'invalid merchant' in msg:
+        return True
+    return str(response_code or '').strip() == '4045408'
+
+
+def _should_append_qris_error_hint(response_code: Any, response_message: Any) -> bool:
+    code = str(response_code or '').strip()
+    if code.startswith('500'):
+        return True
+    if not code.startswith('400'):
+        return False
+    msg = str(response_message or '').lower()
+    return any(marker in msg for marker in ('reference', 'store', 'merchant'))
+
+
+def _apply_sandbox_create_order_hints(request: Any, response: Any) -> None:
+    """Attach sandbox tips by SNAP response class (mirrors Go applySandboxCreateOrderHints)."""
+    if response is None or not hasattr(response, 'response_message'):
+        return
+
+    response_code = getattr(response, 'response_code', None)
+    response_message = getattr(response, 'response_message', None)
+
+    code = str(response_code or '').strip()
+
+    if _is_successful_snap_response(code):
+        if request.__class__.__name__ == 'CreateOrderByRedirectRequest':
+            external_store_id = getattr(request, 'external_store_id', None)
+            if not (external_store_id and str(external_store_id).strip()):
+                object.__setattr__(
+                    response,
+                    'response_message',
+                    _append_sandbox_hint(
+                        response.response_message,
+                        SANDBOX_QRIS_GUIDANCE_HINT_SUCCESS,
+                        'externalstoreid',
+                        'partnerreferenceno',
+                    ),
+                )
+        return
+
+    if _should_append_store_submerchant_hint(code, response_message):
+        object.__setattr__(
+            response,
+            'response_message',
+            _append_sandbox_hint(
+                response.response_message,
+                SANDBOX_NOT_FOUND_STORE_GUIDANCE_HINT,
+                'externalstoreid',
+                'submerchant',
+                'external division id',
+                'external shop id',
+            ),
+        )
+        return
+
+    if _should_append_qris_error_hint(code, response_message):
+        object.__setattr__(
+            response,
+            'response_message',
+            _append_sandbox_hint(
+                response.response_message,
+                SANDBOX_QRIS_GUIDANCE_HINT_ERROR,
+                'externalstoreid',
+                'partnerreferenceno',
+            ),
+        )
 
 
 def validate_additional_info_required(request: Any) -> None:
@@ -523,40 +600,12 @@ def custom_validation(request: Any) -> None:
 
 
 def custom_validation_response(request: Any, response: Any) -> None:
-    """Augment CreateOrder responses in sandbox (QRIS / subMerchantId guidance)."""
+    """Augment CreateOrder responses in sandbox with code-specific tips."""
     if not _is_sandbox() or request is None or response is None:
         return
     if not hasattr(response, 'response_message'):
         return
-
-    # SUCCESS QRIS hint ONLY for CreateOrderByRedirectRequest without externalStoreId
-    if request.__class__.__name__ == 'CreateOrderByRedirectRequest':
-        external_store_id = getattr(request, 'external_store_id', None)
-        if not (external_store_id and str(external_store_id).strip()):
-            object.__setattr__(
-                response,
-                'response_message',
-                _append_sandbox_hint(
-                    response.response_message,
-                    SANDBOX_QRIS_GUIDANCE_HINT_SUCCESS,
-                    'externalstoreid',
-                ),
-            )
-
-    sub_merchant_id = getattr(request, 'sub_merchant_id', None)
-    if sub_merchant_id and str(sub_merchant_id).strip():
-        response_code = getattr(response, 'response_code', None)
-        if _is_business_error_response(response_code):
-            object.__setattr__(
-                response,
-                'response_message',
-                _append_sandbox_hint(
-                    response.response_message,
-                    SANDBOX_SUB_MERCHANT_ID_GUIDANCE_HINT,
-                    'submerchantid',
-                    'externaldivisionid',
-                ),
-            )
+    _apply_sandbox_create_order_hints(request, response)
 
 
 def enrich_create_order_error(request: Any, exc: ApiException) -> ApiException:
@@ -584,21 +633,13 @@ def enrich_create_order_error(request: Any, exc: ApiException) -> ApiException:
         response_message=str(payload.get('responseMessage') or ''),
         partner_reference_no=str(payload.get('partnerReferenceNo') or ''),
     )
-    custom_validation_response(request, response)
+    original_msg = response.response_message
+    _apply_sandbox_create_order_hints(request, response)
 
     reason = exc.reason
-    # ERROR QRIS hint on exception reason for Redirect without externalStoreId (Go puts on err string)
-    if request.__class__.__name__ == 'CreateOrderByRedirectRequest':
-        external_store_id = getattr(request, 'external_store_id', None)
-        if not (external_store_id and str(external_store_id).strip()):
-            hinted = _append_sandbox_hint(
-                '',
-                SANDBOX_QRIS_GUIDANCE_HINT_ERROR,
-                'externalstoreid',
-                'partnerreferenceno',
-            )
-            status = exc.status if exc.status is not None else ''
-            reason = f'{status}: {hinted}'
+    if response.response_message and response.response_message != original_msg:
+        status = exc.status if exc.status is not None else ''
+        reason = f'{status}: {response.response_message}'
 
     enriched_data = {
         'responseCode': response.response_code,
@@ -608,11 +649,20 @@ def enrich_create_order_error(request: Any, exc: ApiException) -> ApiException:
     if isinstance(exc.data, dict):
         enriched_data = {**exc.data, **enriched_data}
 
+    enriched_body = body_str
+    if response.response_message != original_msg:
+        enriched_payload = dict(payload)
+        enriched_payload['responseCode'] = enriched_data['responseCode']
+        enriched_payload['responseMessage'] = enriched_data['responseMessage']
+        if enriched_data.get('partnerReferenceNo'):
+            enriched_payload['partnerReferenceNo'] = enriched_data['partnerReferenceNo']
+        enriched_body = json.dumps(enriched_payload)
+
     # Preserve subclass (e.g. NotFoundException for HTTP 404) so callers can catch by type
     enriched = type(exc)(
         status=exc.status,
         reason=reason,
-        body=exc.body,
+        body=enriched_body,
         data=enriched_data,
     )
     enriched.headers = getattr(exc, 'headers', None)

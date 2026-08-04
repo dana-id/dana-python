@@ -54,7 +54,7 @@ from dana.utils.snap_header import SnapHeader
 from dana.disbursement.v1.custom_validation import (
     custom_validation,
     custom_validation_response,
-    enrich_transfer_to_dana_error,
+    enrich_disbursement_error,
 )
 from dana.exceptions import ApiException
 
@@ -144,11 +144,10 @@ class DisbursementApi:
                 pass
             return api_response.data
         except ApiException as e:
-            if 'bank_account_inquiry' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(bank_account_inquiry_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(bank_account_inquiry_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -224,11 +223,10 @@ class DisbursementApi:
                 pass
             return api_response
         except ApiException as e:
-            if 'bank_account_inquiry' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(bank_account_inquiry_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(bank_account_inquiry_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -464,11 +462,10 @@ class DisbursementApi:
                 pass
             return api_response.data
         except ApiException as e:
-            if 'dana_account_inquiry' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(dana_account_inquiry_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(dana_account_inquiry_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -544,11 +541,10 @@ class DisbursementApi:
                 pass
             return api_response
         except ApiException as e:
-            if 'dana_account_inquiry' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(dana_account_inquiry_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(dana_account_inquiry_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -785,11 +781,10 @@ class DisbursementApi:
                 pass
             return api_response.data
         except ApiException as e:
-            if 'transfer_to_bank' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(transfer_to_bank_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(transfer_to_bank_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -866,11 +861,10 @@ class DisbursementApi:
                 pass
             return api_response
         except ApiException as e:
-            if 'transfer_to_bank' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(transfer_to_bank_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(transfer_to_bank_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -1107,11 +1101,10 @@ class DisbursementApi:
                 pass
             return api_response.data
         except ApiException as e:
-            if 'transfer_to_bank_inquiry_status' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(transfer_to_bank_inquiry_status_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(transfer_to_bank_inquiry_status_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -1187,11 +1180,10 @@ class DisbursementApi:
                 pass
             return api_response
         except ApiException as e:
-            if 'transfer_to_bank_inquiry_status' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(transfer_to_bank_inquiry_status_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(transfer_to_bank_inquiry_status_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -1427,11 +1419,10 @@ class DisbursementApi:
                 pass
             return api_response.data
         except ApiException as e:
-            if 'transfer_to_dana' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(transfer_to_dana_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(transfer_to_dana_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -1507,11 +1498,10 @@ class DisbursementApi:
                 pass
             return api_response
         except ApiException as e:
-            if 'transfer_to_dana' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(transfer_to_dana_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(transfer_to_dana_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -1747,11 +1737,10 @@ class DisbursementApi:
                 pass
             return api_response.data
         except ApiException as e:
-            if 'transfer_to_dana_inquiry_status' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(transfer_to_dana_inquiry_status_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(transfer_to_dana_inquiry_status_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 
@@ -1827,11 +1816,10 @@ class DisbursementApi:
                 pass
             return api_response
         except ApiException as e:
-            if 'transfer_to_dana_inquiry_status' == 'transfer_to_dana':
-                try:
-                    raise enrich_transfer_to_dana_error(transfer_to_dana_inquiry_status_request, e)
-                except (ImportError, ModuleNotFoundError, NameError):
-                    raise e
+            try:
+                raise enrich_disbursement_error(transfer_to_dana_inquiry_status_request, e)
+            except (ImportError, ModuleNotFoundError, NameError):
+                raise e
             raise e
 
 

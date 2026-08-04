@@ -627,8 +627,8 @@ class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
         assert 'externalstoreid' in msg or 'external_store_id' in msg, (
             f'response_message should hint about externalStoreId when missing, got: {response.response_message}'
         )
-        assert 'partnerreferenceno max is 25 chars' not in msg, (
-            f'SUCCESS hint must not include partnerReferenceNo max (ERROR-only), got: {response.response_message}'
+        assert 'partnerreferenceno max is 25 chars' in msg, (
+            f'SUCCESS hint must include partnerReferenceNo max 25 for QRIS, got: {response.response_message}'
         )
         assert 'dashboard.dana.id/sandbox/submerchants' in msg, (
             f'response_message should link to sandbox submerchants for externalStoreId, got: {response.response_message}'
@@ -653,7 +653,7 @@ class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
                 'response_message should not include sandbox QRIS guidance when external_store_id is set, got: '
                 f'{response.response_message}'
             )
-            assert 'if qris is not showing in payment methods, add externalstoreid' not in (
+            assert 'if you want to use qris' not in (
                 response.response_message.lower()
             ), (
                 'response_message should not include sandbox QRIS hint when external_store_id is set, got: '
@@ -675,10 +675,12 @@ class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
         except ApiException as e:
             combined = f'{e} {getattr(e, "body", "")} {getattr(e, "data", "")}'.lower()
             assert (
-                'submerchantid' in combined
-                or 'externaldivisionid' in combined
+                'submerchant' in combined
+                or 'externalstoreid' in combined
+                or 'external store' in combined
+                or 'external division' in combined
                 or 'dashboard.dana.id/sandbox/submerchants' in combined
-            ), f'response should guide about subMerchantId existence, got: {e}'
+            ), f'response should guide about store/subMerchant on not-found, got: {e}'
             return
 
         code = str(response.response_code or '').strip()
@@ -688,8 +690,11 @@ class TestPaymentGatewaySandboxPayMethodPayOptionValidation:
             )
 
         msg = str(response.response_message or '').lower()
+        # 404* gets the combined store/subMerchant tip
         assert (
-            'submerchantid' in msg
-            or 'externaldivisionid' in msg
+            'submerchant' in msg
+            or 'externalstoreid' in msg
+            or 'external store' in msg
+            or 'external division' in msg
             or 'dashboard.dana.id/sandbox/submerchants' in msg
-        ), f'response_message should guide about subMerchantId existence, got: {response.response_message}'
+        ), f'response_message should guide about store/subMerchant on not-found, got: {response.response_message}'

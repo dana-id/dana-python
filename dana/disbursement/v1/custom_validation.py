@@ -27,15 +27,23 @@ from typing import Any, Callable, Dict, List, Optional
 from dana.exceptions import ApiException
 
 
-SANDBOX_BENEFICIARY_ACCOUNT_NUMBER = '2460888509'
-SANDBOX_BENEFICIARY_BANK_CODE = '014'
-# Sandbox maximum amount (major units) for Disbursement.
-SANDBOX_MAX_AMOUNT = 20000000
 ALLOWED_ACCOUNT_TYPES = frozenset({
     'MERCHANT_DEPOSIT_ACCOUNT',
     'SETTLEMENT_ACCOUNT',
     'DIVISION_DEPOSIT_ACCOUNT',
 })
+
+SANDBOX_POSITIVE_BENEFICIARY_ACCOUNT_NUMBER = '2460888509'
+SANDBOX_POSITIVE_BENEFICIARY_BANK_CODE = '014'
+SANDBOX_MAX_AMOUNT = 20000000
+
+SANDBOX_POSITIVE_BANK_HINT = (
+    f'For testing positive case in sandbox use beneficiaryAccountNumber '
+    f'{SANDBOX_POSITIVE_BENEFICIARY_ACCOUNT_NUMBER} and beneficiaryBankCode '
+    f'{SANDBOX_POSITIVE_BENEFICIARY_BANK_CODE}'
+)
+
+SANDBOX_AMOUNT_MAX_HINT = f'In sandbox, amount.value must not exceed {SANDBOX_MAX_AMOUNT}'
 
 SANDBOX_DANA_BALANCE_LIMIT_HINT = (
     'Make sure DANA balance not exceeding limit of 21000000 after topup'
@@ -62,7 +70,7 @@ def _append_sandbox_hint(
     hint: str,
     *already_present_markers: str,
 ) -> str:
-    """Always append (Go-compatible). Uses markers to avoid duplicates. No 150-char truncate."""
+    """Always append. Uses markers to avoid duplicates. No 150-char truncate."""
     msg = (response_message or '').strip()
     lower_msg = msg.lower()
     for marker in already_present_markers:
@@ -75,30 +83,11 @@ def _append_sandbox_hint(
     return f'{msg}. {hint}'
 
 
-def _is_business_error_response(response_code: Any) -> bool:
-    code = str(response_code or '').strip()
-    return code == '' or not code.startswith('200')
-
-
-def validate_sandbox_amount(request: Any) -> None:
-    """In sandbox, amount.value must not exceed SANDBOX_MAX_AMOUNT."""
-    if request is None or not _is_sandbox():
-        return
-    amount = getattr(request, 'amount', None)
-    if amount is None:
-        return
-    value = getattr(amount, 'value', None)
-    if value is None or str(value).strip() == '':
-        return
-    try:
-        parsed = float(value)
-    except (TypeError, ValueError):
-        return
-    if parsed > SANDBOX_MAX_AMOUNT:
-        raise ApiException(status=0, contexts=[_ctx(
-            'amount.value',
-            f'in sandbox, amount.value must not exceed {SANDBOX_MAX_AMOUNT}; got {value!r}',
-        )])
+def _should_append_dana_balance_hint(response_code: Any, response_message: Any) -> bool:
+    msg = str(response_message or '').lower()
+    if 'exceed' in msg or 'melebihi' in msg:
+        return True
+    return str(response_code or '').strip() == '4033802'
 
 
 def _require_non_empty(value: Any, field_path: str) -> None:
@@ -213,63 +202,6 @@ def validate_account_type_transfer_to_dana(request: Any) -> None:
     _validate_account_type_value(current, 'additionalInfo.accountType')
 
 
-def validate_sandbox_beneficiary_bank_account_inquiry(request: Any) -> None:
-    """In sandbox, beneficiaryAccountNumber must be 2460888509 and beneficiaryBankCode must be 014."""
-    if request is None or not _is_sandbox():
-        return
-    contexts: List[Dict[str, str]] = []
-    account_number = _trim_str(getattr(request, 'beneficiary_account_number', None))
-    if account_number != SANDBOX_BENEFICIARY_ACCOUNT_NUMBER:
-        contexts.append(_ctx(
-            'beneficiaryAccountNumber',
-            (
-                f'in sandbox, beneficiaryAccountNumber must be {SANDBOX_BENEFICIARY_ACCOUNT_NUMBER}; '
-                f'got {getattr(request, "beneficiary_account_number", None)!r}'
-            ),
-        ))
-    additional_info = getattr(request, 'additional_info', None)
-    bank_code = _trim_str(
-        getattr(additional_info, 'beneficiary_bank_code', None) if additional_info is not None else None
-    )
-    if bank_code != SANDBOX_BENEFICIARY_BANK_CODE:
-        contexts.append(_ctx(
-            'additionalInfo.beneficiaryBankCode',
-            (
-                f'in sandbox, additionalInfo.beneficiaryBankCode must be {SANDBOX_BENEFICIARY_BANK_CODE}; '
-                f'got {bank_code!r}'
-            ),
-        ))
-    if contexts:
-        raise ApiException(status=0, contexts=contexts)
-
-
-def validate_sandbox_beneficiary_transfer_to_bank(request: Any) -> None:
-    """In sandbox, beneficiaryAccountNumber must be 2460888509 and beneficiaryBankCode must be 014."""
-    if request is None or not _is_sandbox():
-        return
-    contexts: List[Dict[str, str]] = []
-    account_number = _trim_str(getattr(request, 'beneficiary_account_number', None))
-    if account_number != SANDBOX_BENEFICIARY_ACCOUNT_NUMBER:
-        contexts.append(_ctx(
-            'beneficiaryAccountNumber',
-            (
-                f'in sandbox, beneficiaryAccountNumber must be {SANDBOX_BENEFICIARY_ACCOUNT_NUMBER}; '
-                f'got {getattr(request, "beneficiary_account_number", None)!r}'
-            ),
-        ))
-    bank_code = _trim_str(getattr(request, 'beneficiary_bank_code', None))
-    if bank_code != SANDBOX_BENEFICIARY_BANK_CODE:
-        contexts.append(_ctx(
-            'beneficiaryBankCode',
-            (
-                f'in sandbox, beneficiaryBankCode must be {SANDBOX_BENEFICIARY_BANK_CODE}; '
-                f'got {getattr(request, "beneficiary_bank_code", None)!r}'
-            ),
-        ))
-    if contexts:
-        raise ApiException(status=0, contexts=contexts)
-
-
 def validate_required_additional_info_not_empty_bank_account_inquiry(request: Any) -> None:
     if request is None:
         return
@@ -323,26 +255,20 @@ validation_registry: Dict[str, List[Callable[[Any], None]]] = {
     'BankAccountInquiryRequest': [
         strip_sandbox_ignored_fields_bank_account_inquiry,
         validate_account_type_bank_account_inquiry,
-        validate_sandbox_beneficiary_bank_account_inquiry,
-        validate_sandbox_amount,
         validate_required_additional_info_not_empty_bank_account_inquiry,
     ],
     'TransferToBankRequest': [
         strip_sandbox_ignored_fields_transfer_to_bank,
         validate_account_type_transfer_to_bank,
-        validate_sandbox_beneficiary_transfer_to_bank,
-        validate_sandbox_amount,
         validate_required_additional_info_not_empty_transfer_to_bank,
     ],
     'TransferToDanaRequest': [
         strip_sandbox_ignored_fields_transfer_to_dana,
         validate_account_type_transfer_to_dana,
-        validate_sandbox_amount,
         validate_required_additional_info_not_empty_transfer_to_dana,
     ],
     'DanaAccountInquiryRequest': [
         strip_sandbox_ignored_fields_dana_account_inquiry,
-        validate_sandbox_amount,
         validate_required_additional_info_not_empty_dana_account_inquiry,
     ],
 }
@@ -379,30 +305,61 @@ def custom_validation(request: Any) -> None:
         )
 
 
-def custom_validation_response(request: Any, response: Any) -> None:
-    """Augment TransferToDana responses in sandbox on business errors."""
-    if not _is_sandbox() or request is None or response is None:
-        return
-    if request.__class__.__name__ != 'TransferToDanaRequest':
-        return
+def _is_bank_transfer_request(request: Any) -> bool:
+    return request.__class__.__name__ in ('BankAccountInquiryRequest', 'TransferToBankRequest')
+
+
+def _should_append_positive_bank_hint(response_code: Any) -> bool:
+    return str(response_code or '').strip().startswith('500')
+
+
+def _should_append_amount_max_hint(response_message: Any) -> bool:
+    msg = str(response_message or '').lower()
+    return 'exceed' in msg or 'melebihi' in msg
+
+
+def _apply_sandbox_disbursement_hints(request: Any, response: Any) -> None:
     if not hasattr(response, 'response_message'):
         return
     response_code = getattr(response, 'response_code', None)
-    if not _is_business_error_response(response_code):
+    response_message = getattr(response, 'response_message', None)
+
+    updated = str(response_message or '')
+
+    if _is_bank_transfer_request(request) and _should_append_positive_bank_hint(response_code):
+        updated = _append_sandbox_hint(
+            updated,
+            SANDBOX_POSITIVE_BANK_HINT,
+            SANDBOX_POSITIVE_BENEFICIARY_ACCOUNT_NUMBER,
+            f'beneficiarybankcode {SANDBOX_POSITIVE_BENEFICIARY_BANK_CODE}',
+        )
+
+    if request.__class__.__name__ == 'TransferToDanaRequest':
+        if _should_append_dana_balance_hint(response_code, response_message):
+            updated = _append_sandbox_hint(
+                updated,
+                SANDBOX_DANA_BALANCE_LIMIT_HINT,
+                '21000000',
+                'after topup',
+            )
+    elif _should_append_amount_max_hint(response_message):
+        updated = _append_sandbox_hint(updated, SANDBOX_AMOUNT_MAX_HINT, str(SANDBOX_MAX_AMOUNT))
+
+    if updated != str(response_message or ''):
+        response.response_message = updated
+
+
+def custom_validation_response(request: Any, response: Any) -> None:
+    """Augment Disbursement responses in sandbox with account/amount guidance."""
+    if not _is_sandbox() or request is None or response is None:
         return
-    response.response_message = _append_sandbox_hint(
-        response.response_message,
-        SANDBOX_DANA_BALANCE_LIMIT_HINT,
-        '21000000',
-        'after topup',
-    )
+    _apply_sandbox_disbursement_hints(request, response)
 
 
-def enrich_transfer_to_dana_error(request: Any, exc: ApiException) -> ApiException:
-    """Enrich TransferToDana HTTP errors in sandbox (keeps exception; updates data)."""
+def enrich_disbursement_error(request: Any, exc: ApiException) -> ApiException:
+    """Enrich Disbursement HTTP errors in sandbox (keeps exception; updates reason / data).
+    """
     if not _is_sandbox() or request is None or exc is None:
-        return exc
-    if request.__class__.__name__ != 'TransferToDanaRequest':
         return exc
 
     body = exc.body
@@ -420,12 +377,23 @@ def enrich_transfer_to_dana_error(request: Any, exc: ApiException) -> ApiExcepti
     if not isinstance(payload, dict):
         return exc
 
+    partner_reference_no = str(
+        payload.get('partnerReferenceNo')
+        or payload.get('originalPartnerReferenceNo')
+        or ''
+    )
     response = SimpleNamespace(
         response_code=str(payload.get('responseCode') or ''),
         response_message=str(payload.get('responseMessage') or ''),
-        partner_reference_no=str(payload.get('partnerReferenceNo') or ''),
+        partner_reference_no=partner_reference_no,
     )
+    original_msg = response.response_message
     custom_validation_response(request, response)
+
+    reason = exc.reason
+    if response.response_message and response.response_message != original_msg:
+        status = exc.status if exc.status is not None else ''
+        reason = f'{status}: {response.response_message}'
 
     enriched_data = {
         'responseCode': response.response_code,
@@ -435,12 +403,26 @@ def enrich_transfer_to_dana_error(request: Any, exc: ApiException) -> ApiExcepti
     if isinstance(exc.data, dict):
         enriched_data = {**exc.data, **enriched_data}
 
+    enriched_body = body_str
+    if response.response_message != original_msg:
+        enriched_payload = dict(payload)
+        enriched_payload['responseCode'] = enriched_data['responseCode']
+        enriched_payload['responseMessage'] = enriched_data['responseMessage']
+        if enriched_data.get('partnerReferenceNo'):
+            enriched_payload['partnerReferenceNo'] = enriched_data['partnerReferenceNo']
+        enriched_body = json.dumps(enriched_payload)
+
     # Preserve subclass (e.g. NotFoundException for HTTP 404) so callers can catch by type
     enriched = type(exc)(
         status=exc.status,
-        reason=exc.reason,
-        body=exc.body,
+        reason=reason,
+        body=enriched_body,
         data=enriched_data,
     )
     enriched.headers = getattr(exc, 'headers', None)
     return enriched
+
+
+def enrich_transfer_to_dana_error(request: Any, exc: ApiException) -> ApiException:
+    """Enrich TransferToDana HTTP errors in sandbox (alias for enrich_disbursement_error)."""
+    return enrich_disbursement_error(request, exc)
